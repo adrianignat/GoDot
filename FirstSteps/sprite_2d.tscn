@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://mlnapf7vxw5h"]
+
+[ext_resource type="Texture2D" uid="uid://b4xvrk2t6asqg" path="res://SimpleTurquoiseCarTopView.svg" id="1_iy00c"]
+[ext_resource type="Script" path="res://Sprite2D.cs" id="2_vsful"]
+
+[sub_resource type="Environment" id="Environment_6i85w"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_wl2uc"]
+
+[node name="WorldEnvironment" type="WorldEnvironment"]
+environment = SubResource("Environment_6i85w")
+camera_attributes = SubResource("CameraAttributesPractical_wl2uc")
+
+[node name="Car" type="Sprite2D" parent="."]
+position = Vector2(1061, 1043)
+rotation = -1.5708
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_iy00c")
+script = ExtResource("2_vsful")
+
+[node name="Player" type="CharacterBody2D" parent="."]
+visible = false
+position = Vector2(483, 229)
