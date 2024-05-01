@@ -5,7 +5,7 @@ public partial class Bow : Node2D
     [Export]
     private PackedScene _arrowScene;
     private const float arrow_speed = 600f;
-    private const float fire_rate = 1 / 5f;
+    private const float fire_rate = 1/1.5f;
     private float damage = 30f;
 
     private float time_until_next_fire = 0f;
