@@ -45,6 +45,7 @@ animation = &"full"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0.5, 1.5)
 shape = SubResource("RectangleShape2D_dgbng")
+disabled = true
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 2.0
