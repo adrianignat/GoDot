@@ -31,18 +31,19 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dgbng"]
-size = Vector2(63, 16)
+size = Vector2(49, 13)
 
 [node name="Arrow" type="RigidBody2D"]
 gravity_scale = 0.0
 script = ExtResource("1_kmd8r")
 
 [node name="ArrowAnimations" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.9, 0.9)
 sprite_frames = SubResource("SpriteFrames_y8567")
 animation = &"full"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, 2)
+position = Vector2(0.5, 1.5)
 shape = SubResource("RectangleShape2D_dgbng")
 
 [node name="Timer" type="Timer" parent="."]

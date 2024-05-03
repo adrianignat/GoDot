@@ -1,9 +1,12 @@
-[gd_scene load_steps=43 format=3 uid="uid://bwo3muim8kicq"]
+[gd_scene load_steps=42 format=3 uid="uid://bwo3muim8kicq"]
 
 [ext_resource type="Texture2D" uid="uid://uu46gkne00he" path="res://Sprites/Archer_Blue.png" id="1_sbj2l"]
 [ext_resource type="Script" path="res://Scripts/Player.cs" id="1_x0j0j"]
 [ext_resource type="Script" path="res://Scripts/Bow.cs" id="3_hhh2f"]
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/arrow.tscn" id="4_lyi1c"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u1nim"]
+size = Vector2(60.5, 60)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cndxg"]
 atlas = ExtResource("1_sbj2l")
@@ -88,10 +91,6 @@ region = Rect2(960, 768, 192, 192)
 [sub_resource type="AtlasTexture" id="AtlasTexture_jmdhu"]
 atlas = ExtResource("1_sbj2l")
 region = Rect2(1152, 768, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_s1q1t"]
-atlas = ExtResource("1_sbj2l")
-region = Rect2(1344, 768, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ovc2e"]
 atlas = ExtResource("1_sbj2l")
@@ -199,7 +198,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4he1g")
 }],
-"loop": true,
+"loop": false,
 "name": &"shoot_down",
 "speed": 10.0
 }, {
@@ -224,11 +223,8 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_jmdhu")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_s1q1t")
 }],
-"loop": true,
+"loop": false,
 "name": &"shoot_forward",
 "speed": 10.0
 }, {
@@ -257,7 +253,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_2wt2j")
 }],
-"loop": true,
+"loop": false,
 "name": &"shoot_up",
 "speed": 10.0
 }, {
@@ -280,22 +276,14 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_g86md")
 }],
-"loop": true,
+"loop": false,
 "name": &"walk",
 "speed": 10.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_u1nim"]
-size = Vector2(60.5, 60)
-
 [node name="Player" type="CharacterBody2D"]
 motion_mode = 1
 script = ExtResource("1_x0j0j")
-
-[node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
-position = Vector2(99, 96)
-sprite_frames = SubResource("SpriteFrames_vnsn1")
-animation = &"walk"
 
 [node name="PlayerCollisionShape" type="CollisionShape2D" parent="."]
 visible = false
@@ -303,6 +291,13 @@ position = Vector2(230.75, 202)
 shape = SubResource("RectangleShape2D_u1nim")
 
 [node name="Bow" type="Node2D" parent="."]
-position = Vector2(145, 102)
+position = Vector2(123, 102)
 script = ExtResource("3_hhh2f")
 _arrowScene = ExtResource("4_lyi1c")
+
+[node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
+position = Vector2(99, 96)
+sprite_frames = SubResource("SpriteFrames_vnsn1")
+animation = &"shoot_forward"
+frame = 6
+frame_progress = 1.0
