@@ -7,7 +7,7 @@ public partial class Bow : Node2D
     [Export]
     private PackedScene _arrowScene;
     private const float arrow_speed = 600f;
-    private const float fire_rate = 1f;
+    private const float fire_rate = 0.3f;
     private float damage = 30f;
 
     private float time_until_next_fire = 0f;
@@ -40,6 +40,14 @@ public partial class Bow : Node2D
                 case Direction.S:
                     playerAnimation.Play("shoot_down");
                     break;
+                case Direction.SE:
+                case Direction.SW:
+                    playerAnimation.Play("shoot_down_forward");
+                    break;
+                case Direction.NE:
+                case Direction.NW:
+                    playerAnimation.Play("shoot_up_forward");
+                    break;
                 default:
                     playerAnimation.Play("shoot_forward");
                     break;
@@ -68,7 +76,7 @@ public partial class Bow : Node2D
         if (move_input == Vector2.Zero)
         {
             var x = player.Facing == Direction.W ? -1 : 1;
-            
+
             move_input = new Vector2(x, 0);
         }
         arrow.LinearVelocity = move_input * arrow_speed;
