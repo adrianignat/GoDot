@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/arrow.tscn" id="4_lyi1c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u1nim"]
-size = Vector2(60.5, 60)
+size = Vector2(70.25, 69)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cndxg"]
 atlas = ExtResource("1_sbj2l")
@@ -387,8 +387,7 @@ motion_mode = 1
 script = ExtResource("1_x0j0j")
 
 [node name="PlayerCollisionShape" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(230.75, 202)
+position = Vector2(102.875, 92.5)
 shape = SubResource("RectangleShape2D_u1nim")
 
 [node name="Bow" type="Node2D" parent="."]
