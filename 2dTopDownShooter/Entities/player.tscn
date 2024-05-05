@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/arrow.tscn" id="4_lyi1c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u1nim"]
-size = Vector2(70.25, 69)
+size = Vector2(57.25, 69)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cndxg"]
 atlas = ExtResource("1_sbj2l")
@@ -382,20 +382,19 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 motion_mode = 1
 script = ExtResource("1_x0j0j")
 
 [node name="PlayerCollisionShape" type="CollisionShape2D" parent="."]
-position = Vector2(102.875, 92.5)
+position = Vector2(0, -1)
 shape = SubResource("RectangleShape2D_u1nim")
 
 [node name="Bow" type="Node2D" parent="."]
-position = Vector2(123, 102)
+position = Vector2(16, 0)
 script = ExtResource("3_hhh2f")
 _arrowScene = ExtResource("4_lyi1c")
 
 [node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
-position = Vector2(99, 96)
 sprite_frames = SubResource("SpriteFrames_vnsn1")
-animation = &"walk"
+animation = &"shoot_down"

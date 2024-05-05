@@ -6,61 +6,59 @@ public partial class Bow : Node2D
 {
     [Export]
     private PackedScene _arrowScene;
-    private const float arrow_speed = 600f;
-    private const float fire_rate = 0.3f;
-    private float damage = 30f;
+    private const float _arrowSpeed = 600f;
+    private const float _fireRate = 1f;
+    private float _damage = 30f;
 
-    private float time_until_next_fire = 0f;
+    private float _timeUntilNextFire = 0f;
 
-    private bool arrowQueued = false;
+    private bool _arrowQueued = false;
 
-    private AnimatedSprite2D playerAnimation;
-    private Player player;
-
-    int animationFinishedCount = 0;
+    private AnimatedSprite2D _playerAnimation;
+    private Player _player;
 
     public override void _Ready()
     {
         //arrowAnimation = GetNode<AnimatedSprite2D>("ArrowAnimations");
-        playerAnimation = GetParent().GetNode<AnimatedSprite2D>("PlayerAnimations");
-        player = GetParent<Player>();
+        _playerAnimation = GetParent().GetNode<AnimatedSprite2D>("PlayerAnimations");
+        _player = GetParent<Player>();
     }
 
     public override void _Process(double delta)
     {
-        if (time_until_next_fire > fire_rate && !arrowQueued)
+        if (_timeUntilNextFire > _fireRate && !_arrowQueued)
         {
-            arrowQueued = true;
+            _arrowQueued = true;
 
-            switch (player.Moving)
+            switch (_player.Moving)
             {
                 case Direction.N:
-                    playerAnimation.Play("shoot_up");
+                    _playerAnimation.Play("shoot_up");
                     break;
                 case Direction.S:
-                    playerAnimation.Play("shoot_down");
+                    _playerAnimation.Play("shoot_down");
                     break;
                 case Direction.SE:
                 case Direction.SW:
-                    playerAnimation.Play("shoot_down_forward");
+                    _playerAnimation.Play("shoot_down_forward");
                     break;
                 case Direction.NE:
                 case Direction.NW:
-                    playerAnimation.Play("shoot_up_forward");
+                    _playerAnimation.Play("shoot_up_forward");
                     break;
                 default:
-                    playerAnimation.Play("shoot_forward");
+                    _playerAnimation.Play("shoot_forward");
                     break;
             }
         }
         else
         {
-            time_until_next_fire += (float)delta;
+            _timeUntilNextFire += (float)delta;
         }
 
-        if (arrowQueued
-            && playerAnimation.Animation.ToString().Contains("shoot")
-            && playerAnimation.Frame == 6)
+        if (_arrowQueued
+            && _playerAnimation.Animation.ToString().Contains("shoot")
+            && _playerAnimation.Frame == 6)
             AddArrow();
     }
 
@@ -75,32 +73,35 @@ public partial class Bow : Node2D
         Vector2 move_input = Input.GetVector("left", "right", "up", "down");
         if (move_input == Vector2.Zero)
         {
-            var x = player.Facing == Direction.W ? -1 : 1;
+            var x = _player.Facing == Direction.W ? -1 : 1;
 
             move_input = new Vector2(x, 0);
         }
-        arrow.LinearVelocity = move_input * arrow_speed;
+        arrow.LinearVelocity = move_input * _arrowSpeed;
 
-        if (player.Facing == Direction.W
-            && player.Moving != Direction.S
-            && player.Moving != Direction.SW)
+        
+        var moving = DirectionHelper.GetMovingDirection(move_input);
+
+        if (_player.Facing == Direction.W
+            && _player.Moving != Direction.S
+            && _player.Moving != Direction.SW)
             arrow.Position = new Vector2(GlobalPosition.X - 50, GlobalPosition.Y);
 
-        if (player.Moving == Direction.N) // Up
+        if (moving == Direction.N) // Up
             arrowAnimation.RotationDegrees = -90;
-        else if (player.Moving == Direction.S) // Down
+        else if (moving == Direction.S) // Down
             arrowAnimation.RotationDegrees = 90;
-        else if (player.Moving == Direction.W) // Left
+        else if (moving == Direction.W) // Left
             arrowAnimation.RotationDegrees = 180;
-        else if (player.Moving == Direction.E) // Right
+        else if (moving == Direction.E) // Right
             arrowAnimation.RotationDegrees = 0;
-        else if (player.Moving == Direction.NW) // Up Left
+        else if (moving == Direction.NW) // Up Left
             arrowAnimation.RotationDegrees = -135;
-        else if (player.Moving == Direction.NE) // Up Right
+        else if (moving == Direction.NE) // Up Right
             arrowAnimation.RotationDegrees = -45;
-        else if (player.Moving == Direction.SW) // Down Left
+        else if (moving == Direction.SW) // Down Left
             arrowAnimation.RotationDegrees = 135;
-        else if (player.Moving == Direction.SE) // Down Right
+        else if (moving == Direction.SE) // Down Right
             arrowAnimation.RotationDegrees = 45;
 
         return arrow;
@@ -112,10 +113,10 @@ public partial class Bow : Node2D
 
         GetTree().Root.AddChild(arrow);
 
-        playerAnimation.Play("idle");
+        _playerAnimation.Play("idle");
 
-        time_until_next_fire = 0f;
-        arrowQueued = false;
+        _timeUntilNextFire = 0f;
+        _arrowQueued = false;
         return null;
     }
 }
