@@ -4,11 +4,14 @@ using System;
 
 public partial class Bow : Node2D
 {
+    private const float _arrowSpeed = 600f;
+
     [Export]
     private PackedScene _arrowScene;
-    private const float _arrowSpeed = 600f;
-    private const float _fireRate = 1f;
-    private float _damage = 30f;
+    [Export]
+    private float FireRate = 1f;
+    [Export]
+    private short Damage = 50;
 
     private float _timeUntilNextFire = 0f;
 
@@ -18,15 +21,14 @@ public partial class Bow : Node2D
     private Player _player;
 
     public override void _Ready()
-    {
-        //arrowAnimation = GetNode<AnimatedSprite2D>("ArrowAnimations");
+    {   
         _playerAnimation = GetParent().GetNode<AnimatedSprite2D>("PlayerAnimations");
         _player = GetParent<Player>();
     }
 
     public override void _Process(double delta)
     {
-        if (_timeUntilNextFire > _fireRate && !_arrowQueued)
+        if (_timeUntilNextFire > FireRate && !_arrowQueued)
         {
             _arrowQueued = true;
 
@@ -64,7 +66,8 @@ public partial class Bow : Node2D
 
     private RigidBody2D CreateNewArrow()
     {
-        var arrow = _arrowScene.Instantiate<RigidBody2D>();
+        var arrow = _arrowScene.Instantiate<Arrow>();
+        arrow.Damage = Damage;
         var arrowAnimation = arrow.GetChild<AnimatedSprite2D>(0);
         arrowAnimation.Play("full");
 

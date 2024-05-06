@@ -151,7 +151,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_kdoob")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack",
 "speed": 10.0
 }, {
@@ -174,7 +174,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_fsytb")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_down",
 "speed": 10.0
 }, {
@@ -197,7 +197,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_drnyf")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_up",
 "speed": 10.0
 }, {
@@ -255,6 +255,8 @@ animations = [{
 size = Vector2(129, 130)
 
 [node name="Enemy" type="CharacterBody2D"]
+collision_layer = 3
+collision_mask = 3
 motion_mode = 1
 script = ExtResource("1_41y43")
 
@@ -264,7 +266,7 @@ shape = SubResource("RectangleShape2D_n4enc")
 
 [node name="EnemyAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_wfccv")
-animation = &"attack"
+animation = &"attack_up"
 
 [node name="AttackRange" type="Area2D" parent="."]
 

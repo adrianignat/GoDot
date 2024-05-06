@@ -1,19 +1,22 @@
-using dTopDownShooter.Scripts;
 using Godot;
-using System.Diagnostics;
 
 public partial class Enemy : CharacterBody2D
 {
 	private const short _distanceDelta = 60;
 	private const float _speed = 100.0f;
-	private Player player;
+
+	[Export]
+	private short Health = 100;
+	[Export]
+	private short Damage = 10;
 	private bool withinRange = false;
+	private short animationFinishedCount = 0;
 
 	private float attackSpeed = 1f;
-	private float timeUntilNextAttack = 0f;
+	private float timeUntilNextAttack;
 
+	private Player player;
 	private AnimatedSprite2D _enemyAnimation;
-	private Direction _direction;
 
 	public override void _Ready()
 	{
@@ -25,55 +28,73 @@ public partial class Enemy : CharacterBody2D
 
 	public override void _Process(double delta)
 	{
-		if (withinRange)
+		if (withinRange && timeUntilNextAttack <= 0)
 		{
-			if (timeUntilNextAttack <= 0)
-			{
-				Attack();
-				timeUntilNextAttack = attackSpeed;
-			}
-			else
-			{
-				timeUntilNextAttack -= (float)delta;
-			}
+			Attack();
+			timeUntilNextAttack = attackSpeed;
+			return;
 		}
+
+		timeUntilNextAttack -= (float)delta;
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-        var distanceFromPlayer = player.GlobalPosition - GlobalPosition;
-        Vector2 move_input = distanceFromPlayer.Normalized();
+		var distanceFromPlayer = player.GlobalPosition - GlobalPosition;
+		Vector2 move_input = distanceFromPlayer.Normalized();
 		Velocity = move_input * _speed;
 		_enemyAnimation.FlipH = move_input.X < 0;
 
-		if (withinRange)
+		MoveAndSlide();
+	}
+
+	public void TakeDamage(short damage)
+	{
+		Health -= damage;
+		if (Health <= 0)
 		{
-
-			if (distanceFromPlayer.Y < -_distanceDelta)
-			{
-				_enemyAnimation.Play("attack_up");
-			}
-			else if (distanceFromPlayer.Y > _distanceDelta)
-			{
-				_enemyAnimation.Play("attack_down");
-			}
-			else
-			{
-				_enemyAnimation.Play("attack");
-			}
+			QueueFree();
 		}
-
-        MoveAndSlide();
 	}
 
 	private void Attack()
 	{
-		Debug.Print("Attacking player");
+		var distanceFromPlayer = player.GlobalPosition - GlobalPosition;
+		string animationName;
+		if (distanceFromPlayer.Y < -_distanceDelta)
+		{
+			animationName = "attack_up";
+			
+		}
+		else if (distanceFromPlayer.Y > _distanceDelta)
+		{
+			animationName = "attack_down";
+		}
+		else
+		{
+			animationName = "attack";
+		}
+
+		_enemyAnimation.Play(animationName);
+		player.TakeDamage(Damage);
+		_enemyAnimation.AnimationFinished += () => Idle(animationName);
+	}
+
+	private void Idle(string animationName)
+	{
+		if (animationFinishedCount > 0)
+		{
+			_enemyAnimation.Play("idle");
+		}
+		else
+		{
+			_enemyAnimation.Play(animationName);
+			animationFinishedCount++;
+		}
 	}
 
 	public void OnAttackRangeEntered(Node2D body)
 	{
-		
 		if (body.IsInGroup("player"))
 		{
 			withinRange = true;

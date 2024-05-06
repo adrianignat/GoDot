@@ -49,6 +49,8 @@ position = Vector2(0.5, 1.5)
 shape = SubResource("RectangleShape2D_dgbng")
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 2.0
+wait_time = 10.0
 one_shot = true
 autostart = true
+
+[connection signal="body_entered" from="." to="." method="OnCollision"]

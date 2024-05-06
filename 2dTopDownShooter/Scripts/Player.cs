@@ -4,8 +4,11 @@ using Godot;
 public partial class Player : CharacterBody2D
 {
 	private const float _speed = 300.0f;
-	private AnimatedSprite2D _playerAnimation;
 
+	[Export]
+	private short Health = 100;
+
+	private AnimatedSprite2D _playerAnimation;
 	public Direction Facing { get; private set; }
 	public Direction Moving { get; private set; }
 
@@ -49,5 +52,14 @@ public partial class Player : CharacterBody2D
 		Velocity = move_input * _speed;
 		_playerAnimation.FlipH = Facing == Direction.W;
 		MoveAndSlide();
+	}
+
+	internal void TakeDamage(short damage)
+	{
+		Health -= damage;
+		if (Health <= 0)
+		{
+			QueueFree();
+		}
 	}
 }
