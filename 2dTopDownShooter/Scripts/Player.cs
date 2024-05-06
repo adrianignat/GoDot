@@ -3,8 +3,8 @@ using Godot;
 
 public partial class Player : CharacterBody2D
 {
-	private const float _speed = 300.0f;
-
+	[Export]
+	private float Speed = 300.0f;
 	[Export]
 	private short Health = 100;
 
@@ -49,7 +49,7 @@ public partial class Player : CharacterBody2D
 	{
 		Vector2 move_input = Input.GetVector("left", "right", "up", "down");
 
-		Velocity = move_input * _speed;
+		Velocity = move_input * Speed;
 		_playerAnimation.FlipH = Facing == Direction.W;
 		MoveAndSlide();
 	}

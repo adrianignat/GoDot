@@ -3,8 +3,9 @@ using Godot;
 public partial class Enemy : CharacterBody2D
 {
 	private const short _distanceDelta = 60;
-	private const float _speed = 100.0f;
 
+	[Export]
+	private float Speed = 100.0f;
 	[Export]
 	private short Health = 100;
 	[Export]
@@ -42,7 +43,7 @@ public partial class Enemy : CharacterBody2D
 	{
 		var distanceFromPlayer = player.GlobalPosition - GlobalPosition;
 		Vector2 move_input = distanceFromPlayer.Normalized();
-		Velocity = move_input * _speed;
+		Velocity = move_input * Speed;
 		_enemyAnimation.FlipH = move_input.X < 0;
 
 		MoveAndSlide();
