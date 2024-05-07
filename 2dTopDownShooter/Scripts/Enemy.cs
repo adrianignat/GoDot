@@ -19,12 +19,18 @@ public partial class Enemy : CharacterBody2D
 	private Player player;
 	private AnimatedSprite2D _enemyAnimation;
 
+	[Signal]
+	public delegate void KilledEventHandler();
+
 	public override void _Ready()
 	{
 		timeUntilNextAttack = attackSpeed;
 		player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
 		_enemyAnimation = GetNode<AnimatedSprite2D>("EnemyAnimations");
 		_enemyAnimation.Play("walk");
+
+		var main = GetTree().Root.GetNode<Main>("main");
+		Killed += main.UpdateScore;
 	}
 
 	public override void _Process(double delta)
@@ -54,6 +60,7 @@ public partial class Enemy : CharacterBody2D
 		Health -= damage;
 		if (Health <= 0)
 		{
+			EmitSignal("Killed");
 			QueueFree();
 		}
 	}
