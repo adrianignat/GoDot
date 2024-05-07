@@ -75,12 +75,44 @@ public partial class Bow : Node2D
         arrow.Position = GlobalPosition;
 
         Vector2 move_input = Input.GetVector("left", "right", "up", "down");
+        //if (move_input == Vector2.Zero)
+        //{
+        //    var x = _player.Facing == Direction.W ? -1 : 1;
+
+        //    move_input = new Vector2(x, 0);
+        //}
+
         if (move_input == Vector2.Zero)
         {
-            var x = _player.Facing == Direction.W ? -1 : 1;
-
-            move_input = new Vector2(x, 0);
+            switch (_player.Moving)
+            {
+                case Direction.N:
+                    move_input = new Vector2(0, -1);
+                    break;
+                case Direction.S:
+                    move_input = new Vector2(0, 1);
+                    break;
+                case Direction.W:
+                    move_input = new Vector2(-1, 0);
+                    break;
+                case Direction.E:
+                    move_input = new Vector2(1, 0);
+                    break;
+                case Direction.NW:
+                    move_input = new Vector2(-1, -1);
+                    break;
+                case Direction.NE:
+                    move_input = new Vector2(1, -1);
+                    break;
+                case Direction.SW:
+                    move_input = new Vector2(-1, 1);
+                    break;
+                case Direction.SE:
+                    move_input = new Vector2(1, 1);
+                    break;
+            }
         }
+
         arrow.LinearVelocity = move_input * _arrowSpeed;
 
         

@@ -45,7 +45,7 @@ public partial class Player : CharacterBody2D
 		}
 		else
 		{
-			Moving = Facing;
+			//Moving = Facing;
 			_playerAnimation.Play("idle");
 		}
 	}

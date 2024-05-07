@@ -28,7 +28,7 @@ text = "Score: 0"
 script = ExtResource("2_eg46f")
 EnemyScene = ExtResource("2_tddb0")
 spawnPoints = [NodePath("SpawnPoint1"), NodePath("SpawnPoint2"), NodePath("SpawnPoint3"), NodePath("SpawnPoint4"), NodePath("SpawnPoint5"), NodePath("SpawnPoint6"), NodePath("SpawnPoint7"), NodePath("SpawnPoint8")]
-EnemiesPerSecond = 3.0
+EnemiesPerSecond = 2.0
 
 [node name="SpawnPoint1" type="Node2D" parent="EnemySpawner"]
 position = Vector2(512, -32)
