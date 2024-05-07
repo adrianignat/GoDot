@@ -1,32 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://44flofr4xo8"]
+[gd_scene load_steps=4 format=3 uid="uid://44flofr4xo8"]
 
 [ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/player.tscn" id="1_n17b8"]
 [ext_resource type="Script" path="res://Scripts/EnemySpawner.cs" id="2_eg46f"]
 [ext_resource type="PackedScene" uid="uid://bi30yxqh33cfp" path="res://Entities/enemy.tscn" id="2_tddb0"]
 
-[sub_resource type="CSharpScript" id="CSharpScript_ah04r"]
-script/source = "using Godot;
-
-public partial class Main : Node2D
-{
-	private short _score = 0;
-	private Label _scoreLabel;
-
-	public override void _Ready()
-	{
-		_scoreLabel = GetNode<Label>(\"ScoreLabel\");
-	}
-
-	public void UpdateScore()
-	{
-		_score += 1;
-		_scoreLabel.Text = \"Score: \" + _score;
-	}
-}
-"
-
 [node name="main" type="Node2D"]
-script = SubResource("CSharpScript_ah04r")
 
 [node name="Player" parent="." instance=ExtResource("1_n17b8")]
 position = Vector2(1055, 550)
