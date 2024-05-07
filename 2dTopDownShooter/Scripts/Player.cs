@@ -3,6 +3,9 @@ using Godot;
 
 public partial class Player : CharacterBody2D
 {
+	private short _score = 0;
+	private Label _scoreLabel;
+
 	[Export]
 	private float Speed = 300.0f;
 	[Export]
@@ -18,6 +21,8 @@ public partial class Player : CharacterBody2D
 		_playerAnimation.Play("idle");
 		Facing = Direction.E;
 		Moving = Direction.E;
+
+		_scoreLabel = GetTree().Root.GetCamera2D().GetNode<Label>("ScoreLabel");
 	}
 
 	public override void _Process(double _delta)
@@ -61,5 +66,11 @@ public partial class Player : CharacterBody2D
 		{
 			QueueFree();
 		}
+	}
+
+	public void UpdateScore()
+	{
+		_score += 1;
+		_scoreLabel.Text = "Score: " + _score;
 	}
 }

@@ -29,8 +29,8 @@ public partial class Enemy : CharacterBody2D
 		_enemyAnimation = GetNode<AnimatedSprite2D>("EnemyAnimations");
 		_enemyAnimation.Play("walk");
 
-		var main = GetTree().Root.GetNode<Main>("main");
-		Killed += main.UpdateScore;
+		
+		Killed += player.UpdateScore;
 	}
 
 	public override void _Process(double delta)

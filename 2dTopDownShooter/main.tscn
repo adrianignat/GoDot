@@ -1,15 +1,50 @@
 [gd_scene load_steps=5 format=3 uid="uid://44flofr4xo8"]
 
 [ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/player.tscn" id="1_n17b8"]
-[ext_resource type="Script" path="res://Scripts/Main.cs" id="1_ski6x"]
 [ext_resource type="Script" path="res://Scripts/EnemySpawner.cs" id="2_eg46f"]
 [ext_resource type="PackedScene" uid="uid://bi30yxqh33cfp" path="res://Entities/enemy.tscn" id="2_tddb0"]
 
+[sub_resource type="CSharpScript" id="CSharpScript_ah04r"]
+script/source = "using Godot;
+
+public partial class Main : Node2D
+{
+	private short _score = 0;
+	private Label _scoreLabel;
+
+	public override void _Ready()
+	{
+		_scoreLabel = GetNode<Label>(\"ScoreLabel\");
+	}
+
+	public void UpdateScore()
+	{
+		_score += 1;
+		_scoreLabel.Text = \"Score: \" + _score;
+	}
+}
+"
+
 [node name="main" type="Node2D"]
-script = ExtResource("1_ski6x")
+script = SubResource("CSharpScript_ah04r")
 
 [node name="Player" parent="." instance=ExtResource("1_n17b8")]
 position = Vector2(1055, 550)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(2, -12)
+zoom = Vector2(2, 2)
+limit_left = 0
+limit_top = 0
+limit_right = 1920
+limit_bottom = 1080
+
+[node name="ScoreLabel" type="Label" parent="Player/Camera2D"]
+offset_left = 832.0
+offset_top = -512.0
+offset_right = 893.0
+offset_bottom = -489.0
+text = "Score: 0"
 
 [node name="EnemySpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawnPoints")]
 script = ExtResource("2_eg46f")
@@ -40,11 +75,3 @@ position = Vector2(-32, 288)
 
 [node name="SpawnPoint8" type="Node2D" parent="EnemySpawner"]
 position = Vector2(-32, 832)
-
-[node name="ScoreLabel" type="Label" parent="."]
-offset_left = 1792.0
-offset_top = 32.0
-offset_right = 1864.0
-offset_bottom = 55.0
-theme_override_colors/font_color = Color(0.894118, 0, 0, 1)
-text = "Score: 0"

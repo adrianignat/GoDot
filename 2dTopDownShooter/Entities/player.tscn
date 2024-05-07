@@ -383,6 +383,7 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
+scale = Vector2(0.5, 0.5)
 motion_mode = 1
 script = ExtResource("1_x0j0j")
 Speed = 150.0

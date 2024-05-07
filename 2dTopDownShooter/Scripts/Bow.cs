@@ -71,6 +71,7 @@ public partial class Bow : Node2D
         var arrowAnimation = arrow.GetChild<AnimatedSprite2D>(0);
         arrowAnimation.Play("full");
 
+        arrow.Scale = new Vector2(0.5f, 0.5f);
         arrow.Position = GlobalPosition;
 
         Vector2 move_input = Input.GetVector("left", "right", "up", "down");
@@ -114,7 +115,8 @@ public partial class Bow : Node2D
     {
         var arrow = CreateNewArrow();
 
-        GetTree().Root.AddChild(arrow);
+        var parent = GetTree().Root;
+        parent.AddChild(arrow);
 
         _playerAnimation.Play("idle");
 
