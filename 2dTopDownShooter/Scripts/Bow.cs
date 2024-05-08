@@ -21,13 +21,16 @@ public partial class Bow : Node2D
     private Player _player;
 
     public override void _Ready()
-    {   
+    {
         _playerAnimation = GetParent().GetNode<AnimatedSprite2D>("PlayerAnimations");
         _player = GetParent<Player>();
     }
 
     public override void _Process(double delta)
     {
+        if (_player == null || _player.IsDead)
+            return;
+
         if (_timeUntilNextFire > FireRate && !_arrowQueued)
         {
             _arrowQueued = true;

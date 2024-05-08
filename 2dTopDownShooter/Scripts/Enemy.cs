@@ -29,12 +29,16 @@ public partial class Enemy : CharacterBody2D
 		_enemyAnimation = GetNode<AnimatedSprite2D>("EnemyAnimations");
 		_enemyAnimation.Play("walk");
 
-		
+		if (player == null || player.IsDead)
+			return;
 		Killed += player.UpdateScore;
 	}
 
 	public override void _Process(double delta)
 	{
+		if (player == null || player.IsDead)
+			return;
+	   
 		if (withinRange && timeUntilNextAttack <= 0)
 		{
 			Attack();
@@ -47,6 +51,9 @@ public partial class Enemy : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (player == null || player.IsDead)
+			return;
+
 		var distanceFromPlayer = player.GlobalPosition - GlobalPosition;
 		Vector2 move_input = distanceFromPlayer.Normalized();
 		Velocity = move_input * Speed;
@@ -67,6 +74,9 @@ public partial class Enemy : CharacterBody2D
 
 	private void Attack()
 	{
+		if (player == null || player.IsDead)
+			return;
+
 		var distanceFromPlayer = player.GlobalPosition - GlobalPosition;
 		string animationName;
 		if (distanceFromPlayer.Y < -_distanceDelta)

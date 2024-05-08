@@ -153,7 +153,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack",
-"speed": 10.0
+"speed": 30.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -176,7 +176,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack_down",
-"speed": 10.0
+"speed": 30.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -199,7 +199,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack_up",
-"speed": 10.0
+"speed": 30.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -268,7 +268,7 @@ shape = SubResource("RectangleShape2D_n4enc")
 
 [node name="EnemyAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_wfccv")
-animation = &"attack_up"
+animation = &"walk"
 
 [node name="AttackRange" type="Area2D" parent="."]
 

@@ -11,6 +11,8 @@ public partial class Player : CharacterBody2D
 	[Export]
 	private short Health = 100;
 
+	public bool IsDead => Health <= 0;
+
 	private AnimatedSprite2D _playerAnimation;
 	public Direction Facing { get; private set; }
 	public Direction Moving { get; private set; }
@@ -22,7 +24,8 @@ public partial class Player : CharacterBody2D
 		Facing = Direction.E;
 		Moving = Direction.E;
 
-		_scoreLabel = GetTree().Root.GetCamera2D().GetNode<Label>("ScoreLabel");
+		//_scoreLabel = GetTree().Root.GetCamera2D().GetNode<Label>("ScoreLabel");
+		_scoreLabel = GetNode<Label>("ScoreLabel");
 	}
 
 	public override void _Process(double _delta)
