@@ -116,9 +116,10 @@ public partial class Bow : Node2D
             }
         }
 
-        arrow.LinearVelocity = move_input * _arrowSpeed;
+        arrow.LinearVelocity = GetLocalMousePosition().Normalized() * _arrowSpeed;
+        arrow.Rotation = GetLocalMousePosition().Angle();
 
-        
+
         var moving = DirectionHelper.GetMovingDirection(move_input);
 
         if (_player.Facing == Direction.W
@@ -126,22 +127,22 @@ public partial class Bow : Node2D
             && _player.Moving != Direction.SW)
             arrow.Position = new Vector2(GlobalPosition.X - 50, GlobalPosition.Y);
 
-        if (moving == Direction.N) // Up
-            arrowAnimation.RotationDegrees = -90;
-        else if (moving == Direction.S) // Down
-            arrowAnimation.RotationDegrees = 90;
-        else if (moving == Direction.W) // Left
-            arrowAnimation.RotationDegrees = 180;
-        else if (moving == Direction.E) // Right
-            arrowAnimation.RotationDegrees = 0;
-        else if (moving == Direction.NW) // Up Left
-            arrowAnimation.RotationDegrees = -135;
-        else if (moving == Direction.NE) // Up Right
-            arrowAnimation.RotationDegrees = -45;
-        else if (moving == Direction.SW) // Down Left
-            arrowAnimation.RotationDegrees = 135;
-        else if (moving == Direction.SE) // Down Right
-            arrowAnimation.RotationDegrees = 45;
+        // if (moving == Direction.N) // Up
+        // 	arrowAnimation.RotationDegrees = -90;
+        // else if (moving == Direction.S) // Down
+        // 	arrowAnimation.RotationDegrees = 90;
+        // else if (moving == Direction.W) // Left
+        // 	arrowAnimation.RotationDegrees = 180;
+        // else if (moving == Direction.E) // Right
+        // 	arrowAnimation.RotationDegrees = 0;
+        // else if (moving == Direction.NW) // Up Left
+        // 	arrowAnimation.RotationDegrees = -135;
+        // else if (moving == Direction.NE) // Up Right
+        // 	arrowAnimation.RotationDegrees = -45;
+        // else if (moving == Direction.SW) // Down Left
+        // 	arrowAnimation.RotationDegrees = 135;
+        // else if (moving == Direction.SE) // Down Right
+        // 	arrowAnimation.RotationDegrees = 45;
 
         return arrow;
     }
