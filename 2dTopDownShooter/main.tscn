@@ -17,9 +17,10 @@ limit_top = 0
 limit_right = 1920
 limit_bottom = 1080
 
-[node name="EnemySpawner" type="Node2D" parent="."]
+[node name="EnemySpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawnPoints")]
 script = ExtResource("2_eg46f")
 EnemyScene = ExtResource("2_tddb0")
+spawnPoints = [NodePath("SpawnPoint1"), NodePath("SpawnPoint2"), NodePath("SpawnPoint3"), NodePath("SpawnPoint4"), NodePath("SpawnPoint5"), NodePath("SpawnPoint6"), NodePath("SpawnPoint7"), NodePath("SpawnPoint8")]
 EnemiesPerSecond = 2.0
 
 [node name="SpawnPoint1" type="Node2D" parent="EnemySpawner"]
