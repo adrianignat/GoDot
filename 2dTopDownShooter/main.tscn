@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://44flofr4xo8"]
+[gd_scene load_steps=5 format=3 uid="uid://44flofr4xo8"]
 
 [ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/player.tscn" id="1_n17b8"]
 [ext_resource type="Script" path="res://Scripts/EnemySpawner.cs" id="2_eg46f"]
 [ext_resource type="PackedScene" uid="uid://bi30yxqh33cfp" path="res://Entities/enemy.tscn" id="2_tddb0"]
+[ext_resource type="PackedScene" uid="uid://cg2msw1khqokh" path="res://Entities/map.tscn" id="4_f0kco"]
 
 [node name="main" type="Node2D"]
 
@@ -46,3 +47,6 @@ position = Vector2(-32, 288)
 
 [node name="SpawnPoint8" type="Node2D" parent="EnemySpawner"]
 position = Vector2(-32, 832)
+
+[node name="Map" parent="." instance=ExtResource("4_f0kco")]
+z_index = -90
