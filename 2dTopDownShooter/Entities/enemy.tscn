@@ -1,7 +1,7 @@
 [gd_scene load_steps=37 format=3 uid="uid://bi30yxqh33cfp"]
 
-[ext_resource type="Script" path="res://Scripts/Enemy.cs" id="1_41y43"]
 [ext_resource type="Texture2D" uid="uid://cvhfa8bhig7dh" path="res://Sprites/Goblin_Torch_Red.png" id="1_jfter"]
+[ext_resource type="Script" path="res://Scripts/Characters/Enemies/Enemy.cs" id="1_kv5dc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n4enc"]
 size = Vector2(90, 86)
@@ -258,8 +258,9 @@ size = Vector2(129, 130)
 scale = Vector2(0.5, 0.5)
 collision_layer = 2
 motion_mode = 1
-script = ExtResource("1_41y43")
-Speed = 30.0
+script = ExtResource("1_kv5dc")
+Speed = 100.0
+Health = 100
 
 [node name="EnemyCollision" type="CollisionShape2D" parent="."]
 position = Vector2(5, -3)

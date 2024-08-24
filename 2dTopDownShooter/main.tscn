@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://44flofr4xo8"]
 
 [ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/player.tscn" id="1_n17b8"]
-[ext_resource type="Script" path="res://Scripts/EnemySpawner.cs" id="2_eg46f"]
+[ext_resource type="Script" path="res://Scripts/Characters/Enemies/EnemySpawner.cs" id="2_nc1g4"]
 [ext_resource type="PackedScene" uid="uid://bi30yxqh33cfp" path="res://Entities/enemy.tscn" id="2_tddb0"]
-[ext_resource type="PackedScene" uid="uid://cg2msw1khqokh" path="res://Entities/map.tscn" id="4_f0kco"]
+[ext_resource type="PackedScene" path="res://Entities/map.tscn" id="4_f0kco"]
 
 [node name="main" type="Node2D"]
 
@@ -19,10 +19,10 @@ limit_right = 1920
 limit_bottom = 1080
 
 [node name="EnemySpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawnPoints")]
-script = ExtResource("2_eg46f")
-EnemyScene = ExtResource("2_tddb0")
+script = ExtResource("2_nc1g4")
 spawnPoints = [NodePath("SpawnPoint1"), NodePath("SpawnPoint2"), NodePath("SpawnPoint3"), NodePath("SpawnPoint4"), NodePath("SpawnPoint5"), NodePath("SpawnPoint6"), NodePath("SpawnPoint7"), NodePath("SpawnPoint8")]
-EnemiesPerSecond = 2.0
+Scene = ExtResource("2_tddb0")
+ObjectsPerSecond = 1.0
 
 [node name="SpawnPoint1" type="Node2D" parent="EnemySpawner"]
 position = Vector2(512, -32)
@@ -47,6 +47,10 @@ position = Vector2(-32, 288)
 
 [node name="SpawnPoint8" type="Node2D" parent="EnemySpawner"]
 position = Vector2(-32, 832)
+
+[node name="IncreaseSpawnRate" type="Timer" parent="EnemySpawner"]
+wait_time = 15.0
+autostart = true
 
 [node name="Map" parent="." instance=ExtResource("4_f0kco")]
 z_index = -90

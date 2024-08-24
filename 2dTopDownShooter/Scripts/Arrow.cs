@@ -2,16 +2,24 @@ using Godot;
 
 public partial class Arrow : RigidBody2D
 {
-	public short Damage { get; internal set; }
+	[Export]
+	public short Damage { get; set; }
+
+	[Export]
+	public float Speed { get; set; }
 
 	public override void _Ready()
 	{
-		var timer = GetNode<Timer>("Timer");
+		var timer = GetNode<Timer>("Lifespan");
 		timer.Timeout += () => QueueFree();
+
 		ContactMonitor = true;
 		MaxContactsReported = 1;
-	}
 
+		Scale = new Vector2(0.5f, 0.5f);
+		LinearVelocity = GetLocalMousePosition().Normalized() * Speed;
+		Rotation = GetLocalMousePosition().Angle();
+	}
 
 	private void OnCollision(Node body)
 	{

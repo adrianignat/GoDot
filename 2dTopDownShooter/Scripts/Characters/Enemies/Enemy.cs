@@ -1,13 +1,11 @@
+using dTopDownShooter.Scripts.Characters;
 using Godot;
+using System;
 
-public partial class Enemy : CharacterBody2D
+public partial class Enemy : Character
 {
 	private const short _distanceDelta = 60;
 
-	[Export]
-	private float Speed = 100.0f;
-	[Export]
-	private short Health = 100;
 	[Export]
 	private short Damage = 10;
 	private bool withinRange = false;
@@ -19,9 +17,6 @@ public partial class Enemy : CharacterBody2D
 	private Player player;
 	private AnimatedSprite2D _enemyAnimation;
 
-	[Signal]
-	public delegate void KilledEventHandler();
-
 	public override void _Ready()
 	{
 		timeUntilNextAttack = attackSpeed;
@@ -31,7 +26,13 @@ public partial class Enemy : CharacterBody2D
 
 		if (player == null || player.IsDead)
 			return;
-		Killed += player.UpdateScore;
+		Killed += OnKilled;
+	}
+
+	private void OnKilled()
+	{
+		player.UpdateScore();
+		QueueFree();
 	}
 
 	public override void _Process(double delta)
@@ -60,16 +61,6 @@ public partial class Enemy : CharacterBody2D
 		_enemyAnimation.FlipH = move_input.X < 0;
 
 		MoveAndSlide();
-	}
-
-	public void TakeDamage(short damage)
-	{
-		Health -= damage;
-		if (Health <= 0)
-		{
-			EmitSignal("Killed");
-			QueueFree();
-		}
 	}
 
 	private void Attack()

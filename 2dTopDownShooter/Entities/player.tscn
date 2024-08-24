@@ -1,12 +1,41 @@
-[gd_scene load_steps=55 format=3 uid="uid://bwo3muim8kicq"]
+[gd_scene load_steps=63 format=3 uid="uid://bwo3muim8kicq"]
 
+[ext_resource type="Script" path="res://Scripts/Characters/Player.cs" id="1_3jw8b"]
 [ext_resource type="Texture2D" uid="uid://uu46gkne00he" path="res://Sprites/Archer_Blue.png" id="1_sbj2l"]
-[ext_resource type="Script" path="res://Scripts/Player.cs" id="1_x0j0j"]
 [ext_resource type="Script" path="res://Scripts/Bow.cs" id="3_hhh2f"]
+[ext_resource type="Texture2D" uid="uid://cnynym1ufcfib" path="res://Sprites/Dead.png" id="4_agnll"]
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/arrow.tscn" id="4_lyi1c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u1nim"]
 size = Vector2(57.25, 69)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_thks6"]
+atlas = ExtResource("4_agnll")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t1mis"]
+atlas = ExtResource("4_agnll")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xxwow"]
+atlas = ExtResource("4_agnll")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ahkif"]
+atlas = ExtResource("4_agnll")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_roljj"]
+atlas = ExtResource("4_agnll")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0u76j"]
+atlas = ExtResource("4_agnll")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t43df"]
+atlas = ExtResource("4_agnll")
+region = Rect2(768, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cndxg"]
 atlas = ExtResource("1_sbj2l")
@@ -204,6 +233,32 @@ region = Rect2(960, 192, 192, 192)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_thks6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t1mis")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xxwow")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ahkif")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_roljj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0u76j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t43df")
+}],
+"loop": false,
+"name": &"dead",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_cndxg")
 }, {
 "duration": 1.0,
@@ -385,8 +440,9 @@ animations = [{
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 scale = Vector2(0.5, 0.5)
 motion_mode = 1
-script = ExtResource("1_x0j0j")
+script = ExtResource("1_3jw8b")
 Speed = 150.0
+Health = 100
 
 [node name="PlayerCollisionShape" type="CollisionShape2D" parent="."]
 position = Vector2(0, -1)
@@ -395,13 +451,14 @@ shape = SubResource("RectangleShape2D_u1nim")
 [node name="Bow" type="Node2D" parent="."]
 position = Vector2(16, 0)
 script = ExtResource("3_hhh2f")
-_arrowScene = ExtResource("4_lyi1c")
-FireRate = 0.25
-Damage = 100
+Scene = ExtResource("4_lyi1c")
+ObjectsPerSecond = 3.0
 
 [node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_vnsn1")
-animation = &"shoot_up_forward"
+animation = &"dead"
+frame = 6
+frame_progress = 1.0
 
 [node name="ScoreLabel" type="Label" parent="."]
 offset_top = -64.0
