@@ -1,11 +1,11 @@
 using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Characters;
 using Godot;
-using System;
 
 public partial class Player : Character
 {
-	private short _score = 0;
+	private ushort _gold = 0;
+	private ushort _score = 0;
 	private Label _scoreLabel;
 
 	public bool IsShooting = false;
@@ -75,6 +75,11 @@ public partial class Player : Character
 	{
 		_score += 1;
 		_scoreLabel.Text = "Score: " + _score;
+	}
+
+	public void AcquireGold(ushort amount)
+	{
+		_gold += amount;
 	}
 
 	internal void PlayShootAnimation()

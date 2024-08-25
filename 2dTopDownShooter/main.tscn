@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://44flofr4xo8"]
+[gd_scene load_steps=7 format=3 uid="uid://44flofr4xo8"]
 
 [ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/player.tscn" id="1_n17b8"]
 [ext_resource type="Script" path="res://Scripts/Characters/Enemies/EnemySpawner.cs" id="2_nc1g4"]
 [ext_resource type="PackedScene" uid="uid://bi30yxqh33cfp" path="res://Entities/enemy.tscn" id="2_tddb0"]
-[ext_resource type="PackedScene" path="res://Entities/map.tscn" id="4_f0kco"]
+[ext_resource type="PackedScene" uid="uid://c6q7t51vhpvat" path="res://Entities/map.tscn" id="4_f0kco"]
+[ext_resource type="Script" path="res://Scripts/Spawners/LootSpawner.cs" id="5_5ncms"]
+[ext_resource type="PackedScene" uid="uid://ckuxpfbfqhsks" path="res://Entities/gold.tscn" id="6_b3xnh"]
 
 [node name="main" type="Node2D"]
 
@@ -54,3 +56,7 @@ autostart = true
 
 [node name="Map" parent="." instance=ExtResource("4_f0kco")]
 z_index = -90
+
+[node name="LootSpawner" type="Node2D" parent="."]
+script = ExtResource("5_5ncms")
+GoldScene = ExtResource("6_b3xnh")

@@ -1,4 +1,5 @@
 using dTopDownShooter.Scripts.Characters;
+using dTopDownShooter.Scripts.Spawners;
 using Godot;
 using System;
 
@@ -15,12 +16,14 @@ public partial class Enemy : Character
 	private float timeUntilNextAttack;
 
 	private Player player;
+	private LootSpawner lootSpawner;
 	private AnimatedSprite2D _enemyAnimation;
 
 	public override void _Ready()
 	{
 		timeUntilNextAttack = attackSpeed;
 		player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
+		lootSpawner = GetTree().Root.GetNode("main").GetNode<LootSpawner>("LootSpawner");
 		_enemyAnimation = GetNode<AnimatedSprite2D>("EnemyAnimations");
 		_enemyAnimation.Play("walk");
 
@@ -32,7 +35,13 @@ public partial class Enemy : Character
 	private void OnKilled()
 	{
 		player.UpdateScore();
+		DropXP();
 		QueueFree();
+	}
+
+	private void DropXP()
+	{
+		lootSpawner.Spawn(GlobalPosition);
 	}
 
 	public override void _Process(double delta)

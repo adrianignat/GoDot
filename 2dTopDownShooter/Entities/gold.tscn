@@ -1,0 +1,81 @@
+[gd_scene load_steps=12 format=3 uid="uid://ckuxpfbfqhsks"]
+
+[ext_resource type="Script" path="res://Scripts/Objects/Gold.cs" id="1_nn6wr"]
+[ext_resource type="Texture2D" uid="uid://bi6nje4l831tt" path="res://Sprites/G_Spawn.png" id="2_cwknx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tb3an"]
+size = Vector2(45, 42)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x8yhq"]
+atlas = ExtResource("2_cwknx")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_orhew"]
+atlas = ExtResource("2_cwknx")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m3fve"]
+atlas = ExtResource("2_cwknx")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rlc3l"]
+atlas = ExtResource("2_cwknx")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_do35h"]
+atlas = ExtResource("2_cwknx")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8mjep"]
+atlas = ExtResource("2_cwknx")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5qb8n"]
+atlas = ExtResource("2_cwknx")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6xnkf"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x8yhq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_orhew")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m3fve")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rlc3l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_do35h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8mjep")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5qb8n")
+}],
+"loop": false,
+"name": &"spawn",
+"speed": 10.0
+}]
+
+[node name="Gold" type="Area2D"]
+z_index = -1
+script = ExtResource("1_nn6wr")
+Amount = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(5.5, 11)
+shape = SubResource("RectangleShape2D_tb3an")
+
+[node name="GoldAnimation" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_6xnkf")
+animation = &"spawn"
+frame = 6
+frame_progress = 1.0
+
+[connection signal="body_entered" from="." to="." method="OnCollision"]
