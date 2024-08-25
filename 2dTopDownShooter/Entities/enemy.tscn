@@ -259,7 +259,7 @@ scale = Vector2(0.5, 0.5)
 collision_layer = 2
 motion_mode = 1
 script = ExtResource("1_kv5dc")
-Speed = 70.0
+Speed = 50.0
 Health = 100
 
 [node name="EnemyCollision" type="CollisionShape2D" parent="."]
