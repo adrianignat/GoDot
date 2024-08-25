@@ -10,7 +10,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 	{
 		base._Ready();
 		var timer = GetNode<Timer>("IncreaseSpawnRate");
-		timer.Timeout += () => ObjectsPerSecond *= 2;
+		timer.Timeout += () => ObjectsPerSecond *= 1.2f;
 	}
 
 	public override Vector2 GetLocation()

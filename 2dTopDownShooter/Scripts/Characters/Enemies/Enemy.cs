@@ -34,7 +34,7 @@ public partial class Enemy : Character
 
 	private void OnKilled()
 	{
-		player.UpdateScore();
+		//player.UpdateScore();
 		DropXP();
 		QueueFree();
 	}

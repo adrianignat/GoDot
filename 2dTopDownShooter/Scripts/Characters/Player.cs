@@ -80,6 +80,7 @@ public partial class Player : Character
 	public void AcquireGold(ushort amount)
 	{
 		_gold += amount;
+		_scoreLabel.Text = "Gold: " + _gold;
 	}
 
 	internal void PlayShootAnimation()
