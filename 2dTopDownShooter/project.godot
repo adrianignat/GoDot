@@ -17,8 +17,6 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-RigidBodyAutoScaler="*res://addons/rigidbody_auto_scaler/RigidBodyAutoScaler.gd"
-
 [display]
 
 window/size/viewport_width=1920
