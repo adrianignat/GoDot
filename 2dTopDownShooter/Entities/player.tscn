@@ -439,6 +439,8 @@ animations = [{
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 scale = Vector2(0.5, 0.5)
+collision_layer = 2
+collision_mask = 13
 motion_mode = 1
 script = ExtResource("1_3jw8b")
 Speed = 150.0
