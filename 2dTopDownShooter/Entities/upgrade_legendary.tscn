@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dk43rj3hfdjvc"]
+[gd_scene load_steps=7 format=3 uid="uid://dk43rj3hfdjvc"]
 
 [ext_resource type="Texture2D" uid="uid://jksgf5o2tgjw" path="res://Sprites/Banners/Banner_Connection_Up.png" id="1_8uytd"]
 [ext_resource type="Texture2D" uid="uid://bo5ovsc08ejwf" path="res://Sprites/Ribbons/Ribbon_Yellow_3Slides.png" id="2_t6knn"]
@@ -12,20 +12,38 @@ font_size = 20
 outline_size = 3
 outline_color = Color(0, 0, 0, 1)
 
+[sub_resource type="SystemFont" id="SystemFont_y7cij"]
+font_names = PackedStringArray("Impact")
+
+[sub_resource type="LabelSettings" id="LabelSettings_0quws"]
+font = SubResource("SystemFont_y7cij")
+font_size = 11
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
+
 [node name="Upgrade_Normal" type="Sprite2D"]
 position = Vector2(425, 521)
 scale = Vector2(3.10938, 3.26631)
 texture = ExtResource("1_8uytd")
 
-[node name="Quality" type="Sprite2D" parent="."]
+[node name="Quality_Color" type="Sprite2D" parent="."]
 position = Vector2(0.321608, -77.1512)
 scale = Vector2(0.754678, 0.754678)
 texture = ExtResource("2_t6knn")
 
-[node name="Description" type="Label" parent="Quality"]
+[node name="Quality_Description" type="Label" parent="Quality_Color"]
 offset_left = -51.1382
-offset_top = -18.6613
+offset_top = -17.4442
 offset_right = 51.8618
-offset_bottom = 4.33867
+offset_bottom = 5.55571
 text = "LEGENDARY"
 label_settings = SubResource("LabelSettings_mwyr5")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -40.0
+offset_top = -55.0
+offset_right = 42.0
+offset_bottom = 44.0
+text = "Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text "
+label_settings = SubResource("LabelSettings_0quws")
+autowrap_mode = 3
