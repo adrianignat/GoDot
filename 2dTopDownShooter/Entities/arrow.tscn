@@ -34,7 +34,6 @@ animations = [{
 size = Vector2(49, 13)
 
 [node name="Arrow" type="RigidBody2D"]
-scale = Vector2(0.5, 0.5)
 collision_layer = 16
 collision_mask = 12
 gravity_scale = 0.0
@@ -43,7 +42,7 @@ Damage = 100
 Speed = 600.0
 
 [node name="ArrowAnimations" type="AnimatedSprite2D" parent="."]
-scale = Vector2(0.9, 0.9)
+scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_y8567")
 animation = &"full"
 

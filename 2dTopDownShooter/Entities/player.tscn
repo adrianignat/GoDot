@@ -454,7 +454,7 @@ shape = SubResource("RectangleShape2D_u1nim")
 position = Vector2(16, 0)
 script = ExtResource("3_hhh2f")
 Scene = ExtResource("4_lyi1c")
-ObjectsPerSecond = 6.0
+ObjectsPerSecond = 10.0
 
 [node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_vnsn1")

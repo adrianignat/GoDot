@@ -75,6 +75,7 @@ position = Vector2(5.5, 11)
 shape = SubResource("RectangleShape2D_tb3an")
 
 [node name="GoldAnimation" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_6xnkf")
 animation = &"spawn"
 frame = 6

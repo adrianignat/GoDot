@@ -7,8 +7,6 @@ public partial class Gold : Area2D
 
 	public override void _Ready()
 	{
-		Scale = new Vector2(0.5f, 0.5f);
-
 		var animation = GetNode<AnimatedSprite2D>("GoldAnimation");
 		animation.Play("spawn");
 	}

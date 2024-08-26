@@ -21,8 +21,6 @@ public partial class Arrow : RigidBody2D
 		ContactMonitor = true;
 		MaxContactsReported = 1;
 
-		Scale = new Vector2(0.5f, 0.5f);
-
 		_player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
 
 		UpdateVelocity();
