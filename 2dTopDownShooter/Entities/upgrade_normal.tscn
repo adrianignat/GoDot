@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8yacmfotqixv"]
+
+[ext_resource type="Texture2D" uid="uid://jksgf5o2tgjw" path="res://Sprites/Banners/Banner_Connection_Up.png" id="1_84gt3"]
+[ext_resource type="Texture2D" uid="uid://nfoj7n8wlwoj" path="res://Sprites/Ribbons/Ribbon_Blue_3Slides.png" id="3_wc7ok"]
+
+[sub_resource type="SystemFont" id="SystemFont_8dhro"]
+font_names = PackedStringArray("Britannic")
+
+[sub_resource type="LabelSettings" id="LabelSettings_mwyr5"]
+font = SubResource("SystemFont_8dhro")
+font_size = 20
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Upgrade_Normal" type="Sprite2D"]
+position = Vector2(425, 521)
+scale = Vector2(3.10938, 3.26631)
+texture = ExtResource("1_84gt3")
+
+[node name="Quality" type="Sprite2D" parent="."]
+position = Vector2(0.321608, -77.1512)
+scale = Vector2(0.754678, 0.754678)
+texture = ExtResource("3_wc7ok")
+
+[node name="Description" type="Label" parent="Quality"]
+offset_left = -35.2964
+offset_top = -17.2943
+offset_right = 38.7036
+offset_bottom = 5.70565
+text = "NORMAL"
+label_settings = SubResource("LabelSettings_mwyr5")
