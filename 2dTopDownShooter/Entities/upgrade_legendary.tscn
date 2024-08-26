@@ -12,11 +12,11 @@ font_size = 20
 outline_size = 3
 outline_color = Color(0, 0, 0, 1)
 
-[sub_resource type="SystemFont" id="SystemFont_y7cij"]
+[sub_resource type="SystemFont" id="SystemFont_ujqlw"]
 font_names = PackedStringArray("Impact")
 
 [sub_resource type="LabelSettings" id="LabelSettings_0quws"]
-font = SubResource("SystemFont_y7cij")
+font = SubResource("SystemFont_ujqlw")
 font_size = 11
 outline_size = 2
 outline_color = Color(0, 0, 0, 1)
@@ -39,7 +39,7 @@ offset_bottom = 5.55571
 text = "LEGENDARY"
 label_settings = SubResource("LabelSettings_mwyr5")
 
-[node name="Label" type="Label" parent="."]
+[node name="Upgrade_Descr" type="Label" parent="."]
 offset_left = -40.0
 offset_top = -55.0
 offset_right = 42.0
