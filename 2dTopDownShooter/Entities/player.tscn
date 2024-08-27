@@ -1,10 +1,11 @@
-[gd_scene load_steps=63 format=3 uid="uid://bwo3muim8kicq"]
+[gd_scene load_steps=64 format=3 uid="uid://bwo3muim8kicq"]
 
 [ext_resource type="Script" path="res://Scripts/Characters/Player.cs" id="1_3jw8b"]
 [ext_resource type="Texture2D" uid="uid://uu46gkne00he" path="res://Sprites/Archer_Blue.png" id="1_sbj2l"]
 [ext_resource type="Script" path="res://Scripts/Bow.cs" id="3_hhh2f"]
 [ext_resource type="Texture2D" uid="uid://cnynym1ufcfib" path="res://Sprites/Dead.png" id="4_agnll"]
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/arrow.tscn" id="4_lyi1c"]
+[ext_resource type="PackedScene" uid="uid://flyd8u2is6nn" path="res://Entities/player_health_bar.tscn" id="6_a3846"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u1nim"]
 size = Vector2(57.25, 69)
@@ -467,3 +468,12 @@ offset_top = -64.0
 offset_right = 61.0
 offset_bottom = -41.0
 text = "Score: 0"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PlayerHealthBar" parent="CanvasLayer" instance=ExtResource("6_a3846")]
+offset_left = 35.0
+offset_top = 37.0
+offset_right = 392.0
+offset_bottom = 57.0
+size_flags_horizontal = 0

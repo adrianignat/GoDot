@@ -2,6 +2,7 @@ using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Characters;
 using Godot;
 
+
 public partial class Player : Character
 {
 	private ushort _gold = 0;
