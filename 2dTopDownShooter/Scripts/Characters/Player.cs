@@ -27,14 +27,14 @@ public partial class Player : Character
 		Facing = Direction.E;
 		Moving = Direction.E;
 
-		Killed += OnKilled;
-
 		_scoreLabel = GetNode<Label>("ScoreLabel");
+
+		Game.Instance.PlayerTakeDamage += TakeDamage;
 	}
 
-	public override void _Process(double _delta)
+	public override void _Process(double delta)
 	{
-		if (IsDead)
+		if (Game.Instance.IsPaused)
 			return;
 
 		var move_input = Input.GetVector("left", "right", "up", "down");
@@ -62,7 +62,7 @@ public partial class Player : Character
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (IsDead)
+		if (Game.Instance.IsPaused)
 			return;
 
 		Vector2 move_input = Input.GetVector("left", "right", "up", "down");
@@ -86,6 +86,9 @@ public partial class Player : Character
 
 	internal void PlayShootAnimation()
 	{
+		if (Game.Instance.IsPaused)
+			return;
+
 		if (IsShooting)
 			return;
 
@@ -111,8 +114,9 @@ public partial class Player : Character
 		}
 	}
 
-	private void OnKilled()
+	internal override void OnKilled()
 	{
+		Game.Instance.IsPaused = true;
 		_playerAnimation.Play("dead");
 	}
 }

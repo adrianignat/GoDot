@@ -1,4 +1,5 @@
 ﻿using Godot;
+using System.Xml.Linq;
 
 namespace dTopDownShooter.Scripts.Characters
 {
@@ -11,16 +12,19 @@ namespace dTopDownShooter.Scripts.Characters
 
         internal bool IsDead => Health <= 0;
 
-        [Signal]
-        public delegate void KilledEventHandler();
-
         internal void TakeDamage(short damage)
         {
             Health -= damage;
             if (Health <= 0)
             {
-                EmitSignal("Killed");
+                OnKilled();
             }
+        }
+
+        internal virtual void OnKilled()
+        {
+            var game = Game.Instance;
+            game.EmitSignal(Game.SignalName.EnemyKilled, this);
         }
     }
 }

@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://flyd8u2is6nn"]
 
-[ext_resource type="Script" path="res://Scripts/Characters/player_health_bar.gd" id="1_lc8y3"]
+[ext_resource type="Script" path="res://Scripts/Characters/PlayerHealthBar.cs" id="1_yxtcu"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_55b61"]
 
@@ -27,7 +27,7 @@ theme_override_styles/background = SubResource("StyleBoxEmpty_55b61")
 theme_override_styles/fill = SubResource("StyleBoxFlat_nt3lt")
 value = 50.0
 show_percentage = false
-script = ExtResource("1_lc8y3")
+script = ExtResource("1_yxtcu")
 
 [node name="DamageBar" type="ProgressBar" parent="."]
 z_index = -1
@@ -39,7 +39,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_e8h38")
 theme_override_styles/fill = SubResource("StyleBoxFlat_qjmk7")
-value = 80.0
 show_percentage = false
 
 [node name="Timer" type="Timer" parent="."]

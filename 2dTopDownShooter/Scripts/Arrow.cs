@@ -1,7 +1,5 @@
 using dTopDownShooter.Scripts;
 using Godot;
-using Godot.Collections;
-using System;
 
 public partial class Arrow : RigidBody2D
 {
