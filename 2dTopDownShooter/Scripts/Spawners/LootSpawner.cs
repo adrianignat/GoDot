@@ -11,17 +11,17 @@ namespace dTopDownShooter.Scripts.Spawners
 		[Export]
 		public PackedScene GoldScene;
 
-        public override void _Ready()
-        {
-            Game.Instance.EnemyKilled += OnEnemyKilled;
-        }
+		public override void _Ready()
+		{
+			Game.Instance.EnemyKilled += OnEnemyKilled;
+		}
 
-        private void OnEnemyKilled(Enemy enemy)
-        {
-            Spawn(enemy.GlobalPosition);
-        }
+		private void OnEnemyKilled(Enemy enemy)
+		{
+			Spawn(enemy.GlobalPosition);
+		}
 
-        public void Spawn(Vector2 position)
+		public void Spawn(Vector2 position)
 		{
 			var gold = GoldScene.Instantiate<Gold>();
 			gold.GlobalPosition = position;
