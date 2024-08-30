@@ -8,10 +8,10 @@ public partial class Enemy : Character
 {
 	private const short _distanceDelta = 60;
 
-    [Export]
-    private ushort Damage = 10;
-    private bool withinRange = false;
-    private short animationFinishedCount = 0;
+	[Export]
+	private ushort Damage = 10;
+	private bool withinRange = false;
+	private short animationFinishedCount = 0;
 
 	private float attackSpeed = 1f;
 	private float timeUntilNextAttack;
