@@ -1,3 +1,4 @@
+using dTopDownShooter.Scripts;
 using Godot;
 
 public partial class Gold : Area2D
@@ -15,8 +16,7 @@ public partial class Gold : Area2D
 	{
 		if (body.IsInGroup("player"))
 		{
-			var player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
-			player.AcquireGold(Amount);
+			Game.Instance.EmitSignal(Game.SignalName.GoldAcquired, Amount);
 			QueueFree();
 		}
 	}

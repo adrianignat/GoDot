@@ -5,13 +5,12 @@ namespace dTopDownShooter.Scripts.Characters
 	internal partial class PlayerHealthBar : ProgressBar
 	{
 		ProgressBar damageBar;
-		short health = 100;
 
 		public override void _Ready()
 		{
 			//var timer = GetNode<Timer>("Timer");
 			//damageBar = GetNode<ProgressBar>("DamageBar");
-			Game.Instance.PlayerTakeDamage += OnPlayerTakeDamage;
+			Game.Instance.PlayerHealthChanged += PlayerHealthChanged;
 			//TODO: this is needed only on delayed heal
 			//timer.Timeout += () => damageBar.Value = health;
 			//damageBar.MaxValue = health;
@@ -20,10 +19,9 @@ namespace dTopDownShooter.Scripts.Characters
 			MaxValue = 100;
 		}
 
-		private void OnPlayerTakeDamage(short damage)
-		{
-			//health -= damage;
-			Value -= damage;
+		private void PlayerHealthChanged(ushort health)
+		{	
+			Value = health;
 		}
 	}
 }

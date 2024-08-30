@@ -4,7 +4,7 @@ using Godot;
 public partial class Arrow : RigidBody2D
 {
 	[Export]
-	public short Damage { get; set; }
+	public ushort Damage { get; set; }
 
 	[Export]
 	public float Speed { get; set; }

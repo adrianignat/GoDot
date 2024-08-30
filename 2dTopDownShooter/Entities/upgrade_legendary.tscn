@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://dk43rj3hfdjvc"]
+[gd_scene load_steps=7 format=3 uid="uid://bciekyyuwur6t"]
 
 [ext_resource type="Texture2D" uid="uid://jksgf5o2tgjw" path="res://Sprites/Banners/Banner_Connection_Up.png" id="1_8uytd"]
 [ext_resource type="Texture2D" uid="uid://bo5ovsc08ejwf" path="res://Sprites/Ribbons/Ribbon_Yellow_3Slides.png" id="2_t6knn"]
 
 [sub_resource type="SystemFont" id="SystemFont_8dhro"]
 font_names = PackedStringArray("Britannic")
+subpixel_positioning = 0
 
 [sub_resource type="LabelSettings" id="LabelSettings_mwyr5"]
 font = SubResource("SystemFont_8dhro")
@@ -14,6 +15,7 @@ outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="SystemFont" id="SystemFont_ujqlw"]
 font_names = PackedStringArray("Impact")
+subpixel_positioning = 0
 
 [sub_resource type="LabelSettings" id="LabelSettings_0quws"]
 font = SubResource("SystemFont_ujqlw")
@@ -21,9 +23,9 @@ font_size = 11
 outline_size = 2
 outline_color = Color(0, 0, 0, 1)
 
-[node name="Upgrade_Normal" type="Sprite2D"]
-position = Vector2(425, 521)
-scale = Vector2(3.10938, 3.26631)
+[node name="Upgrade_Legendary" type="Sprite2D"]
+position = Vector2(30, 98)
+scale = Vector2(1, 1.05)
 texture = ExtResource("1_8uytd")
 
 [node name="Quality_Color" type="Sprite2D" parent="."]
@@ -44,6 +46,8 @@ offset_left = -40.0
 offset_top = -55.0
 offset_right = 42.0
 offset_bottom = 44.0
-text = "Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text Test Text "
+text = "Heal by 40%"
 label_settings = SubResource("LabelSettings_0quws")
+horizontal_alignment = 1
+vertical_alignment = 1
 autowrap_mode = 3

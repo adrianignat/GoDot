@@ -1,4 +1,4 @@
-[gd_scene load_steps=64 format=3 uid="uid://bwo3muim8kicq"]
+[gd_scene load_steps=68 format=3 uid="uid://bwo3muim8kicq"]
 
 [ext_resource type="Script" path="res://Scripts/Characters/Player.cs" id="1_3jw8b"]
 [ext_resource type="Texture2D" uid="uid://uu46gkne00he" path="res://Sprites/Archer_Blue.png" id="1_sbj2l"]
@@ -6,6 +6,10 @@
 [ext_resource type="Texture2D" uid="uid://cnynym1ufcfib" path="res://Sprites/Dead.png" id="4_agnll"]
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/arrow.tscn" id="4_lyi1c"]
 [ext_resource type="PackedScene" uid="uid://flyd8u2is6nn" path="res://Entities/player_health_bar.tscn" id="6_a3846"]
+[ext_resource type="PackedScene" uid="uid://btocigi4olhw0" path="res://Entities/upgrade_normal.tscn" id="7_1nfqo"]
+[ext_resource type="Script" path="res://Scripts/Upgrades/UpgradeSelection.cs" id="7_pklm1"]
+[ext_resource type="PackedScene" uid="uid://bciekyyuwur6t" path="res://Entities/upgrade_legendary.tscn" id="9_cn7lq"]
+[ext_resource type="PackedScene" uid="uid://bnsn5m1gs237v" path="res://Entities/upgrade_epic.tscn" id="10_fbkkw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u1nim"]
 size = Vector2(57.25, 69)
@@ -477,3 +481,46 @@ offset_top = 37.0
 offset_right = 392.0
 offset_bottom = 57.0
 size_flags_horizontal = 0
+
+[node name="UpgradeMenuLayer" type="CanvasLayer" parent="."]
+
+[node name="UpgradeMenu" type="Control" parent="UpgradeMenuLayer"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -460.0
+offset_top = -140.0
+offset_right = -460.0
+offset_bottom = -140.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_pklm1")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UpgradeMenuLayer/UpgradeMenu"]
+layout_mode = 0
+offset_right = 225.0
+offset_bottom = 101.0
+scale = Vector2(2, 2)
+theme_override_constants/separation = 75
+
+[node name="Option1" type="Button" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer"]
+custom_minimum_size = Vector2(70, 150)
+layout_mode = 2
+text = "Option1"
+
+[node name="Upgrade_Normal" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer/Option1" instance=ExtResource("7_1nfqo")]
+
+[node name="Option2" type="Button" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer"]
+layout_mode = 2
+text = "Option2"
+
+[node name="Upgrade_Epic" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer/Option2" instance=ExtResource("10_fbkkw")]
+
+[node name="Option3" type="Button" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer"]
+layout_mode = 2
+text = "Option 3"
+
+[node name="Upgrade_Normal" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer/Option3" instance=ExtResource("9_cn7lq")]

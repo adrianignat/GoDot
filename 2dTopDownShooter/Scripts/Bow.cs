@@ -18,9 +18,6 @@ public partial class Bow : Spawner<Arrow>
 
 	public override bool CanSpawn()
 	{
-		if (_player == null || _player.IsDead)
-			return false;
-
 		if (!_player.IsShooting && !_arrowQueued)
 		{
 			_arrowQueued = true;

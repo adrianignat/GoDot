@@ -1,6 +1,8 @@
 using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Characters;
+using dTopDownShooter.Scripts.Upgrades;
 using Godot;
+using System;
 
 
 public partial class Player : Character
@@ -30,6 +32,21 @@ public partial class Player : Character
 		_scoreLabel = GetNode<Label>("ScoreLabel");
 
 		Game.Instance.PlayerTakeDamage += TakeDamage;
+		Game.Instance.GoldAcquired += AcquireGold;
+		Game.Instance.UpgradeSelected += UpgradeSelected;
+	}
+
+	private void UpgradeSelected(Upgrade upgdade)
+	{
+		if (Health < 100)
+		{
+			Health += upgdade.Amount;
+		}
+
+		if (Health > 100)
+		{
+			Health = 100;
+		}
 	}
 
 	public override void _Process(double delta)
@@ -55,7 +72,6 @@ public partial class Player : Character
 		}
 		else
 		{
-			//Moving = Facing;
 			_playerAnimation.Play("idle");
 		}
 	}
@@ -81,13 +97,20 @@ public partial class Player : Character
 	public void AcquireGold(ushort amount)
 	{
 		_gold += amount;
+		if (_gold % 20 == 0)
+		{
+			Game.Instance.EmitSignal(Game.SignalName.UpgradeReady);
+		}
 		_scoreLabel.Text = "Gold: " + _gold;
 	}
 
 	internal void PlayShootAnimation()
 	{
 		if (Game.Instance.IsPaused)
+		{
+			IsShooting = false;
 			return;
+		}
 
 		if (IsShooting)
 			return;
