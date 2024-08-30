@@ -4,8 +4,17 @@ namespace dTopDownShooter.Scripts.Upgrades
 {
 	public partial class UpgradeSelection : Control
 	{
-		private ushort legendaryUpgradeChance = 5;
-		private ushort epicUpgradeChance = 15;
+		[Export]
+		public ushort FirstUpgrade = 5;
+
+		[Export]
+		public ushort UpgradeStep = 1;
+
+		[Export]
+		private ushort LegendaryUpgradeChance = 5;
+
+		[Export]
+		private ushort EpicUpgradeChance = 15;
 
 		private Upgrade[] upgrades = new Upgrade[3];
 
@@ -15,20 +24,25 @@ namespace dTopDownShooter.Scripts.Upgrades
 		private PackedScene epicUpgradeScene = GD.Load<PackedScene>("res://Entities/upgrade_epic.tscn");
 		private PackedScene legendaryUpgradeScene = GD.Load<PackedScene>("res://Entities/upgrade_legendary.tscn");
 
-		private Timer timer = new();
+		private ushort _gold;
+		private ushort _goldRequiredToUpdate;
 
 		public UpgradeSelection()
 		{
 			Game.Instance.UpgradeReady += ShowUpgradeSelectionScene;
-
-			AddChild(timer);
-			timer.Timeout += ShowSelectionWindow;
+			Game.Instance.GoldAcquired += OnGoldAcquired;
+			_goldRequiredToUpdate = FirstUpgrade;
 		}
 
-		private void ShowSelectionWindow()
+		private void OnGoldAcquired(ushort amount)
 		{
-			timer.Stop();
-			Show();
+			_gold += amount;
+
+			if (_gold >= _goldRequiredToUpdate)
+			{
+				_goldRequiredToUpdate += (ushort)(_gold + UpgradeStep);
+				Game.Instance.EmitSignal(Game.SignalName.UpgradeReady);
+			}
 		}
 
 		public override void _Ready()
@@ -45,19 +59,17 @@ namespace dTopDownShooter.Scripts.Upgrades
 			options[0].Pressed += () => OnUpgradeButtonPressed(0);
 			options[1].Pressed += () => OnUpgradeButtonPressed(1);
 			options[2].Pressed += () => OnUpgradeButtonPressed(2);
-
-			timer.WaitTime = 1;
 		}
 
 		private void OnUpgradeButtonPressed(int selection)
 		{
 			Game.Instance.EmitSignal(Game.SignalName.UpgradeSelected, upgrades[selection]);
-			
+
 			Hide(); // Hide the menu after selection
 			Game.Instance.IsPaused = false;
 		}
 
-		private async void ShowUpgradeSelectionScene()
+		private void ShowUpgradeSelectionScene()
 		{
 			Game.Instance.IsPaused = true;
 
@@ -73,12 +85,12 @@ namespace dTopDownShooter.Scripts.Upgrades
 				Node scene;
 				RandomNumberGenerator rng = new();
 				var chance = rng.RandiRange(0, 100);
-				if (chance <= legendaryUpgradeChance)
+				if (chance <= LegendaryUpgradeChance)
 				{
 					upgrades[i] = new Upgrade(UpgradeType.Health, RarityType.Legendary);
 					scene = legendaryUpgradeScene.Instantiate(); ;
 				}
-				else if (chance <= epicUpgradeChance)
+				else if (chance <= EpicUpgradeChance)
 				{
 					upgrades[i] = new Upgrade(UpgradeType.Health, RarityType.Epic);
 					scene = epicUpgradeScene.Instantiate();

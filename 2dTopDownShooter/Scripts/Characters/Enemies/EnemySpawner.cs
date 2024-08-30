@@ -6,11 +6,14 @@ public partial class EnemySpawner : Spawner<Enemy>
 	[Export]
 	Node2D[] spawnPoints;
 
+	[Export]
+	public float SpawnIncreaseRate = 1.1f;
+
 	public override void _Ready()
 	{
 		base._Ready();
 		var timer = GetNode<Timer>("IncreaseSpawnRate");
-		timer.Timeout += () => ObjectsPerSecond *= 1.2f;
+		timer.Timeout += () => ObjectsPerSecond *= SpawnIncreaseRate;
 	}
 
 	public override Vector2 GetLocation()

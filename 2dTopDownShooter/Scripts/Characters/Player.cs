@@ -106,10 +106,6 @@ public partial class Player : Character
 	public void AcquireGold(ushort amount)
 	{
 		_gold += amount;
-		if (_gold % 20 == 0)
-		{
-			Game.Instance.EmitSignal(Game.SignalName.UpgradeReady);
-		}
 		_scoreLabel.Text = "Gold: " + _gold;
 	}
 
