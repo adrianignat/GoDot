@@ -1,4 +1,4 @@
-[gd_scene load_steps=128 format=4 uid="uid://bpbof32cowlww"]
+[gd_scene load_steps=127 format=4 uid="uid://bpbof32cowlww"]
 
 [ext_resource type="Texture2D" uid="uid://qthyj17wkioa" path="res://Sprites/Water.png" id="1_f2sbo"]
 [ext_resource type="Texture2D" uid="uid://dw7yr76gu5hop" path="res://Sprites/Tilemap_Flat.png" id="2_n67vb"]
@@ -57,7 +57,6 @@
 [ext_resource type="Texture2D" uid="uid://dgkjijrfwilcp" path="res://Sprites/Buildings/House/House_Construction.png" id="55_8qxgu"]
 [ext_resource type="Texture2D" uid="uid://bcmmltvrer0at" path="res://Sprites/Buildings/House/House_Destroyed.png" id="56_7fq2u"]
 [ext_resource type="Texture2D" uid="uid://dogtlwrypiiq1" path="res://Sprites/Buildings/House/House_Purple.png" id="57_xrpfr"]
-[ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/player.tscn" id="58_1vxng"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sx2tl"]
 resource_name = "Water"
@@ -1322,12 +1321,7 @@ position = Vector2(-1952, 125)
 shape = SubResource("RectangleShape2D_jq7kc")
 
 [node name="BuilingsLayer" type="TileMapLayer" parent="."]
+z_index = 1
 y_sort_enabled = true
 tile_map_data = PackedByteArray("AAD8////AAAAAAAAAAD8/wAAAAAAAAEAAAD8/wEAAAAAAAIAAAD8/wIAAAAAAAMAAAD9////AAABAAAAAAD9/wAAAAABAAEAAAD9/wEAAAABAAIAAAD9/wIAAAABAAMAAAD8/wwAAAAAAAAAAAD8/w0AAAAAAAEAAAD8/w4AAAAAAAIAAAD8/w8AAAAAAAMAAAD9/wwAAAABAAAAAAD9/w0AAAABAAEAAAD9/w4AAAABAAIAAAD9/w8AAAABAAMAAAAgAAwABAAAAAAAAAAgAA0ABAAAAAEAAAAgAA4ABAAAAAIAAAAgAA8ABAAAAAMAAAAhAAwABAABAAAAAAAhAA0ABAABAAEAAAAhAA4ABAABAAIAAAAhAA8ABAABAAMAAAAgAP//BAAAAAAAAAAgAAAABAAAAAEAAAAgAAEABAAAAAIAAAAgAAIABAAAAAMAAAAhAP//BAABAAAAAAAhAAAABAABAAEAAAAhAAEABAABAAIAAAAhAAIABAABAAMAAADu/wYADAAAAAAAAADu/wcADAAAAAEAAADu/wgADAAAAAIAAADu/wkADAAAAAMAAADv/wYADAABAAAAAADv/wcADAABAAEAAADv/wgADAABAAIAAADv/wkADAABAAMAAADw/wYADAACAAAAAADw/wcADAACAAEAAADw/wgADAACAAIAAADw/wkADAACAAMAAADx/wYADAADAAAAAADx/wcADAADAAEAAADx/wgADAADAAIAAADx/wkADAADAAMAAADy/wYADAAEAAAAAADy/wcADAAEAAEAAADy/wgADAAEAAIAAADy/wkADAAEAAMAAAAsAAYAEAAAAAAAAAAsAAcAEAAAAAEAAAAsAAgAEAAAAAIAAAAsAAkAEAAAAAMAAAAtAAYAEAABAAAAAAAtAAcAEAABAAEAAAAtAAgAEAABAAIAAAAtAAkAEAABAAMAAAAuAAYAEAACAAAAAAAuAAcAEAACAAEAAAAuAAgAEAACAAIAAAAuAAkAEAACAAMAAAAvAAYAEAADAAAAAAAvAAcAEAADAAEAAAAvAAgAEAADAAIAAAAvAAkAEAADAAMAAAAwAAYAEAAEAAAAAAAwAAcAEAAEAAEAAAAwAAgAEAAEAAIAAAAwAAkAEAAEAAMAAAA=")
 tile_set = SubResource("TileSet_pd0f8")
-
-[node name="Player" parent="." instance=ExtResource("58_1vxng")]
-y_sort_enabled = true
-position = Vector2(288, 247)
-
-[node name="Camera2D" type="Camera2D" parent="Player"]

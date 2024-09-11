@@ -4,9 +4,9 @@
 [ext_resource type="Script" path="res://Scripts/Game.cs" id="1_owta4"]
 [ext_resource type="Script" path="res://Scripts/Characters/Enemies/EnemySpawner.cs" id="2_nc1g4"]
 [ext_resource type="PackedScene" uid="uid://bi30yxqh33cfp" path="res://Entities/enemy.tscn" id="2_tddb0"]
-[ext_resource type="PackedScene" uid="uid://c6q7t51vhpvat" path="res://Entities/map.tscn" id="4_f0kco"]
 [ext_resource type="Script" path="res://Scripts/Spawners/LootSpawner.cs" id="5_5ncms"]
 [ext_resource type="PackedScene" uid="uid://ckuxpfbfqhsks" path="res://Entities/gold.tscn" id="6_b3xnh"]
+[ext_resource type="PackedScene" uid="uid://bpbof32cowlww" path="res://Entities/map_lvl_1.tscn" id="7_riwm6"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_owta4")
@@ -17,10 +17,10 @@ position = Vector2(1055, 550)
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(2, -12)
 zoom = Vector2(2, 2)
-limit_left = 0
+limit_left = -2048
 limit_top = 0
-limit_right = 1920
-limit_bottom = 1080
+limit_right = 5760
+limit_bottom = 1152
 
 [node name="EnemySpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawnPoints")]
 script = ExtResource("2_nc1g4")
@@ -35,10 +35,10 @@ position = Vector2(512, -32)
 position = Vector2(1728, -32)
 
 [node name="SpawnPoint3" type="Node2D" parent="EnemySpawner"]
-position = Vector2(1952, 224)
+position = Vector2(2592, -32)
 
 [node name="SpawnPoint4" type="Node2D" parent="EnemySpawner"]
-position = Vector2(1952, 832)
+position = Vector2(2656, 1120)
 
 [node name="SpawnPoint5" type="Node2D" parent="EnemySpawner"]
 position = Vector2(288, 1120)
@@ -47,18 +47,18 @@ position = Vector2(288, 1120)
 position = Vector2(1472, 1120)
 
 [node name="SpawnPoint7" type="Node2D" parent="EnemySpawner"]
-position = Vector2(-32, 288)
+position = Vector2(-768, -64)
 
 [node name="SpawnPoint8" type="Node2D" parent="EnemySpawner"]
-position = Vector2(-32, 832)
+position = Vector2(-704, 1184)
 
 [node name="IncreaseSpawnRate" type="Timer" parent="EnemySpawner"]
 wait_time = 30.0
 autostart = true
 
-[node name="Map" parent="." instance=ExtResource("4_f0kco")]
-z_index = -90
-
 [node name="LootSpawner" type="Node2D" parent="."]
 script = ExtResource("5_5ncms")
 GoldScene = ExtResource("6_b3xnh")
+
+[node name="map_lvl_1" parent="." instance=ExtResource("7_riwm6")]
+z_index = -1

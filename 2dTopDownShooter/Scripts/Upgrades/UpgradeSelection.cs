@@ -26,11 +26,13 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 		private ushort _gold;
 		private ushort _goldRequiredToUpdate;
+		private ushort _currentUpgradeStep;
 
 		public UpgradeSelection()
 		{
 			Game.Instance.UpgradeReady += ShowUpgradeSelectionScene;
 			Game.Instance.GoldAcquired += OnGoldAcquired;
+			_currentUpgradeStep = FirstUpgrade;
 			_goldRequiredToUpdate = FirstUpgrade;
 		}
 
@@ -40,8 +42,12 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 			if (_gold >= _goldRequiredToUpdate)
 			{
-				_goldRequiredToUpdate += (ushort)(_gold + UpgradeStep);
+				GD.Print($"Gold: {_gold}, Required: {_goldRequiredToUpdate}, CurrentStep: {_currentUpgradeStep}");
+				
 				Game.Instance.EmitSignal(Game.SignalName.UpgradeReady);
+
+				_currentUpgradeStep += UpgradeStep;
+				_goldRequiredToUpdate += _currentUpgradeStep;
 			}
 		}
 
