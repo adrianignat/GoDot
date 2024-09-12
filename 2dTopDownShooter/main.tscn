@@ -18,9 +18,9 @@ position = Vector2(1055, 550)
 position = Vector2(2, -12)
 zoom = Vector2(2, 2)
 limit_left = -2048
-limit_top = 0
+limit_top = -3000
 limit_right = 5760
-limit_bottom = 1152
+limit_bottom = 3000
 
 [node name="EnemySpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawnPoints")]
 script = ExtResource("2_nc1g4")
