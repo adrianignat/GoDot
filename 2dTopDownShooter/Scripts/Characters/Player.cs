@@ -37,16 +37,16 @@ public partial class Player : Character
 
 	private void UpgradeSelected(Upgrade upgdade)
 	{
-		if (Health < 100)
-		{
+		if (upgdade.Type == UpgradeType.Speed)
+			Speed += upgdade.Amount;
+		else if (upgdade.Type == UpgradeType.Health)
 			Health += upgdade.Amount;
-		}
-
-		if (Health > 100)
-		{
-			Health = 100;
-		}
-	}
+        else if (upgdade.Type == UpgradeType.WeaponSpeed)
+        {
+            var bow = GetNode<Bow>("Bow");
+            bow.ObjectsPerSecond += (upgdade.Amount / 100f);
+        }
+    }
 
 	public override void _Process(double delta)
 	{

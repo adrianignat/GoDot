@@ -33,63 +33,21 @@ public partial class Arrow : RigidBody2D
 			Position = new Vector2(GlobalPosition.X - 50, GlobalPosition.Y);
 	}
 
-	private void UpdateRotation(Vector2 move_input)
-	{
-		var moving = DirectionHelper.GetMovingDirection(move_input);
-		if (moving == Direction.N) // Up
-			RotationDegrees = -90;
-		else if (moving == Direction.S) // Down
-			RotationDegrees = 90;
-		else if (moving == Direction.W) // Left
-			RotationDegrees = 180;
-		else if (moving == Direction.E) // Right
-			RotationDegrees = 0;
-		else if (moving == Direction.NW) // Up Left
-			RotationDegrees = -135;
-		else if (moving == Direction.NE) // Up Right
-			RotationDegrees = -45;
-		else if (moving == Direction.SW) // Down Left
-			RotationDegrees = 135;
-		else if (moving == Direction.SE) // Down Right
-			RotationDegrees = 45;
-	}
-
 	private void UpdateVelocity()
 	{
-		Vector2 move_input = Input.GetVector("left", "right", "up", "down");
+		Vector2 direction = new Vector2(-1, 0);
 
-		if (move_input == Vector2.Zero)
+		Node2D closestEnemy = GetClosestEnemy();
+
+		if (closestEnemy != null)
 		{
-			switch (_player.Moving)
-			{
-				case Direction.N:
-					move_input = new Vector2(0, -1);
-					break;
-				case Direction.S:
-					move_input = new Vector2(0, 1);
-					break;
-				case Direction.W:
-					move_input = new Vector2(-1, 0);
-					break;
-				case Direction.E:
-					move_input = new Vector2(1, 0);
-					break;
-				case Direction.NW:
-					move_input = new Vector2(-1, -1);
-					break;
-				case Direction.NE:
-					move_input = new Vector2(1, -1);
-					break;
-				case Direction.SW:
-					move_input = new Vector2(-1, 1);
-					break;
-				case Direction.SE:
-					move_input = new Vector2(1, 1);
-					break;
-			}
+			// Calculate the direction to the enemy
+			Vector2 enemyPosition = closestEnemy.GlobalPosition;
+			direction = (enemyPosition - _player.GlobalPosition).Normalized();  // Normalized to get a unit vector
 		}
-		LinearVelocity = move_input * Speed;
-		UpdateRotation(move_input);
+			
+		LinearVelocity = direction * Speed;
+		Rotation = direction.Angle();
 	}
 
 	private void OnCollision(Node body)
@@ -100,5 +58,29 @@ public partial class Arrow : RigidBody2D
 			enemy.TakeDamage(Damage);
 		}
 		QueueFree();
+	}
+
+	private Node2D GetClosestEnemy()
+	{
+		Node2D closestEnemy = null;
+		float closestDistance = Mathf.Inf;
+
+		// Assume all enemies are in a group called "Enemies"
+		var enemies = GetTree().GetNodesInGroup("enemies");
+
+		foreach (Node2D enemy in enemies)
+		{
+			// Get the distance between the player and this enemy
+			float distance = _player.GlobalPosition.DistanceSquaredTo(enemy.GlobalPosition);
+
+			// Check if this enemy is closer than the previous closest enemy
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				closestEnemy = enemy;
+			}
+		}
+
+		return closestEnemy;
 	}
 }

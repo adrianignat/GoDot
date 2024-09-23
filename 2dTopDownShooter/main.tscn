@@ -11,6 +11,9 @@
 [node name="main" type="Node2D"]
 script = ExtResource("1_owta4")
 
+[node name="map_lvl_1" parent="." instance=ExtResource("7_riwm6")]
+z_index = -1
+
 [node name="Player" parent="." instance=ExtResource("1_n17b8")]
 position = Vector2(1055, 550)
 
@@ -59,6 +62,3 @@ autostart = true
 [node name="LootSpawner" type="Node2D" parent="."]
 script = ExtResource("5_5ncms")
 GoldScene = ExtResource("6_b3xnh")
-
-[node name="map_lvl_1" parent="." instance=ExtResource("7_riwm6")]
-z_index = -1

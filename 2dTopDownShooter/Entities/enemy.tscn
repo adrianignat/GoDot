@@ -254,7 +254,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xmrs5"]
 size = Vector2(129, 130)
 
-[node name="Enemy" type="CharacterBody2D"]
+[node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
 scale = Vector2(0.5, 0.5)
 collision_layer = 4
 collision_mask = 10

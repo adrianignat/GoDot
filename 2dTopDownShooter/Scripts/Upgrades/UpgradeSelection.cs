@@ -91,25 +91,24 @@ namespace dTopDownShooter.Scripts.Upgrades
 				Node scene;
 				RandomNumberGenerator rng = new();
 				var chance = rng.RandiRange(0, 100);
+				var upgradeType = (UpgradeType)rng.RandiRange(0, 2);
 				if (chance <= LegendaryUpgradeChance)
 				{
-					upgrades[i] = new Upgrade(UpgradeType.Health, RarityType.Legendary);
+					upgrades[i] = new Upgrade(upgradeType, RarityType.Legendary);
 					scene = legendaryUpgradeScene.Instantiate(); ;
 				}
 				else if (chance <= EpicUpgradeChance)
 				{
-					upgrades[i] = new Upgrade(UpgradeType.Health, RarityType.Epic);
+					upgrades[i] = new Upgrade(upgradeType, RarityType.Epic);
 					scene = epicUpgradeScene.Instantiate();
 				}
 				else
 				{
-					upgrades[i] = new Upgrade(UpgradeType.Health, RarityType.Common);
+					upgrades[i] = new Upgrade(upgradeType, RarityType.Common);
 					scene = normalUpgradeScene.Instantiate();
 				}
-
-				// Wait until the node is actually freed
-				//await ToSignal(GetTree(), "idle_frame");
-
+				var description = scene.GetNode<Label>("Upgrade_Descr");
+				description.Text = $"{upgrades[i].Type}: +{upgrades[i].Amount}";
 				options[i].CallDeferred("add_child", scene);
 			}
 

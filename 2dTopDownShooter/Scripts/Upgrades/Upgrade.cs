@@ -34,9 +34,9 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 	internal enum UpgradeType
 	{
-		Health,
-		WeaponSpeed,
-		Speed
+		Health = 0,
+		WeaponSpeed = 1,
+		Speed = 2
 	}
 
 	internal enum RarityType
