@@ -22,7 +22,7 @@ public partial class Arrow : RigidBody2D
 		_player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
 
 		UpdateVelocity();
-		AdjustPosition();
+		//AdjustPosition();
 	}
 
 	private void AdjustPosition()
