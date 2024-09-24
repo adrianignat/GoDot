@@ -25,35 +25,10 @@ limit_top = -3000
 limit_right = 5760
 limit_bottom = 3000
 
-[node name="EnemySpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawnPoints")]
+[node name="EnemySpawner" type="Node2D" parent="."]
 script = ExtResource("2_nc1g4")
-spawnPoints = [NodePath("SpawnPoint1"), NodePath("SpawnPoint2"), NodePath("SpawnPoint3"), NodePath("SpawnPoint4"), NodePath("SpawnPoint5"), NodePath("SpawnPoint6"), NodePath("SpawnPoint7"), NodePath("SpawnPoint8")]
 Scene = ExtResource("2_tddb0")
 ObjectsPerSecond = 1.0
-
-[node name="SpawnPoint1" type="Node2D" parent="EnemySpawner"]
-position = Vector2(512, -32)
-
-[node name="SpawnPoint2" type="Node2D" parent="EnemySpawner"]
-position = Vector2(1728, -32)
-
-[node name="SpawnPoint3" type="Node2D" parent="EnemySpawner"]
-position = Vector2(2592, -32)
-
-[node name="SpawnPoint4" type="Node2D" parent="EnemySpawner"]
-position = Vector2(2656, 1120)
-
-[node name="SpawnPoint5" type="Node2D" parent="EnemySpawner"]
-position = Vector2(288, 1120)
-
-[node name="SpawnPoint6" type="Node2D" parent="EnemySpawner"]
-position = Vector2(1472, 1120)
-
-[node name="SpawnPoint7" type="Node2D" parent="EnemySpawner"]
-position = Vector2(-768, -64)
-
-[node name="SpawnPoint8" type="Node2D" parent="EnemySpawner"]
-position = Vector2(-704, 1184)
 
 [node name="IncreaseSpawnRate" type="Timer" parent="EnemySpawner"]
 wait_time = 30.0

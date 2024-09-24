@@ -41,12 +41,12 @@ public partial class Player : Character
 			Speed += upgdade.Amount;
 		else if (upgdade.Type == UpgradeType.Health)
 			Health += upgdade.Amount;
-        else if (upgdade.Type == UpgradeType.WeaponSpeed)
-        {
-            var bow = GetNode<Bow>("Bow");
-            bow.ObjectsPerSecond += (upgdade.Amount / 100f);
-        }
-    }
+		else if (upgdade.Type == UpgradeType.WeaponSpeed)
+		{
+			var bow = GetNode<Bow>("Bow");
+			bow.ObjectsPerSecond += (upgdade.Amount / 100f);
+		}
+	}
 
 	public override void _Process(double delta)
 	{

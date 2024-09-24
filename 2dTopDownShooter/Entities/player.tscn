@@ -11,8 +11,9 @@
 [ext_resource type="PackedScene" uid="uid://bciekyyuwur6t" path="res://Entities/upgrade_legendary.tscn" id="9_cn7lq"]
 [ext_resource type="PackedScene" uid="uid://bnsn5m1gs237v" path="res://Entities/upgrade_epic.tscn" id="10_fbkkw"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_u1nim"]
-size = Vector2(57.25, 69)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c601n"]
+radius = 22.0
+height = 76.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_thks6"]
 atlas = ExtResource("4_agnll")
@@ -452,20 +453,18 @@ Speed = 150.0
 Health = 100
 
 [node name="PlayerCollisionShape" type="CollisionShape2D" parent="."]
-position = Vector2(0, -1)
-shape = SubResource("RectangleShape2D_u1nim")
+position = Vector2(-2, 2)
+shape = SubResource("CapsuleShape2D_c601n")
 
 [node name="Bow" type="Node2D" parent="."]
-position = Vector2(16, 0)
+position = Vector2(20, 8)
 script = ExtResource("3_hhh2f")
 Scene = ExtResource("4_lyi1c")
 ObjectsPerSecond = 1.0
 
 [node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_vnsn1")
-animation = &"dead"
-frame = 6
-frame_progress = 1.0
+animation = &"idle"
 
 [node name="ScoreLabel" type="Label" parent="."]
 offset_top = -64.0
