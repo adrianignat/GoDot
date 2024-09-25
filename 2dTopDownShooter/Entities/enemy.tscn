@@ -257,7 +257,7 @@ size = Vector2(129, 130)
 [node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
 scale = Vector2(0.5, 0.5)
 collision_layer = 4
-collision_mask = 10
+collision_mask = 11
 motion_mode = 1
 script = ExtResource("1_kv5dc")
 Speed = 50.0
