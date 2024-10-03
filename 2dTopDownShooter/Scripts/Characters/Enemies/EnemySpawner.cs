@@ -1,5 +1,6 @@
 using dTopDownShooter.Scripts.Spawners;
 using Godot;
+using Godot.Collections;
 
 public partial class EnemySpawner : Spawner<Enemy>
 {
@@ -8,19 +9,43 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 	private Camera2D _camera;
 
-	public override void _Ready()
+	Array<Node> _validSpawnTiles;
+
+    public override void _Ready()
 	{
 		base._Ready();
 		var timer = GetNode<Timer>("IncreaseSpawnRate");
 		timer.Timeout += () => ObjectsPerSecond *= SpawnIncreaseRate;
 
 		_camera = GetTree().Root.GetNode("main").GetNode("Player").GetNode<Camera2D>("Camera2D");
-	}
+		_validSpawnTiles = GetTree().GetNodesInGroup("validSpawnLocation");
+    }
 
 	public override Vector2 GetLocation()
 	{
-		return GetRandomSpawnPositionOutsideCamera(_camera);
-	}
+        bool isValidSpawn = false;
+
+        Vector2 spawnPosition = new();
+        while (!isValidSpawn)
+        {
+            // Get a random position outside the camera view
+            spawnPosition = GetRandomSpawnPositionOutsideCamera(_camera);
+
+            foreach (TileMapLayer tilemap in _validSpawnTiles)
+            {
+                if (IsWithinTileMapLayer(tilemap, spawnPosition))
+                {
+                    isValidSpawn = true;
+                    break;
+                }
+                else
+                {
+                    isValidSpawn = false;
+                }
+            }
+        }
+        return spawnPosition;
+    }
 
 	public Vector2 GetRandomSpawnPositionOutsideCamera(Camera2D camera)
 	{
@@ -63,6 +88,18 @@ public partial class EnemySpawner : Spawner<Enemy>
 				break;
 		}
 
-		return spawnPosition;
-	}
+        return spawnPosition;
+    }
+
+    private static bool IsWithinTileMapLayer(TileMapLayer tilemapLayer, Vector2 position)
+    {
+        // Convert world position to map coordinates (tile position)
+        Vector2I mapCoords = tilemapLayer.LocalToMap(position);
+
+        // Check if the map coordinates are within the tilemap bounds
+        // You can adjust the bounds check based on your game requirements
+        var tilemapBounds = tilemapLayer.GetCellTileData(mapCoords);
+
+        return tilemapBounds != null;
+    }
 }

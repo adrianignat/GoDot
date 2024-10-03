@@ -30,7 +30,7 @@ public partial class Enemy : Character
 
 	internal override void OnKilled()
 	{
-		base.OnKilled();
+		Game.Instance.EmitSignal(Game.SignalName.EnemyKilled, this);
 		QueueFree();
 	}
 	

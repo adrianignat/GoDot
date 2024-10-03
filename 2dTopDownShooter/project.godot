@@ -30,6 +30,11 @@ project/assembly_name="2dTopDownShooter"
 
 enabled=PackedStringArray()
 
+[global_group]
+
+noSpawn=""
+validSpawnLocation=""
+
 [input]
 
 up={

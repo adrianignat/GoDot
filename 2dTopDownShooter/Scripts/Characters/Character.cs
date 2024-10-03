@@ -34,9 +34,7 @@ namespace dTopDownShooter.Scripts.Characters
         }
 
         internal virtual void OnKilled()
-        {
-            var game = Game.Instance;
-            game.EmitSignal(Game.SignalName.EnemyKilled, this);
+        {   
         }
     }
 }
