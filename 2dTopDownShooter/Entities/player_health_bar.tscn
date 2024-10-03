@@ -1,6 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://flyd8u2is6nn"]
+[gd_scene load_steps=7 format=3 uid="uid://flyd8u2is6nn"]
 
 [ext_resource type="Script" path="res://Scripts/Characters/PlayerHealthBar.cs" id="1_yxtcu"]
+
+[sub_resource type="SystemFont" id="SystemFont_8uh4o"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_55b61"]
 
@@ -22,11 +24,12 @@ bg_color = Color(1, 1, 1, 1)
 [node name="PlayerHealthBar" type="ProgressBar"]
 z_index = 1
 offset_right = 200.0
-offset_bottom = 20.0
+offset_bottom = 23.0
+theme_override_fonts/font = SubResource("SystemFont_8uh4o")
+theme_override_font_sizes/font_size = 20
 theme_override_styles/background = SubResource("StyleBoxEmpty_55b61")
 theme_override_styles/fill = SubResource("StyleBoxFlat_nt3lt")
 value = 50.0
-show_percentage = false
 script = ExtResource("1_yxtcu")
 
 [node name="DamageBar" type="ProgressBar" parent="."]

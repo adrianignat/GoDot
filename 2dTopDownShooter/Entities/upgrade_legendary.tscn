@@ -19,8 +19,8 @@ subpixel_positioning = 0
 
 [sub_resource type="LabelSettings" id="LabelSettings_0quws"]
 font = SubResource("SystemFont_ujqlw")
-font_size = 11
-outline_size = 2
+font_size = 300
+outline_size = 80
 outline_color = Color(0, 0, 0, 1)
 
 [node name="Upgrade_Legendary" type="Sprite2D"]
@@ -42,10 +42,11 @@ text = "LEGENDARY"
 label_settings = SubResource("LabelSettings_mwyr5")
 
 [node name="Upgrade_Descr" type="Label" parent="."]
-offset_left = -40.0
-offset_top = -55.0
-offset_right = 42.0
-offset_bottom = 44.0
+offset_left = -41.0
+offset_top = -53.3333
+offset_right = 1619.0
+offset_bottom = 1941.67
+scale = Vector2(0.05, 0.05)
 text = "Heal by 40%"
 label_settings = SubResource("LabelSettings_0quws")
 horizontal_alignment = 1

@@ -11,7 +11,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 	Array<Node> _validSpawnTiles;
 
-    public override void _Ready()
+	public override void _Ready()
 	{
 		base._Ready();
 		var timer = GetNode<Timer>("IncreaseSpawnRate");
@@ -19,33 +19,33 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 		_camera = GetTree().Root.GetNode("main").GetNode("Player").GetNode<Camera2D>("Camera2D");
 		_validSpawnTiles = GetTree().GetNodesInGroup("validSpawnLocation");
-    }
+	}
 
 	public override Vector2 GetLocation()
 	{
-        bool isValidSpawn = false;
+		bool isValidSpawn = false;
 
-        Vector2 spawnPosition = new();
-        while (!isValidSpawn)
-        {
-            // Get a random position outside the camera view
-            spawnPosition = GetRandomSpawnPositionOutsideCamera(_camera);
+		Vector2 spawnPosition = new();
+		while (!isValidSpawn)
+		{
+			// Get a random position outside the camera view
+			spawnPosition = GetRandomSpawnPositionOutsideCamera(_camera);
 
-            foreach (TileMapLayer tilemap in _validSpawnTiles)
-            {
-                if (IsWithinTileMapLayer(tilemap, spawnPosition))
-                {
-                    isValidSpawn = true;
-                    break;
-                }
-                else
-                {
-                    isValidSpawn = false;
-                }
-            }
-        }
-        return spawnPosition;
-    }
+			foreach (TileMapLayer tilemap in _validSpawnTiles)
+			{
+				if (IsWithinTileMapLayer(tilemap, spawnPosition))
+				{
+					isValidSpawn = true;
+					break;
+				}
+				else
+				{
+					isValidSpawn = false;
+				}
+			}
+		}
+		return spawnPosition;
+	}
 
 	public Vector2 GetRandomSpawnPositionOutsideCamera(Camera2D camera)
 	{
@@ -88,18 +88,18 @@ public partial class EnemySpawner : Spawner<Enemy>
 				break;
 		}
 
-        return spawnPosition;
-    }
+		return spawnPosition;
+	}
 
-    private static bool IsWithinTileMapLayer(TileMapLayer tilemapLayer, Vector2 position)
-    {
-        // Convert world position to map coordinates (tile position)
-        Vector2I mapCoords = tilemapLayer.LocalToMap(position);
+	private static bool IsWithinTileMapLayer(TileMapLayer tilemapLayer, Vector2 position)
+	{
+		// Convert world position to map coordinates (tile position)
+		Vector2I mapCoords = tilemapLayer.LocalToMap(position);
 
-        // Check if the map coordinates are within the tilemap bounds
-        // You can adjust the bounds check based on your game requirements
-        var tilemapBounds = tilemapLayer.GetCellTileData(mapCoords);
+		// Check if the map coordinates are within the tilemap bounds
+		// You can adjust the bounds check based on your game requirements
+		var tilemapBounds = tilemapLayer.GetCellTileData(mapCoords);
 
-        return tilemapBounds != null;
-    }
+		return tilemapBounds != null;
+	}
 }

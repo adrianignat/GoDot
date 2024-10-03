@@ -476,9 +476,9 @@ text = "Score: 0"
 
 [node name="PlayerHealthBar" parent="CanvasLayer" instance=ExtResource("6_a3846")]
 offset_left = 35.0
-offset_top = 37.0
-offset_right = 392.0
-offset_bottom = 57.0
+offset_top = 52.0
+offset_right = 1868.0
+offset_bottom = 72.0
 size_flags_horizontal = 0
 
 [node name="UpgradeMenuLayer" type="CanvasLayer" parent="."]
