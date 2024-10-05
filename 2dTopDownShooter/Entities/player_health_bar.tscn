@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/Characters/PlayerHealthBar.cs" id="1_yxtcu"]
 
 [sub_resource type="SystemFont" id="SystemFont_8uh4o"]
+subpixel_positioning = 0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_55b61"]
 

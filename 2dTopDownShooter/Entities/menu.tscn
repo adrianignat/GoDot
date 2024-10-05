@@ -1,0 +1,72 @@
+[gd_scene load_steps=4 format=3 uid="uid://ctvkqee5jvjd2"]
+
+[ext_resource type="Texture2D" uid="uid://tkxyb1hpom6a" path="res://Sprites/Banners/Carved_9Slides.png" id="1_1mwmb"]
+[ext_resource type="Script" path="res://Scripts/menu.gd" id="1_4wu8m"]
+
+[sub_resource type="SystemFont" id="SystemFont_mueij"]
+font_names = PackedStringArray("Impact")
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4wu8m")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -250.0
+offset_right = 250.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_1mwmb")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -60.0
+offset_right = 200.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 15
+
+[node name="Start_Game" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(400, 120)
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_mueij")
+theme_override_font_sizes/font_size = 64
+text = "Start"
+
+[node name="Game_Options" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(400, 120)
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_mueij")
+theme_override_font_sizes/font_size = 64
+text = "Options"
+
+[node name="Exit_Game" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(400, 120)
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_mueij")
+theme_override_font_sizes/font_size = 64
+text = "Exit"
