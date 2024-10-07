@@ -95,7 +95,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 				if (chance <= LegendaryUpgradeChance)
 				{
 					upgrades[i] = new Upgrade(upgradeType, RarityType.Legendary);
-					scene = legendaryUpgradeScene.Instantiate(); ;
+					scene = legendaryUpgradeScene.Instantiate();
 				}
 				else if (chance <= EpicUpgradeChance)
 				{
@@ -108,7 +108,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 					scene = normalUpgradeScene.Instantiate();
 				}
 				var description = scene.GetNode<Label>("Upgrade_Descr");
-				description.Text = $"{upgrades[i].Type}: +{upgrades[i].Amount}";
+				description.Text = $"{upgrades[i].Description}";
 				options[i].CallDeferred("add_child", scene);
 			}
 

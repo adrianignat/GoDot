@@ -7,7 +7,19 @@ namespace dTopDownShooter.Scripts.Upgrades
 		internal UpgradeType Type { get; }
 		internal RarityType Rarity { get; }
 		internal ushort Amount { get; }
-
+		internal string Description
+		{
+			get
+			{
+				return Type switch
+				{
+					UpgradeType.Health => $"Health",
+					UpgradeType.WeaponSpeed => $"Weapon speed",
+					UpgradeType.Speed => $"Movement speed",
+					_ => string.Empty,
+				};
+			}
+		}
 
 		internal Upgrade(UpgradeType type, RarityType rarity)
 		{

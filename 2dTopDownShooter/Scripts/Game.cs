@@ -10,8 +10,10 @@ namespace dTopDownShooter.Scripts
 
 		internal bool IsPaused { get; set; }
 
-		public static Game Instance 
-		{ 
+		internal bool ShouldRestart { get; set; } = false;
+
+		public static Game Instance
+		{
 			get
 			{
 				_gameInstance ??= new Game();
@@ -20,17 +22,38 @@ namespace dTopDownShooter.Scripts
 			}
 			private set
 			{
-			} 
+			}
 		}
 
-		public Window MainWindow { get; set; }
+		public Node2D MainWindow { get; set; }
 
 		public Player Player { get; set; }
 
 		public override void _Ready()
 		{
-			Instance.MainWindow = GetTree().Root;
-			Instance.Player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
+			Instance.MainWindow = GetTree().Root.GetNode<Node2D>("main");
+			Instance.Player = Instance.MainWindow.GetNode<Player>("Player");
+		}
+
+		public override void _Process(double delta)
+		{
+			base._Process(delta);
+			if (Instance.ShouldRestart)
+			{
+				Restart();
+				ShouldRestart = false;
+			}
+		}
+
+		internal void Restart()
+		{
+			//var enemies = GetTree().GetNodesInGroup("enemies");
+			//foreach (Enemy enemy in enemies)
+			//{
+			//	enemy.QueueFree();
+			//}
+			//Instance.Player = new Player();
+			Instance.MainWindow.GetTree().ReloadCurrentScene();
 		}
 
 		[Signal]

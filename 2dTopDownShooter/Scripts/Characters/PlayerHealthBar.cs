@@ -17,11 +17,26 @@ namespace dTopDownShooter.Scripts.Characters
 			//damageBar.Value = health;
 			Value = 100;
 			MaxValue = 100;
+			ResizeHealthBar();
+
 		}
 
 		private void PlayerHealthChanged(ushort health)
 		{	
+			if (health > MaxValue)
+			{
+				MaxValue = health;
+			}
+
 			Value = health;
+			ResizeHealthBar();
+
+		}
+
+		private void ResizeHealthBar()
+		{            
+			float newWidth = (float)MaxValue * 5f;
+			Size = new Vector2(newWidth, Size.Y);
 		}
 	}
 }
