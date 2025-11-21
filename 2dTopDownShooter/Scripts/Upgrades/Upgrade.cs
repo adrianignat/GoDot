@@ -18,6 +18,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 					UpgradeType.Speed => $"Movement speed",
 					UpgradeType.Bouncing => $"Bouncing +1",
 					UpgradeType.Piercing => $"Piercing +1",
+					UpgradeType.Luck => $"Luck",
 					_ => string.Empty,
 				};
 			}
@@ -52,7 +53,8 @@ namespace dTopDownShooter.Scripts.Upgrades
 		WeaponSpeed = 1,
 		Speed = 2,
 		Bouncing = 3,
-		Piercing = 4
+		Piercing = 4,
+		Luck = 5
 	}
 
 	internal enum RarityType

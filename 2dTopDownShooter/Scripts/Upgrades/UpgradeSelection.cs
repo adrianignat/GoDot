@@ -100,11 +100,16 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 		private RarityType RollRarity()
 		{
+			var luckLevel = Game.Instance.Player.LuckLevel;
+			// Each 10 luck adds +2% legendary and +5% epic chance
+			var legendaryChance = LegendaryUpgradeChance + (luckLevel / 5);
+			var epicChance = EpicUpgradeChance + (luckLevel / 2);
+
 			var roll = _rng.RandiRange(0, 100);
 
-			if (roll <= LegendaryUpgradeChance)
+			if (roll <= legendaryChance)
 				return RarityType.Legendary;
-			if (roll <= EpicUpgradeChance)
+			if (roll <= epicChance)
 				return RarityType.Epic;
 			return RarityType.Common;
 		}
@@ -130,7 +135,8 @@ namespace dTopDownShooter.Scripts.Upgrades
 			[
 				UpgradeType.Health,
 				UpgradeType.WeaponSpeed,
-				UpgradeType.Speed
+				UpgradeType.Speed,
+				UpgradeType.Luck
 			];
 		}
 

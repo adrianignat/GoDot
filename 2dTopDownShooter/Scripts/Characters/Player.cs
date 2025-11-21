@@ -13,6 +13,7 @@ public partial class Player : Character
 	public bool IsShooting = false;
 	public Direction Facing { get; private set; }
 	public Direction Moving { get; private set; }
+	public int LuckLevel { get; private set; } = 0;
 
 
 	public override void _Ready()
@@ -52,6 +53,10 @@ public partial class Player : Character
 		{
 			bow.PiercingLevel += 1;
 			bow.SelectedArrowUpgrade = UpgradeType.Piercing;
+		}
+		else if (upgdade.Type == UpgradeType.Luck)
+		{
+			LuckLevel += upgdade.Amount;
 		}
 	}
 
