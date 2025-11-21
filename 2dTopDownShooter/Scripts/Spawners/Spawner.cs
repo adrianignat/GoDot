@@ -43,7 +43,7 @@ namespace dTopDownShooter.Scripts.Spawners
 			}
 		}
 
-		private void Spawn()
+		protected virtual void Spawn()
 		{
 			var spawnedObject = Scene.Instantiate<T>();
 			spawnedObject.GlobalPosition = GetLocation();

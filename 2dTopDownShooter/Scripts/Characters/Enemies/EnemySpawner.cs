@@ -1,13 +1,24 @@
 using dTopDownShooter.Scripts.Spawners;
 using Godot;
 using Godot.Collections;
+using System.Collections.Generic;
 
 public partial class EnemySpawner : Spawner<Enemy>
 {
 	[Export]
 	public float SpawnIncreaseRate = 1.1f;
 
+	/// <summary>
+	/// Time in seconds before each new enemy tier is introduced.
+	/// Index 0 = Red (2 shots), Index 1 = Purple (3 shots), Index 2 = Yellow (4 shots)
+	/// Blue enemies spawn from the start.
+	/// </summary>
+	[Export]
+	public float TierIntroductionInterval = 10f;
+
 	private Camera2D _camera;
+	private List<EnemyTier> _availableTiers = new() { EnemyTier.Blue };
+	private int _nextTierIndex = 1; // Start at Red (index 1 in enum)
 
 	Array<Node> _validSpawnTiles;
 
@@ -19,6 +30,37 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 		_camera = GetTree().Root.GetNode("main").GetNode("Player").GetNode<Camera2D>("Camera2D");
 		_validSpawnTiles = GetTree().GetNodesInGroup("validSpawnLocation");
+
+		// Setup timer for introducing new enemy tiers
+		var tierTimer = new Timer();
+		tierTimer.WaitTime = TierIntroductionInterval;
+		tierTimer.OneShot = false;
+		tierTimer.Timeout += OnTierTimerTimeout;
+		AddChild(tierTimer);
+		tierTimer.Start();
+	}
+
+	private void OnTierTimerTimeout()
+	{
+		// Add next tier if available (Red=2, Purple=3, Yellow=4)
+		_nextTierIndex++;
+		if (_nextTierIndex <= 4)
+		{
+			var newTier = (EnemyTier)_nextTierIndex;
+			_availableTiers.Add(newTier);
+			GD.Print($"New enemy tier introduced: {newTier}");
+		}
+	}
+
+	protected override void Spawn()
+	{
+		var enemy = Scene.Instantiate<Enemy>();
+		enemy.GlobalPosition = GetLocation();
+		GetTree().Root.AddChild(enemy);
+
+		// Initialize with a random tier from available tiers
+		var randomTier = _availableTiers[GD.RandRange(0, _availableTiers.Count - 1)];
+		enemy.Initialize(randomTier);
 	}
 
 	public override Vector2 GetLocation()
