@@ -79,6 +79,10 @@ namespace dTopDownShooter.Scripts.Upgrades
 		{
 			Game.Instance.IsPaused = true;
 
+			// Get the bow to check which arrow upgrade is already selected
+			var bow = Game.Instance.Player.GetNode<Bow>("Bow");
+			var selectedArrowUpgrade = bow.SelectedArrowUpgrade;
+
 			for (int i = 0; i < upgrades.Length; i++)
 			{
 				var child = options[i].GetChild(0);
@@ -90,26 +94,26 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 				Node scene;
 				RandomNumberGenerator rng = new();
-				var chance = rng.RandiRange(0, 100);
+				var chance = LegendaryUpgradeChance;
 				UpgradeType upgradeType;
 
 				if (chance <= LegendaryUpgradeChance)
 				{
-					// Legendary can be Piercing or any other type
-					upgradeType = (UpgradeType)rng.RandiRange(0, 3);
+					// Legendary can be Bouncing, Piercing, or any other type
+					upgradeType = GetLegendaryUpgradeType(rng, selectedArrowUpgrade);
 					upgrades[i] = new Upgrade(upgradeType, RarityType.Legendary);
 					scene = legendaryUpgradeScene.Instantiate();
 				}
 				else if (chance <= EpicUpgradeChance)
 				{
-					// Epic: only Health, WeaponSpeed, Speed (no Piercing)
+					// Epic: only Health, WeaponSpeed, Speed
 					upgradeType = (UpgradeType)rng.RandiRange(0, 2);
 					upgrades[i] = new Upgrade(upgradeType, RarityType.Epic);
 					scene = epicUpgradeScene.Instantiate();
 				}
 				else
 				{
-					// Common: only Health, WeaponSpeed, Speed (no Piercing)
+					// Common: only Health, WeaponSpeed, Speed
 					upgradeType = (UpgradeType)rng.RandiRange(0, 2);
 					upgrades[i] = new Upgrade(upgradeType, RarityType.Common);
 					scene = normalUpgradeScene.Instantiate();
@@ -120,6 +124,30 @@ namespace dTopDownShooter.Scripts.Upgrades
 			}
 
 			Show();
+		}
+
+		private UpgradeType GetLegendaryUpgradeType(RandomNumberGenerator rng, UpgradeType? selectedArrowUpgrade)
+		{
+			// Available types: Health(0), WeaponSpeed(1), Speed(2), Bouncing(3), Piercing(4)
+			// But Bouncing and Piercing are mutually exclusive
+
+			if (selectedArrowUpgrade == UpgradeType.Bouncing)
+			{
+				// Exclude Piercing (4), allow 0-3
+				return (UpgradeType)rng.RandiRange(0, 3);
+			}
+			else if (selectedArrowUpgrade == UpgradeType.Piercing)
+			{
+				// Exclude Bouncing (3), allow 0-2 or 4
+				var roll = rng.RandiRange(0, 3);
+				if (roll == 3) return UpgradeType.Piercing;
+				return (UpgradeType)roll;
+			}
+			else
+			{
+				// Neither selected yet, allow all 0-4
+				return (UpgradeType)rng.RandiRange(0, 4);
+			}
 		}
 	}
 }

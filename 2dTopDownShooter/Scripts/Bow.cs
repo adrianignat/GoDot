@@ -1,4 +1,5 @@
 using dTopDownShooter.Scripts.Spawners;
+using dTopDownShooter.Scripts.Upgrades;
 using Godot;
 
 public partial class Bow : Spawner<Arrow>
@@ -14,6 +15,17 @@ public partial class Bow : Spawner<Arrow>
 	/// Number of additional enemies arrows can bounce through.
 	/// </summary>
 	public int BouncingLevel { get; set; } = 0;
+
+	/// <summary>
+	/// Number of additional enemies arrows can pierce through.
+	/// </summary>
+	public int PiercingLevel { get; set; } = 0;
+
+	/// <summary>
+	/// Tracks which arrow upgrade type was selected (Bouncing or Piercing).
+	/// Used to make them mutually exclusive.
+	/// </summary>
+	public UpgradeType? SelectedArrowUpgrade { get; set; } = null;
 
 	public override void _Ready()
 	{
@@ -39,5 +51,6 @@ public partial class Bow : Spawner<Arrow>
 	protected override void InitializeSpawnedObject(Arrow arrow)
 	{
 		arrow.BouncingLevel = BouncingLevel;
+		arrow.PiercingLevel = PiercingLevel;
 	}
 }

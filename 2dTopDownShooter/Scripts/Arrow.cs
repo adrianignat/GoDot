@@ -13,11 +13,20 @@ public partial class Arrow : RigidBody2D
 	[Export]
 	public float BounceSpeedReduction = 0.3f;
 
+	[Export]
+	public float PierceSpeedReduction = 0.7f;
+
 	/// <summary>
 	/// Number of additional enemies this arrow can bounce through.
 	/// Set by the Bow before the arrow is added to the scene.
 	/// </summary>
 	public int BouncingLevel { get; set; } = 0;
+
+	/// <summary>
+	/// Number of additional enemies this arrow can pierce through.
+	/// Set by the Bow before the arrow is added to the scene.
+	/// </summary>
+	public int PiercingLevel { get; set; } = 0;
 
 	private Player _player;
 	private int _enemiesHit = 0;
@@ -25,6 +34,9 @@ public partial class Arrow : RigidBody2D
 	private HashSet<Enemy> _hitEnemies = new();
 	private Vector2 _currentDirection;
 	private float _currentSpeed;
+
+	private bool IsPiercing => PiercingLevel > 0;
+	private bool IsBouncing => BouncingLevel > 0;
 
 	public override void _Ready()
 	{
@@ -35,7 +47,8 @@ public partial class Arrow : RigidBody2D
 		MaxContactsReported = 10;
 
 		_player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
-		_maxEnemiesCanHit = 1 + BouncingLevel;
+		// Use whichever level is set (they're mutually exclusive)
+		_maxEnemiesCanHit = 1 + BouncingLevel + PiercingLevel;
 		_currentSpeed = Speed;
 
 		UpdateVelocity();
@@ -69,8 +82,10 @@ public partial class Arrow : RigidBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// Maintain speed and direction regardless of physics collisions
+		// Maintain speed, direction, and rotation regardless of physics collisions
 		LinearVelocity = _currentDirection * _currentSpeed;
+		AngularVelocity = 0;
+		Rotation = _currentDirection.Angle();
 	}
 
 	private void OnCollision(Node body)
@@ -85,6 +100,9 @@ public partial class Arrow : RigidBody2D
 			enemy.TakeDamage(Damage);
 			_enemiesHit++;
 
+			// Add collision exception so arrow passes through this enemy
+			AddCollisionExceptionWith(enemy);
+
 			// Only destroy arrow if we've hit max enemies
 			if (_enemiesHit >= _maxEnemiesCanHit)
 			{
@@ -92,15 +110,22 @@ public partial class Arrow : RigidBody2D
 				return;
 			}
 
-			// Bounce: reduce speed and change direction away from enemy
-			_currentSpeed *= BounceSpeedReduction;
+			if (IsPiercing)
+			{
+				// Piercing: maintain direction, slight speed reduction
+				_currentSpeed *= PierceSpeedReduction;
+			}
+			else if (IsBouncing)
+			{
+				// Bouncing: reduce speed and change direction away from enemy
+				_currentSpeed *= BounceSpeedReduction;
 
-			// Calculate bounce direction (away from enemy + some randomness)
-			Vector2 awayFromEnemy = (GlobalPosition - enemy.GlobalPosition).Normalized();
-			// Add slight random angle variation for more interesting bounces
-			float randomAngle = (float)GD.RandRange(-0.5f, 0.5f);
-			_currentDirection = awayFromEnemy.Rotated(randomAngle);
-			Rotation = _currentDirection.Angle();
+				// Calculate bounce direction (away from enemy + some randomness)
+				Vector2 awayFromEnemy = (GlobalPosition - enemy.GlobalPosition).Normalized();
+				float randomAngle = (float)GD.RandRange(-0.5f, 0.5f);
+				_currentDirection = awayFromEnemy.Rotated(randomAngle);
+				Rotation = _currentDirection.Angle();
+			}
 		}
 		else
 		{

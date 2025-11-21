@@ -17,6 +17,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 					UpgradeType.WeaponSpeed => $"Weapon speed",
 					UpgradeType.Speed => $"Movement speed",
 					UpgradeType.Bouncing => $"Bouncing +1",
+					UpgradeType.Piercing => $"Piercing +1",
 					_ => string.Empty,
 				};
 			}
@@ -45,12 +46,13 @@ namespace dTopDownShooter.Scripts.Upgrades
 		}
 	}
 
-	internal enum UpgradeType
+	public enum UpgradeType
 	{
 		Health = 0,
 		WeaponSpeed = 1,
 		Speed = 2,
-		Bouncing = 3
+		Bouncing = 3,
+		Piercing = 4
 	}
 
 	internal enum RarityType

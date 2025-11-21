@@ -46,7 +46,15 @@ public partial class Player : Character
 		else if (upgdade.Type == UpgradeType.WeaponSpeed)
 			bow.ObjectsPerSecond += (upgdade.Amount / 100f);
 		else if (upgdade.Type == UpgradeType.Bouncing)
+		{
 			bow.BouncingLevel += 1;
+			bow.SelectedArrowUpgrade = UpgradeType.Bouncing;
+		}
+		else if (upgdade.Type == UpgradeType.Piercing)
+		{
+			bow.PiercingLevel += 1;
+			bow.SelectedArrowUpgrade = UpgradeType.Piercing;
+		}
 	}
 
 	public override void _Process(double delta)
