@@ -104,10 +104,23 @@ public partial class Enemy : Character
 		}
 	}
 
+	internal override void OnDamaged()
+	{
+		PlayHitFlash();
+	}
+
 	internal override void OnKilled()
 	{
 		Game.Instance.EmitSignal(Game.SignalName.EnemyKilled, this);
 		QueueFree();
+	}
+
+	private void PlayHitFlash()
+	{
+		// Brief white flash to indicate damage
+		var tween = CreateTween();
+		tween.TweenProperty(_enemyAnimation, "modulate", new Color(10, 10, 10, 1), 0.05f);
+		tween.TweenProperty(_enemyAnimation, "modulate", new Color(1, 1, 1, 1), 0.1f);
 	}
 	
 	public override void _Process(double delta)

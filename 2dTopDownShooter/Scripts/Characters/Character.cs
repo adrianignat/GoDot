@@ -31,10 +31,18 @@ namespace dTopDownShooter.Scripts.Characters
             {
                 OnKilled();
             }
+            else
+            {
+                OnDamaged();
+            }
+        }
+
+        internal virtual void OnDamaged()
+        {
         }
 
         internal virtual void OnKilled()
-        {   
+        {
         }
     }
 }
