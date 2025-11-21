@@ -1,28 +1,24 @@
 using Godot;
+using System.Collections.Generic;
 
 namespace dTopDownShooter.Scripts.Upgrades
 {
 	public partial class UpgradeSelection : Control
 	{
-		[Export]
-		public ushort FirstUpgrade = 5;
+		[Export] public ushort FirstUpgrade = 5;
+		[Export] public ushort UpgradeStep = 1;
+		[Export] private ushort LegendaryUpgradeChance = 5;
+		[Export] private ushort EpicUpgradeChance = 15;
 
-		[Export]
-		public ushort UpgradeStep = 1;
+		private const int UpgradeOptionCount = 3;
 
-		[Export]
-		private ushort LegendaryUpgradeChance = 5;
+		private readonly PackedScene _normalScene = GD.Load<PackedScene>("res://Entities/upgrade_normal.tscn");
+		private readonly PackedScene _epicScene = GD.Load<PackedScene>("res://Entities/upgrade_epic.tscn");
+		private readonly PackedScene _legendaryScene = GD.Load<PackedScene>("res://Entities/upgrade_legendary.tscn");
 
-		[Export]
-		private ushort EpicUpgradeChance = 15;
-
-		private Upgrade[] upgrades = new Upgrade[3];
-
-		private Button[] options;
-
-		private PackedScene normalUpgradeScene = GD.Load<PackedScene>("res://Entities/upgrade_normal.tscn");
-		private PackedScene epicUpgradeScene = GD.Load<PackedScene>("res://Entities/upgrade_epic.tscn");
-		private PackedScene legendaryUpgradeScene = GD.Load<PackedScene>("res://Entities/upgrade_legendary.tscn");
+		private readonly RandomNumberGenerator _rng = new();
+		private readonly Upgrade[] _upgrades = new Upgrade[UpgradeOptionCount];
+		private Button[] _optionButtons;
 
 		private ushort _gold;
 		private ushort _goldRequiredToUpdate;
@@ -30,10 +26,29 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 		public UpgradeSelection()
 		{
-			Game.Instance.UpgradeReady += ShowUpgradeSelectionScene;
+			Game.Instance.UpgradeReady += ShowSelectionScreen;
 			Game.Instance.GoldAcquired += OnGoldAcquired;
 			_currentUpgradeStep = FirstUpgrade;
-			_goldRequiredToUpdate = 1;
+			_goldRequiredToUpdate = FirstUpgrade;
+		}
+
+		public override void _Ready()
+		{
+			Hide();
+			InitializeButtons();
+		}
+
+		private void InitializeButtons()
+		{
+			var hbox = GetNode<HBoxContainer>("HBoxContainer");
+			_optionButtons = new Button[UpgradeOptionCount];
+
+			for (int i = 0; i < UpgradeOptionCount; i++)
+			{
+				_optionButtons[i] = hbox.GetNode<Button>($"Option{i + 1}");
+				int index = i;
+				_optionButtons[i].Pressed += () => SelectUpgrade(index);
+			}
 		}
 
 		private void OnGoldAcquired(ushort amount)
@@ -42,112 +57,122 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 			if (_gold >= _goldRequiredToUpdate)
 			{
-				GD.Print($"Gold: {_gold}, Required: {_goldRequiredToUpdate}, CurrentStep: {_currentUpgradeStep}");
-				
 				Game.Instance.EmitSignal(Game.SignalName.UpgradeReady);
-
 				_currentUpgradeStep += UpgradeStep;
-				//_goldRequiredToUpdate += _currentUpgradeStep;
+				_goldRequiredToUpdate += _currentUpgradeStep;
 			}
 		}
 
-		public override void _Ready()
+		private void SelectUpgrade(int index)
 		{
+			Game.Instance.EmitSignal(Game.SignalName.UpgradeSelected, _upgrades[index]);
 			Hide();
-
-			var hbox = GetNode<HBoxContainer>("HBoxContainer");
-
-			options = new Button[3];
-			options[0] = hbox.GetNode<Button>("Option1");
-			options[1] = hbox.GetNode<Button>("Option2");
-			options[2] = hbox.GetNode<Button>("Option3");
-
-			options[0].Pressed += () => OnUpgradeButtonPressed(0);
-			options[1].Pressed += () => OnUpgradeButtonPressed(1);
-			options[2].Pressed += () => OnUpgradeButtonPressed(2);
-		}
-
-		private void OnUpgradeButtonPressed(int selection)
-		{
-			Game.Instance.EmitSignal(Game.SignalName.UpgradeSelected, upgrades[selection]);
-
-			Hide(); // Hide the menu after selection
 			Game.Instance.IsPaused = false;
 		}
 
-		private void ShowUpgradeSelectionScene()
+		private void ShowSelectionScreen()
 		{
 			Game.Instance.IsPaused = true;
 
-			// Get the bow to check which arrow upgrade is already selected
-			var bow = Game.Instance.Player.GetNode<Bow>("Bow");
-			var selectedArrowUpgrade = bow.SelectedArrowUpgrade;
+			var usedTypes = new HashSet<UpgradeType>();
+			var lockedArrowType = GetLockedArrowUpgrade();
 
-			for (int i = 0; i < upgrades.Length; i++)
+			for (int i = 0; i < UpgradeOptionCount; i++)
 			{
-				var child = options[i].GetChild(0);
-				if (child != null)
-				{
-					options[i].RemoveChild(child);
-					child.QueueFree();
-				}
+				ClearButtonContent(_optionButtons[i]);
 
-				Node scene;
-				RandomNumberGenerator rng = new();
-				var chance = LegendaryUpgradeChance;
-				UpgradeType upgradeType;
+				var rarity = RollRarity();
+				var type = GetAvailableUpgradeType(usedTypes, lockedArrowType, rarity);
+				usedTypes.Add(type);
 
-				if (chance <= LegendaryUpgradeChance)
-				{
-					// Legendary can be Bouncing, Piercing, or any other type
-					upgradeType = GetLegendaryUpgradeType(rng, selectedArrowUpgrade);
-					upgrades[i] = new Upgrade(upgradeType, RarityType.Legendary);
-					scene = legendaryUpgradeScene.Instantiate();
-				}
-				else if (chance <= EpicUpgradeChance)
-				{
-					// Epic: only Health, WeaponSpeed, Speed
-					upgradeType = (UpgradeType)rng.RandiRange(0, 2);
-					upgrades[i] = new Upgrade(upgradeType, RarityType.Epic);
-					scene = epicUpgradeScene.Instantiate();
-				}
-				else
-				{
-					// Common: only Health, WeaponSpeed, Speed
-					upgradeType = (UpgradeType)rng.RandiRange(0, 2);
-					upgrades[i] = new Upgrade(upgradeType, RarityType.Common);
-					scene = normalUpgradeScene.Instantiate();
-				}
-				var description = scene.GetNode<Label>("Upgrade_Descr");
-				description.Text = $"{upgrades[i].Description}";
-				options[i].CallDeferred("add_child", scene);
+				_upgrades[i] = new Upgrade(type, rarity);
+				AttachUpgradeScene(_optionButtons[i], _upgrades[i]);
 			}
 
 			Show();
 		}
 
-		private UpgradeType GetLegendaryUpgradeType(RandomNumberGenerator rng, UpgradeType? selectedArrowUpgrade)
+		private static UpgradeType? GetLockedArrowUpgrade()
 		{
-			// Available types: Health(0), WeaponSpeed(1), Speed(2), Bouncing(3), Piercing(4)
-			// But Bouncing and Piercing are mutually exclusive
+			var bow = Game.Instance.Player.GetNode<Bow>("Bow");
+			return bow.SelectedArrowUpgrade;
+		}
 
-			if (selectedArrowUpgrade == UpgradeType.Bouncing)
-			{
-				// Exclude Piercing (4), allow 0-3
-				return (UpgradeType)rng.RandiRange(0, 3);
-			}
-			else if (selectedArrowUpgrade == UpgradeType.Piercing)
-			{
-				// Exclude Bouncing (3), allow 0-2 or 4
-				var roll = rng.RandiRange(0, 3);
-				if (roll == 3) return UpgradeType.Piercing;
-				return (UpgradeType)roll;
-			}
+		private RarityType RollRarity()
+		{
+			var roll = _rng.RandiRange(0, 100);
+
+			if (roll <= LegendaryUpgradeChance)
+				return RarityType.Legendary;
+			if (roll <= EpicUpgradeChance)
+				return RarityType.Epic;
+			return RarityType.Common;
+		}
+
+		private UpgradeType GetAvailableUpgradeType(HashSet<UpgradeType> usedTypes, UpgradeType? lockedArrowType, RarityType rarity)
+		{
+			var available = GetBaseUpgradeTypes();
+
+			if (rarity == RarityType.Legendary)
+				AddArrowUpgrades(available, lockedArrowType);
+
+			available.RemoveAll(t => usedTypes.Contains(t));
+
+			if (available.Count == 0)
+				return UpgradeType.Health;
+
+			return available[_rng.RandiRange(0, available.Count - 1)];
+		}
+
+		private List<UpgradeType> GetBaseUpgradeTypes()
+		{
+			return
+			[
+				UpgradeType.Health,
+				UpgradeType.WeaponSpeed,
+				UpgradeType.Speed
+			];
+		}
+
+		private static void AddArrowUpgrades(List<UpgradeType> types, UpgradeType? lockedArrowType)
+		{
+			if (lockedArrowType == UpgradeType.Bouncing)
+				types.Add(UpgradeType.Bouncing);
+			else if (lockedArrowType == UpgradeType.Piercing)
+				types.Add(UpgradeType.Piercing);
 			else
 			{
-				// Neither selected yet, allow all 0-4
-				return (UpgradeType)rng.RandiRange(0, 4);
+				types.Add(UpgradeType.Bouncing);
+				types.Add(UpgradeType.Piercing);
 			}
+		}
+
+		private static void ClearButtonContent(Button button)
+		{
+			if (button.GetChildCount() > 0)
+			{
+				var child = button.GetChild(0);
+				button.RemoveChild(child);
+				child.QueueFree();
+			}
+		}
+
+		private void AttachUpgradeScene(Button button, Upgrade upgrade)
+		{
+			var scene = GetSceneForRarity(upgrade.Rarity);
+			var description = scene.GetNode<Label>("Upgrade_Descr");
+			description.Text = upgrade.Description;
+			button.CallDeferred("add_child", scene);
+		}
+
+		private Node GetSceneForRarity(RarityType rarity)
+		{
+			return rarity switch
+			{
+				RarityType.Legendary => _legendaryScene.Instantiate(),
+				RarityType.Epic => _epicScene.Instantiate(),
+				_ => _normalScene.Instantiate()
+			};
 		}
 	}
 }

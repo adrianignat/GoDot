@@ -11,19 +11,17 @@ public partial class Player : Character
 	private Label _scoreLabel;
 
 	public bool IsShooting = false;
-
-	private AnimatedSprite2D _playerAnimation;
 	public Direction Facing { get; private set; }
 	public Direction Moving { get; private set; }
 
 
 	public override void _Ready()
 	{
-		_playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimations");
-		_playerAnimation.Play("idle");
-		_playerAnimation.AnimationFinished += () =>
+		_animation = GetNode<AnimatedSprite2D>("PlayerAnimations");
+		_animation.Play("idle");
+		_animation.AnimationFinished += () =>
 		{
-			if (IsShooting) _playerAnimation.Play("idle");
+			if (IsShooting) _animation.Play("idle");
 		};
 		Facing = Direction.E;
 		Moving = Direction.E;
@@ -63,7 +61,7 @@ public partial class Player : Character
 		{
 			IsShooting = false;
 			if (!IsDead)
-				_playerAnimation.Play("idle");
+				_animation.Play("idle");
 			return;
 		}
 
@@ -73,7 +71,7 @@ public partial class Player : Character
 			Facing = DirectionHelper.GetFacingDirection(move_input);
 			Moving = DirectionHelper.GetMovingDirection(move_input);
 		}
-		IsShooting = _playerAnimation.Animation.ToString().Contains("shoot");
+		IsShooting = _animation.Animation.ToString().Contains("shoot");
 		if (IsShooting)
 		{
 			return;
@@ -81,11 +79,11 @@ public partial class Player : Character
 
 		if (move_input != Vector2.Zero)
 		{
-			_playerAnimation.Play("walk");
+			_animation.Play("walk");
 		}
 		else
 		{
-			_playerAnimation.Play("idle");
+			_animation.Play("idle");
 		}
 	}
 
@@ -95,14 +93,14 @@ public partial class Player : Character
 		{
 			IsShooting = false;
 			if (!IsDead)
-				_playerAnimation.Play("idle");
+				_animation.Play("idle");
 			return;
 		}
 
 		Vector2 move_input = Input.GetVector("left", "right", "up", "down");
 
 		Velocity = move_input * Speed;
-		_playerAnimation.FlipH = Facing == Direction.W;
+		_animation.FlipH = Facing == Direction.W;
 		MoveAndSlide();
 	}
 
@@ -132,21 +130,21 @@ public partial class Player : Character
 		switch (Moving)
 		{
 			case Direction.N:
-				_playerAnimation.Play("shoot_up");
+				_animation.Play("shoot_up");
 				break;
 			case Direction.S:
-				_playerAnimation.Play("shoot_down");
+				_animation.Play("shoot_down");
 				break;
 			case Direction.SE:
 			case Direction.SW:
-				_playerAnimation.Play("shoot_down_forward");
+				_animation.Play("shoot_down_forward");
 				break;
 			case Direction.NE:
 			case Direction.NW:
-				_playerAnimation.Play("shoot_up_forward");
+				_animation.Play("shoot_up_forward");
 				break;
 			default:
-				_playerAnimation.Play("shoot_forward");
+				_animation.Play("shoot_forward");
 				break;
 		}
 	}
@@ -154,6 +152,6 @@ public partial class Player : Character
 	internal override void OnKilled()
 	{
 		Game.Instance.IsPaused = true;
-		_playerAnimation.Play("dead");
+		_animation.Play("dead");
 	}
 }

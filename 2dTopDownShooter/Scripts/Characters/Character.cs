@@ -4,7 +4,9 @@ namespace dTopDownShooter.Scripts.Characters
 {
     public partial class Character : CharacterBody2D
     {
-        private ushort health;
+        internal AnimatedSprite2D _animation;
+        private ushort _health;
+
         [Export]
         internal float Speed;
         [Export]
@@ -12,13 +14,13 @@ namespace dTopDownShooter.Scripts.Characters
         {
             get
             {
-                return health;
+                return _health;
             }
             set
             {
-                health = value;
+                _health = value;
                 if (this is Player)
-                    Game.Instance.EmitSignal(Game.SignalName.PlayerHealthChanged, health);
+                    Game.Instance.EmitSignal(Game.SignalName.PlayerHealthChanged, _health);
             }
         }
 
@@ -39,10 +41,19 @@ namespace dTopDownShooter.Scripts.Characters
 
         internal virtual void OnDamaged()
         {
+            PlayHitFlash();
         }
 
         internal virtual void OnKilled()
         {
+        }
+
+        private void PlayHitFlash()
+        {
+            // Brief white flash to indicate damage
+            var tween = CreateTween();
+            tween.TweenProperty(_animation, "modulate", new Color(10, 10, 10, 1), 0.05f);
+            tween.TweenProperty(_animation, "modulate", new Color(1, 1, 1, 1), 0.1f);
         }
     }
 }

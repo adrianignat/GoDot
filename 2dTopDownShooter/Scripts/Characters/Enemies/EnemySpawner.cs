@@ -14,7 +14,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 	/// Blue enemies spawn from the start.
 	/// </summary>
 	[Export]
-	public float TierIntroductionInterval = 10f;
+	public float TierIntroductionInterval = 60f;
 
 	private Camera2D _camera;
 	private List<EnemyTier> _availableTiers = new() { EnemyTier.Blue };
@@ -52,15 +52,10 @@ public partial class EnemySpawner : Spawner<Enemy>
 		}
 	}
 
-	protected override void Spawn()
+	protected override void InitializeSpawnedObject(Enemy enemy)
 	{
-		var enemy = Scene.Instantiate<Enemy>();
-		enemy.GlobalPosition = GetLocation();
-		GetTree().Root.AddChild(enemy);
-
-		// Initialize with a random tier from available tiers
 		var randomTier = _availableTiers[GD.RandRange(0, _availableTiers.Count - 1)];
-		enemy.Initialize(randomTier);
+		enemy.Tier = randomTier;
 	}
 
 	public override Vector2 GetLocation()
