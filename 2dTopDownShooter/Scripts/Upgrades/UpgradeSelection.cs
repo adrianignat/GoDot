@@ -121,6 +121,10 @@ namespace dTopDownShooter.Scripts.Upgrades
 			if (rarity == RarityType.Legendary)
 				AddArrowUpgrades(available, lockedArrowType);
 
+			// Remove maxed out upgrades
+			if (Game.Instance.Player.GetMagnetShape().Radius >= Player.MaxMagnetRadius)
+				available.Remove(UpgradeType.Magnet);
+
 			available.RemoveAll(t => usedTypes.Contains(t));
 
 			if (available.Count == 0)
@@ -136,7 +140,8 @@ namespace dTopDownShooter.Scripts.Upgrades
 				UpgradeType.Health,
 				UpgradeType.WeaponSpeed,
 				UpgradeType.Speed,
-				UpgradeType.Luck
+				UpgradeType.Luck,
+				UpgradeType.Magnet
 			];
 		}
 

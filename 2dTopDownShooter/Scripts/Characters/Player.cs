@@ -14,6 +14,7 @@ public partial class Player : Character
 	public Direction Facing { get; private set; }
 	public Direction Moving { get; private set; }
 	public int LuckLevel { get; private set; } = 0;
+	public const float MaxMagnetRadius = 300f;
 
 
 	public override void _Ready()
@@ -57,6 +58,11 @@ public partial class Player : Character
 		else if (upgdade.Type == UpgradeType.Luck)
 		{
 			LuckLevel += upgdade.Amount;
+		}
+		else if (upgdade.Type == UpgradeType.Magnet)
+		{
+			var circle = GetMagnetShape();
+			circle.Radius += upgdade.Amount * 5;
 		}
 	}
 
@@ -158,5 +164,11 @@ public partial class Player : Character
 	{
 		Game.Instance.IsPaused = true;
 		_animation.Play("dead");
+	}
+
+	public CircleShape2D GetMagnetShape()
+	{
+		var magnetShape = GetNode<Area2D>("GoldMagnetArea").GetNode<CollisionShape2D>("MagnetShape");
+		return (CircleShape2D)magnetShape.Shape;
 	}
 }
