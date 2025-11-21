@@ -1,5 +1,6 @@
 using dTopDownShooter.Scripts;
 using Godot;
+using System.Collections.Generic;
 
 public partial class Arrow : RigidBody2D
 {
@@ -9,7 +10,21 @@ public partial class Arrow : RigidBody2D
 	[Export]
 	public float Speed { get; set; }
 
+	[Export]
+	public float BounceSpeedReduction = 0.3f;
+
+	/// <summary>
+	/// Number of additional enemies this arrow can bounce through.
+	/// Set by the Bow before the arrow is added to the scene.
+	/// </summary>
+	public int BouncingLevel { get; set; } = 0;
+
 	private Player _player;
+	private int _enemiesHit = 0;
+	private int _maxEnemiesCanHit;
+	private HashSet<Enemy> _hitEnemies = new();
+	private Vector2 _currentDirection;
+	private float _currentSpeed;
 
 	public override void _Ready()
 	{
@@ -17,9 +32,11 @@ public partial class Arrow : RigidBody2D
 		timer.Timeout += () => QueueFree();
 
 		ContactMonitor = true;
-		MaxContactsReported = 1;
+		MaxContactsReported = 10;
 
 		_player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
+		_maxEnemiesCanHit = 1 + BouncingLevel;
+		_currentSpeed = Speed;
 
 		UpdateVelocity();
 		//AdjustPosition();
@@ -35,7 +52,7 @@ public partial class Arrow : RigidBody2D
 
 	private void UpdateVelocity()
 	{
-		Vector2 direction = new Vector2(-1, 0);
+		_currentDirection = new Vector2(-1, 0);
 
 		Node2D closestEnemy = GetClosestEnemy();
 
@@ -43,21 +60,53 @@ public partial class Arrow : RigidBody2D
 		{
 			// Calculate the direction to the enemy
 			Vector2 enemyPosition = closestEnemy.GlobalPosition;
-			direction = (enemyPosition - _player.GlobalPosition).Normalized();  // Normalized to get a unit vector
+			_currentDirection = (enemyPosition - _player.GlobalPosition).Normalized();
 		}
-			
-		LinearVelocity = direction * Speed;
-		Rotation = direction.Angle();
+
+		LinearVelocity = _currentDirection * _currentSpeed;
+		Rotation = _currentDirection.Angle();
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		// Maintain speed and direction regardless of physics collisions
+		LinearVelocity = _currentDirection * _currentSpeed;
 	}
 
 	private void OnCollision(Node body)
 	{
-		if (body is Enemy)
+		if (body is Enemy enemy)
 		{
-			var enemy = body as Enemy;
+			// Skip if we already hit this enemy
+			if (_hitEnemies.Contains(enemy))
+				return;
+
+			_hitEnemies.Add(enemy);
 			enemy.TakeDamage(Damage);
+			_enemiesHit++;
+
+			// Only destroy arrow if we've hit max enemies
+			if (_enemiesHit >= _maxEnemiesCanHit)
+			{
+				QueueFree();
+				return;
+			}
+
+			// Bounce: reduce speed and change direction away from enemy
+			_currentSpeed *= BounceSpeedReduction;
+
+			// Calculate bounce direction (away from enemy + some randomness)
+			Vector2 awayFromEnemy = (GlobalPosition - enemy.GlobalPosition).Normalized();
+			// Add slight random angle variation for more interesting bounces
+			float randomAngle = (float)GD.RandRange(-0.5f, 0.5f);
+			_currentDirection = awayFromEnemy.Rotated(randomAngle);
+			Rotation = _currentDirection.Angle();
 		}
-		QueueFree();
+		else
+		{
+			// Hit something that's not an enemy (wall, etc.)
+			QueueFree();
+		}
 	}
 
 	private Node2D GetClosestEnemy()

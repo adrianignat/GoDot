@@ -47,10 +47,19 @@ namespace dTopDownShooter.Scripts.Spawners
 		{
 			var spawnedObject = Scene.Instantiate<T>();
 			spawnedObject.GlobalPosition = GetLocation();
+			InitializeSpawnedObject(spawnedObject);
 			GetTree().Root.AddChild(spawnedObject);
 
 			if (MaxObjects != 0)
 				spawnedObjects++;
+		}
+
+		/// <summary>
+		/// Override this method to initialize spawned objects with custom properties
+		/// before they are added to the scene tree.
+		/// </summary>
+		protected virtual void InitializeSpawnedObject(T spawnedObject)
+		{
 		}
 
 	}

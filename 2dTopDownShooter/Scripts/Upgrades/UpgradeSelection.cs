@@ -33,7 +33,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 			Game.Instance.UpgradeReady += ShowUpgradeSelectionScene;
 			Game.Instance.GoldAcquired += OnGoldAcquired;
 			_currentUpgradeStep = FirstUpgrade;
-			_goldRequiredToUpdate = FirstUpgrade;
+			_goldRequiredToUpdate = 1;
 		}
 
 		private void OnGoldAcquired(ushort amount)
@@ -47,7 +47,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 				Game.Instance.EmitSignal(Game.SignalName.UpgradeReady);
 
 				_currentUpgradeStep += UpgradeStep;
-				_goldRequiredToUpdate += _currentUpgradeStep;
+				//_goldRequiredToUpdate += _currentUpgradeStep;
 			}
 		}
 
@@ -91,19 +91,26 @@ namespace dTopDownShooter.Scripts.Upgrades
 				Node scene;
 				RandomNumberGenerator rng = new();
 				var chance = rng.RandiRange(0, 100);
-				var upgradeType = (UpgradeType)rng.RandiRange(0, 2);
+				UpgradeType upgradeType;
+
 				if (chance <= LegendaryUpgradeChance)
 				{
+					// Legendary can be Piercing or any other type
+					upgradeType = (UpgradeType)rng.RandiRange(0, 3);
 					upgrades[i] = new Upgrade(upgradeType, RarityType.Legendary);
 					scene = legendaryUpgradeScene.Instantiate();
 				}
 				else if (chance <= EpicUpgradeChance)
 				{
+					// Epic: only Health, WeaponSpeed, Speed (no Piercing)
+					upgradeType = (UpgradeType)rng.RandiRange(0, 2);
 					upgrades[i] = new Upgrade(upgradeType, RarityType.Epic);
 					scene = epicUpgradeScene.Instantiate();
 				}
 				else
 				{
+					// Common: only Health, WeaponSpeed, Speed (no Piercing)
+					upgradeType = (UpgradeType)rng.RandiRange(0, 2);
 					upgrades[i] = new Upgrade(upgradeType, RarityType.Common);
 					scene = normalUpgradeScene.Instantiate();
 				}
