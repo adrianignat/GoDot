@@ -1,8 +1,10 @@
-[gd_scene load_steps=69 format=3 uid="uid://bwo3muim8kicq"]
+[gd_scene load_steps=71 format=3 uid="uid://bwo3muim8kicq"]
 
 [ext_resource type="Script" path="res://Scripts/Characters/Player.cs" id="1_3jw8b"]
 [ext_resource type="Texture2D" uid="uid://uu46gkne00he" path="res://Sprites/Archer_Blue.png" id="1_sbj2l"]
 [ext_resource type="Script" path="res://Scripts/Bow.cs" id="3_hhh2f"]
+[ext_resource type="Script" path="res://Scripts/DynamiteThrower.cs" id="3_dynamite"]
+[ext_resource type="PackedScene" uid="uid://dynamite001" path="res://Entities/dynamite.tscn" id="4_dynamite"]
 [ext_resource type="Texture2D" uid="uid://cnynym1ufcfib" path="res://Sprites/Dead.png" id="4_agnll"]
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/arrow.tscn" id="4_lyi1c"]
 [ext_resource type="PackedScene" uid="uid://flyd8u2is6nn" path="res://Entities/player_health_bar.tscn" id="6_a3846"]
@@ -472,6 +474,11 @@ position = Vector2(20, 8)
 script = ExtResource("3_hhh2f")
 Scene = ExtResource("4_lyi1c")
 ObjectsPerSecond = 1.0
+
+[node name="DynamiteThrower" type="Node2D" parent="."]
+script = ExtResource("3_dynamite")
+Scene = ExtResource("4_dynamite")
+ObjectsPerSecond = 0.0
 
 [node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_vnsn1")

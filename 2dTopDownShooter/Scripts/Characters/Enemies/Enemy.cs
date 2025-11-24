@@ -23,7 +23,7 @@ public partial class Enemy : Character
 		{ EnemyTier.Purple, "res://Sprites/Characters/Goblins/Torch/Purple/Torch_Purple.png" },
 		{ EnemyTier.Yellow, "res://Sprites/Characters/Goblins/Torch/Yellow/Torch_Yellow.png" }
 	};
-
+ 
 	// Cached SpriteFrames per tier - created once and reused
 	private static readonly Dictionary<EnemyTier, SpriteFrames> TierSpriteFramesCache = [];
 

@@ -15,6 +15,7 @@ public partial class Player : Character
 	public Direction Moving { get; private set; }
 	public int LuckLevel { get; private set; } = 0;
 	public const float MaxMagnetRadius = 300f;
+	public const float MaxDynamiteBlastRadius = 150f;
 
 
 	public override void _Ready()
@@ -63,6 +64,17 @@ public partial class Player : Character
 		{
 			var circle = GetMagnetShape();
 			circle.Radius += upgdade.Amount * 5;
+		}
+		else if (upgdade.Type == UpgradeType.Dynamite)
+		{
+			var thrower = GetNode<DynamiteThrower>("DynamiteThrower");
+			if (thrower.ObjectsPerSecond == 0)
+			{
+				// First upgrade: enable dynamite throwing (1 every 3 seconds)
+				thrower.ObjectsPerSecond = 0.33f;
+			}
+			// Increase blast radius with each upgrade
+			thrower.BonusBlastRadius += upgdade.Amount;
 		}
 	}
 
@@ -170,5 +182,10 @@ public partial class Player : Character
 	{
 		var magnetShape = GetNode<Area2D>("GoldMagnetArea").GetNode<CollisionShape2D>("MagnetShape");
 		return (CircleShape2D)magnetShape.Shape;
+	}
+
+	public DynamiteThrower GetDynamiteThrower()
+	{
+		return GetNode<DynamiteThrower>("DynamiteThrower");
 	}
 }

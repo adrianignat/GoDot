@@ -20,6 +20,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 					UpgradeType.Piercing => $"Piercing +1",
 					UpgradeType.Luck => $"Luck",
 					UpgradeType.Magnet => $"Magnet",
+					UpgradeType.Dynamite => $"Dynamite",
 					_ => string.Empty,
 				};
 			}
@@ -56,7 +57,8 @@ namespace dTopDownShooter.Scripts.Upgrades
 		Bouncing = 3,
 		Piercing = 4,
 		Luck = 5,
-		Magnet = 6
+		Magnet = 6,
+		Dynamite = 7
 	}
 
 	internal enum RarityType

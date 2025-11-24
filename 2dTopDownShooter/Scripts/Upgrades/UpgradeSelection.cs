@@ -125,6 +125,10 @@ namespace dTopDownShooter.Scripts.Upgrades
 			if (Game.Instance.Player.GetMagnetShape().Radius >= Player.MaxMagnetRadius)
 				available.Remove(UpgradeType.Magnet);
 
+			var dynamiteThrower = Game.Instance.Player.GetDynamiteThrower();
+			if (dynamiteThrower.BonusBlastRadius >= Player.MaxDynamiteBlastRadius)
+				available.Remove(UpgradeType.Dynamite);
+
 			available.RemoveAll(t => usedTypes.Contains(t));
 
 			if (available.Count == 0)
@@ -141,7 +145,8 @@ namespace dTopDownShooter.Scripts.Upgrades
 				UpgradeType.WeaponSpeed,
 				UpgradeType.Speed,
 				UpgradeType.Luck,
-				UpgradeType.Magnet
+				UpgradeType.Magnet,
+				UpgradeType.Dynamite
 			];
 		}
 

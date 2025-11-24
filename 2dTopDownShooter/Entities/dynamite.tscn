@@ -1,0 +1,65 @@
+[gd_scene load_steps=10 format=3 uid="uid://dynamite001"]
+
+[ext_resource type="Texture2D" path="res://Sprites/Characters/Goblins/TNT/Dynamite/Dynamite.png" id="1_dynamite"]
+[ext_resource type="Script" path="res://Scripts/Objects/Dynamite.cs" id="2_script"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frame1"]
+atlas = ExtResource("1_dynamite")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frame2"]
+atlas = ExtResource("1_dynamite")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frame3"]
+atlas = ExtResource("1_dynamite")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frame4"]
+atlas = ExtResource("1_dynamite")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frame5"]
+atlas = ExtResource("1_dynamite")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frame6"]
+atlas = ExtResource("1_dynamite")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fuse"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frame1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frame2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frame3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frame4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frame5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frame6")
+}],
+"loop": false,
+"name": &"fuse",
+"speed": 6.0
+}]
+
+[node name="Dynamite" type="Area2D"]
+script = ExtResource("2_script")
+Damage = 100
+ThrowDuration = 0.3
+BlastRadius = 30.0
+
+[node name="Animation" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_fuse")
+animation = &"fuse"
