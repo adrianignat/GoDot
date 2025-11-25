@@ -113,8 +113,45 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 	protected override void InitializeSpawnedObject(Enemy enemy)
 	{
-		var randomTier = _availableTiers[GD.RandRange(0, _availableTiers.Count - 1)];
-		enemy.Tier = randomTier;
+		enemy.Tier = GetWeightedRandomTier();
+	}
+
+	private EnemyTier GetWeightedRandomTier()
+	{
+		if (_availableTiers.Count == 1)
+			return _availableTiers[0];
+
+		int currentDay = Game.Instance.CurrentDay;
+
+		// Build weighted list: higher tiers get more weight on later days
+		// Base weight = 10, bonus per tier per day = (tierIndex * dayBonus)
+		var weights = new List<int>();
+		int totalWeight = 0;
+
+		for (int i = 0; i < _availableTiers.Count; i++)
+		{
+			// Higher index = higher tier
+			// Day 1: all equal (base 10)
+			// Day 2+: higher tiers get bonus weight
+			int tierBonus = i * (currentDay - 1) * 2; // 2 extra weight per tier level per day
+			int weight = 10 + tierBonus;
+			weights.Add(weight);
+			totalWeight += weight;
+		}
+
+		// Weighted random selection
+		int roll = GD.RandRange(0, totalWeight - 1);
+		int cumulative = 0;
+
+		for (int i = 0; i < _availableTiers.Count; i++)
+		{
+			cumulative += weights[i];
+			if (roll < cumulative)
+				return _availableTiers[i];
+		}
+
+		// Fallback
+		return _availableTiers[_availableTiers.Count - 1];
 	}
 
 	public override Vector2 GetLocation()

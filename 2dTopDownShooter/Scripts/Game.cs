@@ -25,6 +25,9 @@ namespace dTopDownShooter.Scripts
 		public GamePhase CurrentPhase { get; set; } = GamePhase.Day;
 		public bool IsInShelter { get; set; } = false;
 
+		// Game modes
+		public bool WifeMode { get; set; } = false;
+
 		// Day/Night components
 		public DayNightManager DayNightManager { get; private set; }
 		private DayNightUI _dayNightUI;
@@ -101,6 +104,21 @@ namespace dTopDownShooter.Scripts
 			_shelterMarker.Name = "ShelterMarker";
 			AddChild(_shelterMarker);
 			_shelterMarker.SetDayNightManager(DayNightManager);
+		}
+
+		public void ApplyGameMode()
+		{
+			if (WifeMode)
+			{
+				// Wife Mode bonuses
+				Player.Health = 200;      // Double health (normally 100)
+				Player.Speed = 225;       // 50% more speed (normally 150)
+
+				var bow = Player.GetNode<Bow>("Bow");
+				bow.ObjectsPerSecond = 2.0f;  // Double fire rate (normally 1.0)
+
+				GD.Print("Wife Mode activated! Bonuses applied.");
+			}
 		}
 
 		public void StartFirstDay()

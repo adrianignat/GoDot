@@ -4,6 +4,8 @@ using Godot;
 public partial class MainMenu : Control
 {
 	Button startButton;
+	Button wifeModeButton;
+
 	public override void _Ready()
 	{
 		// Show the pause menu by default
@@ -19,11 +21,26 @@ public partial class MainMenu : Control
 
 		startButton = vbox.GetNode<Button>("Start_Game");
 		startButton.Pressed += OnStartPressed;
+
+		wifeModeButton = vbox.GetNode<Button>("Wife_Mode");
+		wifeModeButton.Pressed += OnWifeModePressed;
 	}
 
 	private bool _gameStarted = false;
 
 	private void OnStartPressed()
+	{
+		Game.Instance.WifeMode = false;
+		StartGame();
+	}
+
+	private void OnWifeModePressed()
+	{
+		Game.Instance.WifeMode = true;
+		StartGame();
+	}
+
+	private void StartGame()
 	{
 		Visible = false;
 		Game.Instance.IsPaused = false;
@@ -37,6 +54,7 @@ public partial class MainMenu : Control
 		// Start the first day when game begins
 		if (!_gameStarted)
 		{
+			Game.Instance.ApplyGameMode();
 			Game.Instance.StartFirstDay();
 			_gameStarted = true;
 		}
