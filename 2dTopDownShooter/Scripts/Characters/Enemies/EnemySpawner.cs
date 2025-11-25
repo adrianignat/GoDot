@@ -86,8 +86,8 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 	public Vector2 GetRandomSpawnPositionOutsideCamera(Camera2D camera)
 	{
-		// Get the camera position and viewport size
-		Vector2 cameraPosition = camera.GlobalPosition;
+		// Use GetScreenCenterPosition() to get the actual view center (accounts for camera limits)
+		Vector2 cameraPosition = camera.GetScreenCenterPosition();
 		Vector2 screenSize = GetViewportRect().Size;
 		Vector2 cameraZoom = camera.Zoom;
 		Vector2 viewportSize = screenSize / cameraZoom;
@@ -98,7 +98,8 @@ public partial class EnemySpawner : Spawner<Enemy>
 		float topBound = cameraPosition.Y - viewportSize.Y / 2;
 		float bottomBound = cameraPosition.Y + viewportSize.Y / 2;
 
-		float spawnMargin = 10f;
+		// Spawn margin - distance outside the visible area to spawn enemies
+		float spawnMargin = 50f;
 
 		// Randomly choose which side to spawn the enemy on (left, right, top, or bottom)
 		uint side = GD.Randi() % 4;  // Random number between 0 and 3

@@ -17,6 +17,7 @@ This is a 2D top-down survival game where players fight endless waves of enemies
 ```
 Scripts/
 ├── Game.cs                 # Singleton game manager, state & signals
+├── MapGenerator.cs         # Random map generation with 2x2 tile blocks
 ├── Arrow.cs                # Homing projectile with bouncing/piercing
 ├── Bow.cs                  # Arrow spawner (extends Spawner<Arrow>)
 ├── DynamiteThrower.cs      # Dynamite spawner (extends Spawner<Dynamite>)
@@ -89,6 +90,32 @@ Rarities: Common (+10), Rare (+20), Epic (+30), Legendary (+40)
 - New enemy tiers introduced every 60 seconds
 - Enemies spawn off-screen at map edges
 
+### Map Generation
+Maps are randomly generated on game start via `MapGenerator.cs`:
+
+**Tileset Structure** (`Sprites/Tilemap_Flat.png`):
+- 640x256 image = 10 columns × 4 rows of 64x64 tiles
+- Uses **2x2 tile blocks** that tile seamlessly when repeated
+- Grass tiles: (0,0)-(1,1) block
+- Sand tiles: (5,0)-(6,1) block
+- Each tile in a 2x2 block has bushy edges on specific sides (corners have 2 edges, enabling seamless interior tiling)
+
+**Map Features**:
+- 20x20 tiles (1280x1280 pixels)
+- Grass base with random sand patches (proper 2x2 block tiling)
+- Random structures: towers, houses, wood towers
+- Decorations: trees, mushrooms, rocks
+- Invisible boundary walls to contain player (collision layer 4)
+
+**Boundary Walls**:
+- Use collision layer 4 (detected by player mask 13, NOT by enemy mask 11)
+- Enemies can pass through to enter the map; player cannot leave
+
+**Enemy Spawning**:
+- Uses `camera.GetScreenCenterPosition()` for accurate viewport bounds
+- Spawn margin of 50px outside visible area
+- Ground layer added to "validSpawnLocation" group for spawn validation
+
 ## Input
 
 - **WASD / Arrow Keys**: Movement (8-directional)
@@ -97,12 +124,16 @@ Rarities: Common (+10), Rare (+20), Epic (+30), Legendary (+40)
 
 ## Collision Layers
 
-1. Map
+1. Map (terrain, buildings, trees)
 2. Player
-3. Enemies
-4. Environment
+3. Enemies (note: enemy collision_layer is actually 4, mask is 11)
+4. Environment / Boundary walls (player-only barriers use this layer)
 5. Projectiles
 6. Loot
+
+**Collision Masks**:
+- Player: 13 (binary 1101 = layers 1, 3, 4)
+- Enemy: 11 (binary 1011 = layers 1, 2, 4)
 
 ## Key Signals (Game.cs)
 

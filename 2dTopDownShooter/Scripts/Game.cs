@@ -33,6 +33,25 @@ namespace dTopDownShooter.Scripts
 		{
 			Instance.MainWindow = GetTree().Root.GetNode<Node2D>("main");
 			Instance.Player = Instance.MainWindow.GetNode<Player>("Player");
+
+			// Position player at map center if MapGenerator exists
+			var mapGenerator = Instance.MainWindow.GetNodeOrNull<MapGenerator>("MapGenerator");
+			if (mapGenerator != null)
+			{
+				Instance.Player.Position = mapGenerator.GetPlayerSpawnPosition();
+
+				// Update camera limits based on map size
+				var camera = Instance.Player.GetNodeOrNull<Camera2D>("Camera2D");
+				if (camera != null)
+				{
+					var mapSize = mapGenerator.GetMapSize();
+					// Camera limits define the edges of what can be shown
+					camera.LimitLeft = 0;
+					camera.LimitTop = 0;
+					camera.LimitRight = (int)mapSize.X;
+					camera.LimitBottom = (int)mapSize.Y;
+				}
+			}
 		}
 
 		public override void _Process(double delta)
