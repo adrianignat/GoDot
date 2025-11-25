@@ -28,13 +28,15 @@ namespace dTopDownShooter.Scripts.Characters
 
         internal void TakeDamage(ushort damage)
         {
-            Health -= damage;
-            if (Health <= 0)
+            // Check before subtracting to prevent unsigned underflow
+            if (damage >= Health)
             {
+                Health = 0;
                 OnKilled();
             }
             else
             {
+                Health -= damage;
                 OnDamaged();
             }
         }

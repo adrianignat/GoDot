@@ -17,6 +17,9 @@ public partial class Gold : Area2D
 		var animation = GetNode<AnimatedSprite2D>("GoldAnimation");
 		animation.Play("spawn");
 
+		// Add to gold group for cleanup on day transition
+		AddToGroup("gold");
+
 		// Get player reference
 		_player = Game.Instance.Player;
 

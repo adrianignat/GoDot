@@ -68,12 +68,40 @@ namespace dTopDownShooter.Scripts
 		private HashSet<Vector2I> _occupiedTiles;
 		private TileMapLayer _groundLayer;
 		private TileSet _groundTileSet;
+		private List<Vector2> _housePositions = new();
+		private List<StaticBody2D> _houseBodies = new();
 
 		public override void _Ready()
 		{
 			_random = new Random();
 			_occupiedTiles = new HashSet<Vector2I>();
+			_housePositions = new List<Vector2>();
+			_houseBodies = new List<StaticBody2D>();
 
+			GenerateMap();
+		}
+
+		public void Regenerate()
+		{
+			// Clear all existing map children
+			foreach (Node child in GetChildren())
+			{
+				child.QueueFree();
+			}
+
+			// Reset state
+			_occupiedTiles.Clear();
+			_housePositions.Clear();
+			_houseBodies.Clear();
+			_groundLayer = null;
+			_groundTileSet = null;
+
+			// Generate new map
+			CallDeferred(nameof(GenerateMapDeferred));
+		}
+
+		private void GenerateMapDeferred()
+		{
 			GenerateMap();
 		}
 
@@ -359,6 +387,7 @@ namespace dTopDownShooter.Scripts
 
 		private void PlaceBuildings(int count, string[] textures, Vector2 collisionSize)
 		{
+			bool isHouse = textures == HouseTextures;
 			int placed = 0;
 			int attempts = 0;
 
@@ -373,15 +402,16 @@ namespace dTopDownShooter.Scripts
 				if (!_occupiedTiles.Contains(tilePos) && !IsNearOccupied(tilePos, 2))
 				{
 					var texture = GD.Load<Texture2D>(textures[_random.Next(textures.Length)]);
+					var worldPos = TileToWorld(tilePos);
 
 					var building = new Sprite2D();
 					building.Texture = texture;
-					building.Position = TileToWorld(tilePos);
+					building.Position = worldPos;
 					building.ZIndex = 0;
 					AddChild(building);
 
 					var body = new StaticBody2D();
-					body.Position = TileToWorld(tilePos);
+					body.Position = worldPos;
 					body.CollisionLayer = 1;
 					body.CollisionMask = 0;
 
@@ -392,6 +422,13 @@ namespace dTopDownShooter.Scripts
 					collision.Position = new Vector2(0, collisionSize.Y * 0.3f);
 					body.AddChild(collision);
 					AddChild(body);
+
+					// Track house positions for shelter system
+					if (isHouse)
+					{
+						_housePositions.Add(worldPos);
+						_houseBodies.Add(body);
+					}
 
 					for (int dx = -1; dx <= 1; dx++)
 					{
@@ -541,6 +578,19 @@ namespace dTopDownShooter.Scripts
 		public Vector2 GetMapSize()
 		{
 			return new Vector2(MapWidth * TileSize, MapHeight * TileSize);
+		}
+
+		public List<Vector2> GetHousePositions()
+		{
+			return _housePositions;
+		}
+
+		public Vector2 GetRandomHousePosition()
+		{
+			if (_housePositions.Count == 0)
+				return GetPlayerSpawnPosition(); // Fallback to center
+
+			return _housePositions[_random.Next(_housePositions.Count)];
 		}
 	}
 }

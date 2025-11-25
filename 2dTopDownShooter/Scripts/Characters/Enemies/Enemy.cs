@@ -45,6 +45,9 @@ public partial class Enemy : Character
 		player = Game.Instance.Player;
 		_animation = GetNode<AnimatedSprite2D>("EnemyAnimations");
 
+		// Add to enemies group for cleanup on day transition
+		AddToGroup("enemies");
+
 		// Initialize health and sprite based on tier (set before _Ready via InitializeSpawnedObject)
 		Health = (ushort)(BaseHealth * (int)Tier);
 		LoadSpriteForTier();

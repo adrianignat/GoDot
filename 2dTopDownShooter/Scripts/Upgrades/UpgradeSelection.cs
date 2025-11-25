@@ -24,16 +24,15 @@ namespace dTopDownShooter.Scripts.Upgrades
 		private ushort _goldRequiredToUpdate;
 		private ushort _currentUpgradeStep;
 
-		public UpgradeSelection()
-		{
-			Game.Instance.UpgradeReady += ShowSelectionScreen;
-			Game.Instance.GoldAcquired += OnGoldAcquired;
-			_currentUpgradeStep = FirstUpgrade;
-			_goldRequiredToUpdate = FirstUpgrade;
-		}
-
 		public override void _Ready()
 		{
+			_currentUpgradeStep = FirstUpgrade;
+			_goldRequiredToUpdate = FirstUpgrade;
+
+			// Connect to signals in _Ready, not constructor, to ensure Game.Instance is valid
+			Game.Instance.UpgradeReady += ShowSelectionScreen;
+			Game.Instance.GoldAcquired += OnGoldAcquired;
+
 			Hide();
 			InitializeButtons();
 		}

@@ -34,8 +34,10 @@ namespace dTopDownShooter.Scripts.Characters
 		}
 
 		private void ResizeHealthBar()
-		{            
-			float newWidth = (float)MaxValue * 5f;
+		{
+			// Cap the visual width to prevent it from going off screen
+			const float maxWidth = 500f;
+			float newWidth = Mathf.Min((float)MaxValue * 5f, maxWidth);
 			Size = new Vector2(newWidth, Size.Y);
 		}
 	}

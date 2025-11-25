@@ -1,9 +1,17 @@
+using dTopDownShooter.Scripts.UI;
 using dTopDownShooter.Scripts.Upgrades;
 using Godot;
 
 
 namespace dTopDownShooter.Scripts
 {
+	public enum GamePhase
+	{
+		Day,
+		ShelterWarning,  // Last 30 seconds of day
+		Night
+	}
+
 	public partial class Game : Node2D
 	{
 		private static Game _gameInstance;
@@ -11,6 +19,16 @@ namespace dTopDownShooter.Scripts
 		internal bool IsPaused { get; set; }
 
 		internal bool ShouldRestart { get; set; } = false;
+
+		// Day/Night cycle state
+		public int CurrentDay { get; set; } = 1;
+		public GamePhase CurrentPhase { get; set; } = GamePhase.Day;
+		public bool IsInShelter { get; set; } = false;
+
+		// Day/Night components
+		public DayNightManager DayNightManager { get; private set; }
+		private DayNightUI _dayNightUI;
+		private ShelterMarker _shelterMarker;
 
 		public static Game Instance
 		{
@@ -29,19 +47,26 @@ namespace dTopDownShooter.Scripts
 
 		public Player Player { get; set; }
 
+		public override void _EnterTree()
+		{
+			// Set singleton BEFORE any child _Ready() methods run
+			// This ensures Game.Instance returns this node when children connect to signals
+			_gameInstance = this;
+		}
+
 		public override void _Ready()
 		{
-			Instance.MainWindow = GetTree().Root.GetNode<Node2D>("main");
-			Instance.Player = Instance.MainWindow.GetNode<Player>("Player");
+			MainWindow = GetTree().Root.GetNode<Node2D>("main");
+			Player = MainWindow.GetNode<Player>("Player");
 
 			// Position player at map center if MapGenerator exists
-			var mapGenerator = Instance.MainWindow.GetNodeOrNull<MapGenerator>("MapGenerator");
+			var mapGenerator = MainWindow.GetNodeOrNull<MapGenerator>("MapGenerator");
 			if (mapGenerator != null)
 			{
-				Instance.Player.Position = mapGenerator.GetPlayerSpawnPosition();
+				Player.Position = mapGenerator.GetPlayerSpawnPosition();
 
 				// Update camera limits based on map size
-				var camera = Instance.Player.GetNodeOrNull<Camera2D>("Camera2D");
+				var camera = Player.GetNodeOrNull<Camera2D>("Camera2D");
 				if (camera != null)
 				{
 					var mapSize = mapGenerator.GetMapSize();
@@ -52,12 +77,41 @@ namespace dTopDownShooter.Scripts
 					camera.LimitBottom = (int)mapSize.Y;
 				}
 			}
+
+			// Initialize Day/Night system
+			InitializeDayNightSystem();
+		}
+
+		private void InitializeDayNightSystem()
+		{
+			// Create DayNightManager
+			DayNightManager = new DayNightManager();
+			DayNightManager.Name = "DayNightManager";
+			AddChild(DayNightManager);
+
+			// Create DayNightUI
+			_dayNightUI = new DayNightUI();
+			_dayNightUI.Name = "DayNightUI";
+			_dayNightUI.Layer = 50; // Above most things but below fade overlay
+			AddChild(_dayNightUI);
+			_dayNightUI.SetDayNightManager(DayNightManager);
+
+			// Create ShelterMarker
+			_shelterMarker = new ShelterMarker();
+			_shelterMarker.Name = "ShelterMarker";
+			AddChild(_shelterMarker);
+			_shelterMarker.SetDayNightManager(DayNightManager);
+		}
+
+		public void StartFirstDay()
+		{
+			DayNightManager?.StartDay(1);
 		}
 
 		public override void _Process(double delta)
 		{
 			base._Process(delta);
-			if (Instance.ShouldRestart)
+			if (ShouldRestart)
 			{
 				Restart();
 				ShouldRestart = false;
@@ -66,13 +120,7 @@ namespace dTopDownShooter.Scripts
 
 		internal void Restart()
 		{
-			//var enemies = GetTree().GetNodesInGroup("enemies");
-			//foreach (Enemy enemy in enemies)
-			//{
-			//	enemy.QueueFree();
-			//}
-			//Instance.Player = new Player();
-			Instance.MainWindow.GetTree().ReloadCurrentScene();
+			MainWindow.GetTree().ReloadCurrentScene();
 		}
 
 		[Signal]
@@ -92,5 +140,24 @@ namespace dTopDownShooter.Scripts
 
 		[Signal]
 		public delegate void UpgradeSelectedEventHandler(Upgrade upgdade);
+
+		// Day/Night cycle signals
+		[Signal]
+		public delegate void DayStartedEventHandler(int dayNumber);
+
+		[Signal]
+		public delegate void ShelterWarningEventHandler();
+
+		[Signal]
+		public delegate void NightStartedEventHandler();
+
+		[Signal]
+		public delegate void DayCompletedEventHandler(int dayNumber);
+
+		[Signal]
+		public delegate void PlayerEnteredShelterEventHandler();
+
+		[Signal]
+		public delegate void NightDamageTickEventHandler();
 	}
 }

@@ -18,6 +18,7 @@ This is a 2D top-down survival game where players fight endless waves of enemies
 Scripts/
 ├── Game.cs                 # Singleton game manager, state & signals
 ├── MapGenerator.cs         # Random map generation with 2x2 tile blocks
+├── DayNightManager.cs      # Day/night cycle logic and transitions
 ├── Arrow.cs                # Homing projectile with bouncing/piercing
 ├── Bow.cs                  # Arrow spawner (extends Spawner<Arrow>)
 ├── DynamiteThrower.cs      # Dynamite spawner (extends Spawner<Dynamite>)
@@ -39,6 +40,9 @@ Scripts/
 ├── Spawners/
 │   ├── Spawner.cs          # Generic spawner base class
 │   └── LootSpawner.cs      # Drops loot on enemy death
+├── UI/
+│   ├── DayNightUI.cs       # Day/night HUD display
+│   └── ShelterMarker.cs    # Visual marker for shelter location
 └── Upgrades/
     ├── Upgrade.cs          # Upgrade types, rarities, amounts
     └── UpgradeSelection.cs # Upgrade UI and selection logic
@@ -89,6 +93,49 @@ Rarities: Common (+10), Rare (+20), Epic (+30), Legendary (+40)
 - Enemy spawn rate increases 10% every 30 seconds
 - New enemy tiers introduced every 60 seconds
 - Enemies spawn off-screen at map edges
+
+### Day/Night Cycle
+The game is structured into days with survival mechanics:
+
+**Day Phase (3 minutes)**:
+- "Day X" announcement shown at start with fade animation
+- Timer shows "Daylight left" in top right corner
+- Normal gameplay - fight enemies, collect gold, get upgrades
+
+**Shelter Warning (last 30 seconds)**:
+- A random house is marked as "shelter" with a visual marker
+- Timer turns orange/red, label shows "FIND SHELTER!"
+- Distance to shelter shown on marker
+- Player must reach shelter (80px radius) before day ends
+
+**Night Phase (1 minute, if shelter not reached)**:
+- Screen shows "NIGHT HAS FALLEN!"
+- Player takes 15 damage every 3 seconds
+- Can still reach shelter during night to stop damage
+- Timer shows "Survive the night"
+
+**Day Transition**:
+- Fade to black animation
+- All enemies and gold cleared
+- New map generated
+- Player reset to center
+- Upgrades are kept
+- Spawn rate reduced to 70% (but not below initial)
+- Enemy tier reset by one level (e.g., Red→Blue)
+
+**Key Files**:
+- `DayNightManager.cs`: Cycle logic, transitions, shelter detection
+- `DayNightUI.cs`: Timer, phase labels, day announcements
+- `ShelterMarker.cs`: Visual indicator pointing to shelter
+- `Game.cs`: GamePhase enum, day/night signals
+
+**Signals**:
+- `DayStarted(int dayNumber)` - Day begins
+- `ShelterWarning` - 30 seconds left
+- `NightStarted` - Night phase begins
+- `DayCompleted(int dayNumber)` - Level complete
+- `PlayerEnteredShelter` - Player reached safety
+- `NightDamageTick` - Damage applied during night
 
 ### Map Generation
 Maps are randomly generated on game start via `MapGenerator.cs`:
@@ -141,6 +188,9 @@ Maps are randomly generated on game start via `MapGenerator.cs`:
 - `PlayerTakeDamage` / `PlayerHealthChanged` - Health system
 - `GoldAcquired` - Currency collection
 - `UpgradeReady` / `UpgradeSelected` - Progression system
+- `DayStarted` / `DayCompleted` - Day cycle events
+- `ShelterWarning` / `NightStarted` - Phase transitions
+- `PlayerEnteredShelter` / `NightDamageTick` - Shelter mechanics
 
 ## Architecture Patterns
 

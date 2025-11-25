@@ -18,6 +18,8 @@ public partial class Player : Character
 	public const float MaxDynamiteBlastRadius = 150f;
 
 
+	public const ushort NightDamage = 15;
+
 	public override void _Ready()
 	{
 		_animation = GetNode<AnimatedSprite2D>("PlayerAnimations");
@@ -34,6 +36,14 @@ public partial class Player : Character
 		Game.Instance.PlayerTakeDamage += TakeDamage;
 		Game.Instance.GoldAcquired += AcquireGold;
 		Game.Instance.UpgradeSelected += UpgradeSelected;
+		Game.Instance.NightDamageTick += OnNightDamageTick;
+	}
+
+	private void OnNightDamageTick()
+	{
+		// Take damage from the night
+		TakeDamage(NightDamage);
+		GD.Print($"Night damage! Health: {Health}");
 	}
 
 	private void UpgradeSelected(Upgrade upgdade)

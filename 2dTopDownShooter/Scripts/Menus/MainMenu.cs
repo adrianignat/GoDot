@@ -18,15 +18,28 @@ public partial class MainMenu : Control
 		};
 
 		startButton = vbox.GetNode<Button>("Start_Game");
-		startButton.Pressed += () =>
+		startButton.Pressed += OnStartPressed;
+	}
+
+	private bool _gameStarted = false;
+
+	private void OnStartPressed()
+	{
+		Visible = false;
+		Game.Instance.IsPaused = false;
+
+		if (Game.Instance.Player.IsDead)
 		{
-			Visible = false;
-			Game.Instance.IsPaused = false;
-			if (Game.Instance.Player.IsDead)
-			{
-				Game.Instance.ShouldRestart = true;
-			}
-		};
+			Game.Instance.ShouldRestart = true;
+			_gameStarted = false;
+		}
+
+		// Start the first day when game begins
+		if (!_gameStarted)
+		{
+			Game.Instance.StartFirstDay();
+			_gameStarted = true;
+		}
 	}
 
 	public override void _Input(InputEvent @event)
