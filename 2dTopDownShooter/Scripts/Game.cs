@@ -138,7 +138,32 @@ namespace dTopDownShooter.Scripts
 
 		internal void Restart()
 		{
+			// Clean up all spawned entities before reload
+			CleanupAllEntities();
+
+			// Reload the scene (regenerates map)
 			MainWindow.GetTree().ReloadCurrentScene();
+		}
+
+		private void CleanupAllEntities()
+		{
+			// Remove all enemies
+			foreach (Node node in GetTree().GetNodesInGroup(GameConstants.EnemiesGroup))
+				node.QueueFree();
+
+			// Remove all gold
+			foreach (Node node in GetTree().GetNodesInGroup(GameConstants.GoldGroup))
+				node.QueueFree();
+
+			// Remove all arrows
+			foreach (Node node in GetTree().GetNodesInGroup(GameConstants.ArrowsGroup))
+				node.QueueFree();
+
+			// Remove all dynamite
+			foreach (Node node in GetTree().GetNodesInGroup(GameConstants.DynamiteGroup))
+				node.QueueFree();
+
+			GD.Print("Cleaned up all entities for restart");
 		}
 
 		[Signal]

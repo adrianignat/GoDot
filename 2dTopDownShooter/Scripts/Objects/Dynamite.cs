@@ -23,6 +23,9 @@ public partial class Dynamite : Area2D
     {
         _animation = GetNode<AnimatedSprite2D>("Animation");
 
+        // Add to dynamite group for cleanup on restart
+        AddToGroup(GameConstants.DynamiteGroup);
+
         // Set starting position and begin throw
         GlobalPosition = StartPosition;
         StartThrow();
@@ -75,7 +78,7 @@ public partial class Dynamite : Area2D
         _hasExploded = true;
 
         // Get all enemies in blast radius
-        var enemies = GetTree().GetNodesInGroup("enemies");
+        var enemies = GetTree().GetNodesInGroup(GameConstants.EnemiesGroup);
         foreach (Node2D enemy in enemies)
         {
             float distance = GlobalPosition.DistanceTo(enemy.GlobalPosition);

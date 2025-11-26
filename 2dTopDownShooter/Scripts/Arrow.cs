@@ -51,13 +51,15 @@ public partial class Arrow : RigidBody2D
 		ContactMonitor = true;
 		MaxContactsReported = 10;
 
+		// Add to arrows group for cleanup on restart
+		AddToGroup(GameConstants.ArrowsGroup);
+
 		_player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
 		// Use whichever level is set (they're mutually exclusive)
 		_maxEnemiesCanHit = 1 + BouncingLevel + PiercingLevel;
 		_currentSpeed = Speed;
 
 		UpdateVelocity();
-		//AdjustPosition();
 	}
 
 	private void AdjustPosition()

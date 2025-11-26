@@ -1,18 +1,20 @@
+using dTopDownShooter.Scripts.UI;
 using Godot;
 
 namespace dTopDownShooter.Scripts
 {
 	public partial class DayNightManager : Node
 	{
-
 		private float _timeRemaining;
 		private float _nightDamageTimer;
 		private Vector2 _currentShelterPosition;
 		private bool _shelterMarked = false;
 		private bool _isTransitioning = false;
 		private bool _isStarted = false;
+		private bool _survivedNight = false;
 		private MapGenerator _mapGenerator;
 		private ColorRect _fadeOverlay;
+		private NightSurvivedUI _nightSurvivedUI;
 
 		public float TimeRemaining => _timeRemaining;
 		public Vector2 CurrentShelterPosition => _currentShelterPosition;
@@ -24,6 +26,7 @@ namespace dTopDownShooter.Scripts
 		{
 			_mapGenerator = GetTree().Root.GetNode("main").GetNodeOrNull<MapGenerator>("MapGenerator");
 			CreateFadeOverlay();
+			CreateNightSurvivedUI();
 		}
 
 		private void CreateFadeOverlay()
@@ -38,6 +41,27 @@ namespace dTopDownShooter.Scripts
 			_fadeOverlay.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 			_fadeOverlay.MouseFilter = Control.MouseFilterEnum.Ignore;
 			canvasLayer.AddChild(_fadeOverlay);
+		}
+
+		private void CreateNightSurvivedUI()
+		{
+			_nightSurvivedUI = new NightSurvivedUI();
+			_nightSurvivedUI.Name = "NightSurvivedUI";
+			AddChild(_nightSurvivedUI);
+
+			_nightSurvivedUI.ContinueSelected += OnContinueSelected;
+			_nightSurvivedUI.NewGameSelected += OnNewGameSelected;
+		}
+
+		private void OnContinueSelected()
+		{
+			int completedDay = Game.Instance.CurrentDay;
+			StartDayTransition(completedDay + 1);
+		}
+
+		private void OnNewGameSelected()
+		{
+			Game.Instance.ShouldRestart = true;
 		}
 
 		/// <summary>
@@ -56,6 +80,7 @@ namespace dTopDownShooter.Scripts
 			Game.Instance.IsInShelter = false;
 			_timeRemaining = GameConstants.DayDuration;
 			_shelterMarked = false;
+			_survivedNight = false;
 			_nightDamageTimer = GameConstants.NightDamageInterval;
 
 			Game.Instance.EmitSignal(Game.SignalName.DayStarted, dayNumber);
@@ -172,11 +197,11 @@ namespace dTopDownShooter.Scripts
 			// Check if player found shelter during night
 			CheckShelterProximity();
 
-			// If player reaches shelter during night, complete the day early
+			// If player reaches shelter during night, they survived!
 			if (Game.Instance.IsInShelter)
 			{
-				GD.Print("Player reached shelter during night - escaping to next day!");
-				CompleteDay();
+				GD.Print("Player reached shelter during night - Night Walker!");
+				ShowNightSurvivedScreen();
 				return;
 			}
 
@@ -188,11 +213,22 @@ namespace dTopDownShooter.Scripts
 				_nightDamageTimer = GameConstants.NightDamageInterval;
 			}
 
-			// Night ended
+			// Night ended - player survived!
 			if (_timeRemaining <= 0)
 			{
-				CompleteDay();
+				GD.Print("Player survived the night - Night Walker!");
+				ShowNightSurvivedScreen();
 			}
+		}
+
+		private void ShowNightSurvivedScreen()
+		{
+			if (_survivedNight) return; // Prevent showing twice
+
+			_survivedNight = true;
+			int completedDay = Game.Instance.CurrentDay;
+			Game.Instance.EmitSignal(Game.SignalName.DayCompleted, completedDay);
+			_nightSurvivedUI.ShowNightSurvived(completedDay);
 		}
 
 		private void CompleteDay()
@@ -210,6 +246,9 @@ namespace dTopDownShooter.Scripts
 		private async void StartDayTransition(int nextDay)
 		{
 			_isTransitioning = true;
+
+			// Pause the game during transition
+			Game.Instance.IsPaused = true;
 
 			// Fade to black
 			var fadeOutTween = CreateTween();
@@ -241,6 +280,9 @@ namespace dTopDownShooter.Scripts
 			await ToSignal(fadeInTween, Tween.SignalName.Finished);
 
 			_isTransitioning = false;
+
+			// Unpause the game after transition
+			Game.Instance.IsPaused = false;
 		}
 
 		private void CleanupEntities()

@@ -3,66 +3,71 @@ using Godot;
 
 public partial class MainMenu : Control
 {
-	Button startButton;
-	Button wifeModeButton;
+	private Button _startButton;
+	private Button _wifeModeButton;
+	private bool _gameStarted = false;
 
 	public override void _Ready()
 	{
-		// Show the pause menu by default
+		// Show the menu by default
 		Visible = true;
 		Game.Instance.IsPaused = true;
 
 		var vbox = GetNode("MarginContainer").GetNode<VBoxContainer>("VBoxContainer");
+
 		var exitButton = vbox.GetNode<Button>("Exit_Game");
-		exitButton.Pressed += () =>
-		{
-			GetTree().Quit();
-		};
+		exitButton.Pressed += () => GetTree().Quit();
 
-		startButton = vbox.GetNode<Button>("Start_Game");
-		startButton.Pressed += OnStartPressed;
+		_startButton = vbox.GetNode<Button>("Start_Game");
+		_startButton.Pressed += OnStartPressed;
 
-		wifeModeButton = vbox.GetNode<Button>("Wife_Mode");
-		wifeModeButton.Pressed += OnWifeModePressed;
+		_wifeModeButton = vbox.GetNode<Button>("Wife_Mode");
+		_wifeModeButton.Pressed += OnWifeModePressed;
 	}
-
-	private bool _gameStarted = false;
 
 	private void OnStartPressed()
 	{
-		Game.Instance.WifeMode = false;
-		StartGame();
+		if (_gameStarted)
+		{
+			// Pause menu context: Resume or Restart
+			if (Game.Instance.Player.IsDead)
+			{
+				// Restart the game
+				Game.Instance.ShouldRestart = true;
+			}
+			else
+			{
+				// Just resume
+				Visible = false;
+				Game.Instance.IsPaused = false;
+			}
+		}
+		else
+		{
+			// Main menu context: Start new game (normal mode)
+			Game.Instance.WifeMode = false;
+			StartNewGame();
+		}
 	}
 
 	private void OnWifeModePressed()
 	{
+		// Only available from main menu (before game started)
 		Game.Instance.WifeMode = true;
-		StartGame();
+		StartNewGame();
 	}
 
-	private void StartGame()
+	private void StartNewGame()
 	{
 		Visible = false;
 		Game.Instance.IsPaused = false;
-
-		if (Game.Instance.Player.IsDead)
-		{
-			Game.Instance.ShouldRestart = true;
-			_gameStarted = false;
-		}
-
-		// Start the first day when game begins
-		if (!_gameStarted)
-		{
-			Game.Instance.ApplyGameMode();
-			Game.Instance.StartFirstDay();
-			_gameStarted = true;
-		}
+		Game.Instance.ApplyGameMode();
+		Game.Instance.StartFirstDay();
+		_gameStarted = true;
 	}
 
 	public override void _Input(InputEvent @event)
 	{
-		// Detect Esc key press
 		if (@event.IsActionPressed("pause"))
 		{
 			ToggleMenu();
@@ -71,24 +76,32 @@ public partial class MainMenu : Control
 
 	private void ToggleMenu()
 	{
-		// Toggle the visibility of the pause menu
 		Visible = !Visible;
-		if (Game.Instance.Player.IsDead)
-		{
-			startButton.Text = "Restart";
-		}
-		else
-		{
-			startButton.Text = "Resume";
-		}
-		
+
 		if (Visible)
 		{
 			Game.Instance.IsPaused = true;
+			UpdateMenuForContext();
 		}
 		else
 		{
 			Game.Instance.IsPaused = false;
+		}
+	}
+
+	private void UpdateMenuForContext()
+	{
+		if (_gameStarted)
+		{
+			// Pause menu: hide Wife Mode, show Resume/Restart
+			_wifeModeButton.Visible = false;
+			_startButton.Text = Game.Instance.Player.IsDead ? "Restart" : "Resume";
+		}
+		else
+		{
+			// Main menu: show all options
+			_wifeModeButton.Visible = true;
+			_startButton.Text = "Start";
 		}
 	}
 }
