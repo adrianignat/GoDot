@@ -13,8 +13,6 @@ public enum EnemyTier
 
 public partial class Enemy : Character
 {
-	private const short _distanceDelta = 60;
-	private const ushort BaseHealth = 100;
 
 	private static readonly Dictionary<EnemyTier, string> TierSpritePaths = new()
 	{
@@ -29,27 +27,30 @@ public partial class Enemy : Character
 
 	[Export]
 	private ushort Damage = 10;
-	private bool withinRange = false;
-	private short animationFinishedCount = 0;
+	private bool _withinRange = false;
+	private bool _isAttacking = false;
 
-	private float attackSpeed = 1f;
-	private float timeUntilNextAttack;
+	private float _attackSpeed = 1f;
+	private float _timeUntilNextAttack;
 
-	private Player player;
+	private Player _player;
 
 	public EnemyTier Tier { get; set; } = EnemyTier.Blue;
 
 	public override void _Ready()
 	{
-		timeUntilNextAttack = attackSpeed;
-		player = Game.Instance.Player;
+		_timeUntilNextAttack = _attackSpeed;
+		_player = Game.Instance.Player;
 		_animation = GetNode<AnimatedSprite2D>("EnemyAnimations");
 
 		// Add to enemies group for cleanup on day transition
-		AddToGroup("enemies");
+		AddToGroup(GameConstants.EnemiesGroup);
+
+		// Connect animation finished once - handles all attack animations
+		_animation.AnimationFinished += OnAnimationFinished;
 
 		// Initialize health and sprite based on tier (set before _Ready via InitializeSpawnedObject)
-		Health = (ushort)(BaseHealth * (int)Tier);
+		Health = (ushort)(GameConstants.EnemyBaseHealth * (int)Tier);
 		LoadSpriteForTier();
 		_animation.Play("walk");
 	}
@@ -112,14 +113,13 @@ public partial class Enemy : Character
 		if (Game.Instance.IsPaused)
 			return;
 
-		if (withinRange && timeUntilNextAttack <= 0)
+		if (_withinRange && !_isAttacking && _timeUntilNextAttack <= 0)
 		{
 			Attack();
-			timeUntilNextAttack = attackSpeed;
 			return;
 		}
 
-		timeUntilNextAttack -= (float)delta;
+		_timeUntilNextAttack -= (float)delta;
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -127,24 +127,29 @@ public partial class Enemy : Character
 		if (Game.Instance.IsPaused)
 			return;
 
-		var distanceFromPlayer = player.GlobalPosition - GlobalPosition;
-		Vector2 move_input = distanceFromPlayer.Normalized();
-		Velocity = move_input * Speed;
-		_animation.FlipH = move_input.X < 0;
+		// Don't move while attacking
+		if (_isAttacking)
+			return;
+
+		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
+		Vector2 moveDirection = distanceFromPlayer.Normalized();
+		Velocity = moveDirection * Speed;
+		_animation.FlipH = moveDirection.X < 0;
 
 		MoveAndSlide();
 	}
 
 	private void Attack()
 	{
-		var distanceFromPlayer = player.GlobalPosition - GlobalPosition;
+		_isAttacking = true;
+
+		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
 		string animationName;
-		if (distanceFromPlayer.Y < -_distanceDelta)
+		if (distanceFromPlayer.Y < -GameConstants.EnemyAttackDistanceDelta)
 		{
 			animationName = "attack_up";
-
 		}
-		else if (distanceFromPlayer.Y > _distanceDelta)
+		else if (distanceFromPlayer.Y > GameConstants.EnemyAttackDistanceDelta)
 		{
 			animationName = "attack_down";
 		}
@@ -155,37 +160,49 @@ public partial class Enemy : Character
 
 		_animation.Play(animationName);
 		Game.Instance.EmitSignal(Game.SignalName.PlayerTakeDamage, Damage);
-		_animation.AnimationFinished += () => Idle(animationName);
 	}
 
-	private void Idle(string animationName)
+	private void OnAnimationFinished()
 	{
-		if (animationFinishedCount > 0)
+		// Only handle attack animation completion
+		string currentAnim = _animation.Animation;
+		if (currentAnim.StartsWith("attack"))
 		{
-			_animation.Play("idle");
-		}
-		else
-		{
-			_animation.Play(animationName);
-			animationFinishedCount++;
+			_isAttacking = false;
+			_timeUntilNextAttack = _attackSpeed;
+
+			// Transition to idle or walk based on range
+			if (_withinRange)
+			{
+				_animation.Play("idle");
+			}
+			else
+			{
+				_animation.Play("walk");
+			}
 		}
 	}
 
 	public void OnAttackRangeEntered(Node2D body)
 	{
-		if (body.IsInGroup("player"))
+		if (body.IsInGroup(GameConstants.PlayerGroup))
 		{
-			withinRange = true;
+			_withinRange = true;
 		}
 	}
 
 	public void OnAttackRangeExit(Node2D body)
 	{
-		if (body.IsInGroup("player"))
+		if (body.IsInGroup(GameConstants.PlayerGroup))
 		{
-			_animation.Play("walk");
-			withinRange = false;
-			timeUntilNextAttack = attackSpeed;
+			_withinRange = false;
+			_timeUntilNextAttack = _attackSpeed;
+
+			// Only change to walk if not currently attacking
+			if (!_isAttacking)
+			{
+				_animation.Play("walk");
+			}
 		}
 	}
 }

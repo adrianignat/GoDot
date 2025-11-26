@@ -14,11 +14,10 @@ public partial class Player : Character
 	public Direction Facing { get; private set; }
 	public Direction Moving { get; private set; }
 	public int LuckLevel { get; private set; } = 0;
-	public const float MaxMagnetRadius = 300f;
-	public const float MaxDynamiteBlastRadius = 150f;
 
-
-	public const ushort NightDamage = 15;
+	// Reference GameConstants for external access
+	public static float MaxMagnetRadius => GameConstants.MaxMagnetRadius;
+	public static float MaxDynamiteBlastRadius => GameConstants.MaxDynamiteBlastRadius;
 
 	public override void _Ready()
 	{
@@ -42,7 +41,7 @@ public partial class Player : Character
 	private void OnNightDamageTick()
 	{
 		// Take damage from the night
-		TakeDamage(NightDamage);
+		TakeDamage(GameConstants.PlayerNightDamage);
 		GD.Print($"Night damage! Health: {Health}");
 	}
 

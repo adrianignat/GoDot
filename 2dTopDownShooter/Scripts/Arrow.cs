@@ -2,6 +2,11 @@ using dTopDownShooter.Scripts;
 using Godot;
 using System.Collections.Generic;
 
+/// <summary>
+/// Homing arrow projectile that targets the closest enemy at spawn time.
+/// The target direction is calculated once in _Ready and maintained throughout flight.
+/// Supports bouncing (ricochet) and piercing (pass-through) abilities.
+/// </summary>
 public partial class Arrow : RigidBody2D
 {
 	[Export]
@@ -139,8 +144,7 @@ public partial class Arrow : RigidBody2D
 		Node2D closestEnemy = null;
 		float closestDistance = Mathf.Inf;
 
-		// Assume all enemies are in a group called "Enemies"
-		var enemies = GetTree().GetNodesInGroup("enemies");
+		var enemies = GetTree().GetNodesInGroup(GameConstants.EnemiesGroup);
 
 		foreach (Node2D enemy in enemies)
 		{

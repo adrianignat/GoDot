@@ -40,7 +40,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 		timer.Timeout += () => ObjectsPerSecond *= SpawnIncreaseRate;
 
 		_camera = GetTree().Root.GetNode("main").GetNode("Player").GetNode<Camera2D>("Camera2D");
-		_validSpawnTiles = GetTree().GetNodesInGroup("validSpawnLocation");
+		_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
 
 		// Setup timer for introducing new enemy tiers
 		_tierTimer = new Timer();
@@ -74,7 +74,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 		_tierTimer.Start();
 
 		// Refresh valid spawn tiles (map regenerated)
-		_validSpawnTiles = GetTree().GetNodesInGroup("validSpawnLocation");
+		_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
 
 		GD.Print($"Day {dayNumber}: Spawn rate = {ObjectsPerSecond}, Available tiers = {string.Join(", ", _availableTiers)}");
 	}
@@ -161,10 +161,9 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 		bool isValidSpawn = false;
 		int attempts = 0;
-		const int maxAttempts = 100;
 
 		Vector2 spawnPosition = new();
-		while (!isValidSpawn && attempts < maxAttempts)
+		while (!isValidSpawn && attempts < GameConstants.MaxSpawnAttempts)
 		{
 			attempts++;
 			// Get a random position outside the camera view
@@ -209,7 +208,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 		if (needsRefresh)
 		{
-			_validSpawnTiles = GetTree().GetNodesInGroup("validSpawnLocation");
+			_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
 			GD.Print($"Refreshed valid spawn tiles: {_validSpawnTiles.Count} found");
 		}
 	}
@@ -229,7 +228,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 		float bottomBound = cameraPosition.Y + viewportSize.Y / 2;
 
 		// Spawn margin - distance outside the visible area to spawn enemies
-		float spawnMargin = 50f;
+		float spawnMargin = GameConstants.SpawnMargin;
 
 		// Randomly choose which side to spawn the enemy on (left, right, top, or bottom)
 		uint side = GD.Randi() % 4;  // Random number between 0 and 3

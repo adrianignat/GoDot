@@ -18,7 +18,7 @@ public partial class Gold : Area2D
 		animation.Play("spawn");
 
 		// Add to gold group for cleanup on day transition
-		AddToGroup("gold");
+		AddToGroup(GameConstants.GoldGroup);
 
 		// Get player reference
 		_player = Game.Instance.Player;
@@ -26,6 +26,9 @@ public partial class Gold : Area2D
 		// Connect area signals for magnet detection
 		AreaEntered += OnMagnetAreaEntered;
 		AreaExited += OnMagnetAreaExited;
+
+		// Connect body collision for direct player pickup
+		BodyEntered += OnBodyEntered;
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -54,9 +57,9 @@ public partial class Gold : Area2D
 		}
 	}
 
-	private void OnCollision(Node body)
+	private void OnBodyEntered(Node2D body)
 	{
-		if (body.IsInGroup("player"))
+		if (body.IsInGroup(GameConstants.PlayerGroup))
 		{
 			Game.Instance.EmitSignal(Game.SignalName.GoldAcquired, Amount);
 			QueueFree();

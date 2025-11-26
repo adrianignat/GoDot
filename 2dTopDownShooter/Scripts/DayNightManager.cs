@@ -4,18 +4,6 @@ namespace dTopDownShooter.Scripts
 {
 	public partial class DayNightManager : Node
 	{
-		// Day duration: 3 minutes = 180 seconds
-		private const float DayDuration = 180f;
-		// Shelter warning starts at 30 seconds left
-		private const float ShelterWarningTime = 30f;
-		// Night duration: 1 minute = 60 seconds
-		private const float NightDuration = 60f;
-		// Night damage tick interval: 3 seconds
-		private const float NightDamageInterval = 3f;
-		// Shelter detection radius
-		private const float ShelterRadius = 80f;
-		// Fade transition duration
-		private const float FadeDuration = 1.0f;
 
 		private float _timeRemaining;
 		private float _nightDamageTimer;
@@ -52,15 +40,23 @@ namespace dTopDownShooter.Scripts
 			canvasLayer.AddChild(_fadeOverlay);
 		}
 
+		/// <summary>
+		/// Starts the first day of the game. Call this once when gameplay begins.
+		/// </summary>
 		public void StartDay(int dayNumber)
 		{
 			_isStarted = true;
+			InitializeDayState(dayNumber);
+		}
+
+		private void InitializeDayState(int dayNumber)
+		{
 			Game.Instance.CurrentDay = dayNumber;
 			Game.Instance.CurrentPhase = GamePhase.Day;
 			Game.Instance.IsInShelter = false;
-			_timeRemaining = DayDuration;
+			_timeRemaining = GameConstants.DayDuration;
 			_shelterMarked = false;
-			_nightDamageTimer = NightDamageInterval;
+			_nightDamageTimer = GameConstants.NightDamageInterval;
 
 			Game.Instance.EmitSignal(Game.SignalName.DayStarted, dayNumber);
 			GD.Print($"Day {dayNumber} started!");
@@ -90,7 +86,7 @@ namespace dTopDownShooter.Scripts
 			_timeRemaining -= delta;
 
 			// Check if it's time to show shelter warning
-			if (_timeRemaining <= ShelterWarningTime && !_shelterMarked)
+			if (_timeRemaining <= GameConstants.ShelterWarningTime && !_shelterMarked)
 			{
 				EnterShelterWarningPhase();
 			}
@@ -149,7 +145,7 @@ namespace dTopDownShooter.Scripts
 
 			float distance = player.GlobalPosition.DistanceTo(_currentShelterPosition);
 			bool wasInShelter = Game.Instance.IsInShelter;
-			Game.Instance.IsInShelter = distance <= ShelterRadius;
+			Game.Instance.IsInShelter = distance <= GameConstants.ShelterRadius;
 
 			if (Game.Instance.IsInShelter && !wasInShelter)
 			{
@@ -161,8 +157,8 @@ namespace dTopDownShooter.Scripts
 		private void StartNight()
 		{
 			Game.Instance.CurrentPhase = GamePhase.Night;
-			_timeRemaining = NightDuration;
-			_nightDamageTimer = NightDamageInterval;
+			_timeRemaining = GameConstants.NightDuration;
+			_nightDamageTimer = GameConstants.NightDamageInterval;
 
 			Game.Instance.EmitSignal(Game.SignalName.NightStarted);
 			GD.Print("Night has fallen! You'll take damage until dawn.");
@@ -184,12 +180,12 @@ namespace dTopDownShooter.Scripts
 				return;
 			}
 
-			// Deal damage every 3 seconds if not in shelter
+			// Deal damage every few seconds if not in shelter
 			if (_nightDamageTimer <= 0)
 			{
 				Game.Instance.EmitSignal(Game.SignalName.NightDamageTick);
 				GD.Print("Night damage!");
-				_nightDamageTimer = NightDamageInterval;
+				_nightDamageTimer = GameConstants.NightDamageInterval;
 			}
 
 			// Night ended
@@ -217,7 +213,7 @@ namespace dTopDownShooter.Scripts
 
 			// Fade to black
 			var fadeOutTween = CreateTween();
-			fadeOutTween.TweenProperty(_fadeOverlay, "color", new Color(0, 0, 0, 1), FadeDuration);
+			fadeOutTween.TweenProperty(_fadeOverlay, "color", new Color(0, 0, 0, 1), GameConstants.FadeDuration);
 			await ToSignal(fadeOutTween, Tween.SignalName.Finished);
 
 			// Cleanup: remove all enemies and gold
@@ -236,20 +232,12 @@ namespace dTopDownShooter.Scripts
 				player.Position = _mapGenerator.GetPlayerSpawnPosition();
 			}
 
-			// Start new day
-			Game.Instance.CurrentDay = nextDay;
-			Game.Instance.CurrentPhase = GamePhase.Day;
-			Game.Instance.IsInShelter = false;
-			_timeRemaining = DayDuration;
-			_shelterMarked = false;
-			_nightDamageTimer = NightDamageInterval;
-
-			Game.Instance.EmitSignal(Game.SignalName.DayStarted, nextDay);
-			GD.Print($"Day {nextDay} started!");
+			// Start new day (reuses same initialization as StartDay)
+			InitializeDayState(nextDay);
 
 			// Fade back in
 			var fadeInTween = CreateTween();
-			fadeInTween.TweenProperty(_fadeOverlay, "color", new Color(0, 0, 0, 0), FadeDuration);
+			fadeInTween.TweenProperty(_fadeOverlay, "color", new Color(0, 0, 0, 0), GameConstants.FadeDuration);
 			await ToSignal(fadeInTween, Tween.SignalName.Finished);
 
 			_isTransitioning = false;
@@ -258,14 +246,14 @@ namespace dTopDownShooter.Scripts
 		private void CleanupEntities()
 		{
 			// Remove all enemies
-			var enemies = GetTree().GetNodesInGroup("enemies");
+			var enemies = GetTree().GetNodesInGroup(GameConstants.EnemiesGroup);
 			foreach (Node enemy in enemies)
 			{
 				enemy.QueueFree();
 			}
 
 			// Remove all gold
-			var goldNodes = GetTree().GetNodesInGroup("gold");
+			var goldNodes = GetTree().GetNodesInGroup(GameConstants.GoldGroup);
 			foreach (Node gold in goldNodes)
 			{
 				gold.QueueFree();

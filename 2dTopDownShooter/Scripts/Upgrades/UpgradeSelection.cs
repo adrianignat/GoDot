@@ -104,11 +104,12 @@ namespace dTopDownShooter.Scripts.Upgrades
 			var legendaryChance = LegendaryUpgradeChance + (luckLevel / 5);
 			var epicChance = EpicUpgradeChance + (luckLevel / 2);
 
-			var roll = _rng.RandiRange(0, 100);
+			var roll = _rng.RandiRange(1, 100);
 
+			// Use cumulative thresholds: legendary first, then epic range starts after
 			if (roll <= legendaryChance)
 				return RarityType.Legendary;
-			if (roll <= epicChance)
+			if (roll <= legendaryChance + epicChance)
 				return RarityType.Epic;
 			return RarityType.Common;
 		}
