@@ -197,11 +197,11 @@ namespace dTopDownShooter.Scripts
 			// Check if player found shelter during night
 			CheckShelterProximity();
 
-			// If player reaches shelter during night, they survived!
+			// If player reaches shelter during night, complete the day normally
 			if (Game.Instance.IsInShelter)
 			{
-				GD.Print("Player reached shelter during night - Night Walker!");
-				ShowNightSurvivedScreen();
+				GD.Print("Player reached shelter during night - safe!");
+				CompleteDay();
 				return;
 			}
 

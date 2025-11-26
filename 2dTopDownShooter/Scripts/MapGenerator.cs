@@ -7,8 +7,13 @@ namespace dTopDownShooter.Scripts
 	public partial class MapGenerator : Node2D
 	{
 		private const int TileSize = 64;
-		private const int MapWidth = 20;  // tiles
-		private const int MapHeight = 20; // tiles
+		private const int PlayableWidth = 20;  // tiles (the area where player can move)
+		private const int PlayableHeight = 20; // tiles
+		private const int SpawnMargin = 5;     // tiles on each side for enemy spawning
+
+		// Total map size includes spawn margins on all sides
+		private const int MapWidth = PlayableWidth + SpawnMargin * 2;
+		private const int MapHeight = PlayableHeight + SpawnMargin * 2;
 
 		// Tile coordinates based on 2x2 block pattern in Tilemap_Flat.png
 		// The tileset uses 2x2 blocks that tile seamlessly when repeated
@@ -128,14 +133,22 @@ namespace dTopDownShooter.Scripts
 
 		private void CreateMapBoundaries()
 		{
+			// Boundary walls surround the playable area, not the full map
+			// This allows enemies to spawn in the margin area outside the playable zone
 			float wallThickness = 64f;
-			float mapW = MapWidth * TileSize;
-			float mapH = MapHeight * TileSize;
+			float playableX = SpawnMargin * TileSize;
+			float playableY = SpawnMargin * TileSize;
+			float playableW = PlayableWidth * TileSize;
+			float playableH = PlayableHeight * TileSize;
 
-			CreateBoundaryWall(new Vector2(-wallThickness / 2, mapH / 2), new Vector2(wallThickness, mapH + wallThickness * 2));
-			CreateBoundaryWall(new Vector2(mapW + wallThickness / 2, mapH / 2), new Vector2(wallThickness, mapH + wallThickness * 2));
-			CreateBoundaryWall(new Vector2(mapW / 2, -wallThickness / 2), new Vector2(mapW + wallThickness * 2, wallThickness));
-			CreateBoundaryWall(new Vector2(mapW / 2, mapH + wallThickness / 2), new Vector2(mapW + wallThickness * 2, wallThickness));
+			// Left wall (at left edge of playable area)
+			CreateBoundaryWall(new Vector2(playableX - wallThickness / 2, playableY + playableH / 2), new Vector2(wallThickness, playableH + wallThickness * 2));
+			// Right wall (at right edge of playable area)
+			CreateBoundaryWall(new Vector2(playableX + playableW + wallThickness / 2, playableY + playableH / 2), new Vector2(wallThickness, playableH + wallThickness * 2));
+			// Top wall (at top edge of playable area)
+			CreateBoundaryWall(new Vector2(playableX + playableW / 2, playableY - wallThickness / 2), new Vector2(playableW + wallThickness * 2, wallThickness));
+			// Bottom wall (at bottom edge of playable area)
+			CreateBoundaryWall(new Vector2(playableX + playableW / 2, playableY + playableH + wallThickness / 2), new Vector2(playableW + wallThickness * 2, wallThickness));
 		}
 
 		private void CreateBoundaryWall(Vector2 position, Vector2 size)
@@ -307,8 +320,9 @@ namespace dTopDownShooter.Scripts
 
 		private void PlaceStructures()
 		{
-			int centerX = MapWidth / 2;
-			int centerY = MapHeight / 2;
+			// Center of the playable area (accounting for spawn margin offset)
+			int centerX = SpawnMargin + PlayableWidth / 2;
+			int centerY = SpawnMargin + PlayableHeight / 2;
 			for (int x = centerX - 2; x <= centerX + 2; x++)
 			{
 				for (int y = centerY - 2; y <= centerY + 2; y++)
@@ -329,12 +343,18 @@ namespace dTopDownShooter.Scripts
 
 		private void PlaceForts(int count)
 		{
+			// Place forts near corners of the playable area
+			int minX = SpawnMargin + 2;
+			int maxX = SpawnMargin + PlayableWidth - 3;
+			int minY = SpawnMargin + 2;
+			int maxY = SpawnMargin + PlayableHeight - 3;
+
 			var corners = new List<Vector2I>
 			{
-				new Vector2I(2, 2),
-				new Vector2I(MapWidth - 3, 2),
-				new Vector2I(2, MapHeight - 3),
-				new Vector2I(MapWidth - 3, MapHeight - 3)
+				new Vector2I(minX, minY),
+				new Vector2I(maxX, minY),
+				new Vector2I(minX, maxY),
+				new Vector2I(maxX, maxY)
 			};
 
 			for (int i = corners.Count - 1; i > 0; i--)
@@ -395,8 +415,9 @@ namespace dTopDownShooter.Scripts
 			{
 				attempts++;
 
-				int x = _random.Next(1, MapWidth - 1);
-				int y = _random.Next(1, MapHeight - 1);
+				// Place buildings within the playable area only
+				int x = _random.Next(SpawnMargin + 1, SpawnMargin + PlayableWidth - 1);
+				int y = _random.Next(SpawnMargin + 1, SpawnMargin + PlayableHeight - 1);
 				var tilePos = new Vector2I(x, y);
 
 				if (!_occupiedTiles.Contains(tilePos) && !IsNearOccupied(tilePos, 2))
@@ -454,8 +475,9 @@ namespace dTopDownShooter.Scripts
 				{
 					attempts++;
 
-					int x = _random.Next(0, MapWidth);
-					int y = _random.Next(0, MapHeight);
+					// Place decorations within the playable area only
+					int x = _random.Next(SpawnMargin, SpawnMargin + PlayableWidth);
+					int y = _random.Next(SpawnMargin, SpawnMargin + PlayableHeight);
 					var tilePos = new Vector2I(x, y);
 
 					if (!_occupiedTiles.Contains(tilePos))
@@ -484,6 +506,12 @@ namespace dTopDownShooter.Scripts
 
 			int numTrees = _random.Next(8, 15);
 
+			// Playable area bounds for tree placement
+			int minX = SpawnMargin;
+			int maxX = SpawnMargin + PlayableWidth;
+			int minY = SpawnMargin;
+			int maxY = SpawnMargin + PlayableHeight;
+
 			for (int i = 0; i < numTrees; i++)
 			{
 				int attempts = 0;
@@ -492,23 +520,24 @@ namespace dTopDownShooter.Scripts
 					attempts++;
 
 					int x, y;
+					// 70% chance to place trees near edges of playable area
 					if (_random.NextDouble() < 0.7)
 					{
 						if (_random.NextDouble() < 0.5)
 						{
-							x = _random.NextDouble() < 0.5 ? _random.Next(0, 3) : _random.Next(MapWidth - 3, MapWidth);
-							y = _random.Next(0, MapHeight);
+							x = _random.NextDouble() < 0.5 ? _random.Next(minX, minX + 3) : _random.Next(maxX - 3, maxX);
+							y = _random.Next(minY, maxY);
 						}
 						else
 						{
-							x = _random.Next(0, MapWidth);
-							y = _random.NextDouble() < 0.5 ? _random.Next(0, 3) : _random.Next(MapHeight - 3, MapHeight);
+							x = _random.Next(minX, maxX);
+							y = _random.NextDouble() < 0.5 ? _random.Next(minY, minY + 3) : _random.Next(maxY - 3, maxY);
 						}
 					}
 					else
 					{
-						x = _random.Next(0, MapWidth);
-						y = _random.Next(0, MapHeight);
+						x = _random.Next(minX, maxX);
+						y = _random.Next(minY, maxY);
 					}
 
 					var tilePos = new Vector2I(x, y);
@@ -569,15 +598,30 @@ namespace dTopDownShooter.Scripts
 
 		public Vector2 GetPlayerSpawnPosition()
 		{
+			// Spawn in center of the playable area
 			return new Vector2(
-				(MapWidth / 2) * TileSize + TileSize / 2,
-				(MapHeight / 2) * TileSize + TileSize / 2
+				(SpawnMargin + PlayableWidth / 2) * TileSize + TileSize / 2,
+				(SpawnMargin + PlayableHeight / 2) * TileSize + TileSize / 2
 			);
 		}
 
 		public Vector2 GetMapSize()
 		{
 			return new Vector2(MapWidth * TileSize, MapHeight * TileSize);
+		}
+
+		/// <summary>
+		/// Returns the bounds of the playable area for camera limits.
+		/// Returns (x, y, width, height) where x,y is the top-left corner.
+		/// </summary>
+		public Rect2 GetPlayableAreaBounds()
+		{
+			return new Rect2(
+				SpawnMargin * TileSize,
+				SpawnMargin * TileSize,
+				PlayableWidth * TileSize,
+				PlayableHeight * TileSize
+			);
 		}
 
 		public List<Vector2> GetHousePositions()

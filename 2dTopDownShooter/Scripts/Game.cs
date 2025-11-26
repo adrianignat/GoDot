@@ -68,16 +68,16 @@ namespace dTopDownShooter.Scripts
 			{
 				Player.Position = mapGenerator.GetPlayerSpawnPosition();
 
-				// Update camera limits based on map size
+				// Update camera limits to the playable area (not full map)
+				// This keeps the camera within the player's playable zone
 				var camera = Player.GetNodeOrNull<Camera2D>("Camera2D");
 				if (camera != null)
 				{
-					var mapSize = mapGenerator.GetMapSize();
-					// Camera limits define the edges of what can be shown
-					camera.LimitLeft = 0;
-					camera.LimitTop = 0;
-					camera.LimitRight = (int)mapSize.X;
-					camera.LimitBottom = (int)mapSize.Y;
+					var playableArea = mapGenerator.GetPlayableAreaBounds();
+					camera.LimitLeft = (int)playableArea.Position.X;
+					camera.LimitTop = (int)playableArea.Position.Y;
+					camera.LimitRight = (int)(playableArea.Position.X + playableArea.Size.X);
+					camera.LimitBottom = (int)(playableArea.Position.Y + playableArea.Size.Y);
 				}
 			}
 
