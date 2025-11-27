@@ -9,6 +9,8 @@ public partial class Player : Character
 	private ushort _gold = 0;
 	private ushort _score = 0;
 	private Label _scoreLabel;
+	private ColorRect _feetIndicator;
+	private Camera2D _camera;
 
 	public bool IsShooting = false;
 	public Direction Facing { get; private set; }
@@ -31,6 +33,8 @@ public partial class Player : Character
 		Moving = Direction.E;
 
 		_scoreLabel = GetNode<Label>("ScoreLabel");
+		_feetIndicator = GetNode<ColorRect>("FeetIndicatorLayer/FeetIndicator");
+		_camera = GetNodeOrNull<Camera2D>("Camera2D");
 
 		Game.Instance.PlayerTakeDamage += TakeDamage;
 		Game.Instance.GoldAcquired += AcquireGold;
@@ -121,6 +125,9 @@ public partial class Player : Character
 
 	public override void _PhysicsProcess(double delta)
 	{
+		// Always update feet indicator (even when paused)
+		UpdateFeetIndicator();
+
 		if (Game.Instance.IsPaused)
 		{
 			IsShooting = false;
@@ -133,7 +140,28 @@ public partial class Player : Character
 
 		Velocity = move_input * Speed;
 		_animation.FlipH = Facing == Direction.W;
+
 		MoveAndSlide();
+	}
+
+	private void UpdateFeetIndicator()
+	{
+		if (_feetIndicator == null) return;
+
+		// Try to get camera if not cached yet
+		if (_camera == null)
+			_camera = GetNodeOrNull<Camera2D>("Camera2D");
+		if (_camera == null) return;
+
+		// Player feet position in world space (offset down from center)
+		Vector2 feetWorldPos = GlobalPosition + new Vector2(0, 20);
+
+		// Convert to screen position using canvas transform
+		var canvasTransform = GetCanvasTransform();
+		Vector2 screenPos = canvasTransform * feetWorldPos;
+
+		// Center the indicator on the feet position
+		_feetIndicator.Position = screenPos - _feetIndicator.Size / 2;
 	}
 
 	public void UpdateScore()

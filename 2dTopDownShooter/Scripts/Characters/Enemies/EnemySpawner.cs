@@ -39,7 +39,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 		var timer = GetNode<Timer>("IncreaseSpawnRate");
 		timer.Timeout += () => ObjectsPerSecond *= SpawnIncreaseRate;
 
-		_camera = GetTree().Root.GetNode("main").GetNode("Player").GetNode<Camera2D>("Camera2D");
+		_camera = GetTree().Root.GetNode("main").GetNode("EntityLayer").GetNode("Player").GetNode<Camera2D>("Camera2D");
 		_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
 
 		// Setup timer for introducing new enemy tiers
@@ -109,6 +109,12 @@ public partial class EnemySpawner : Spawner<Enemy>
 			_availableTiers.Add(newTier);
 			GD.Print($"New enemy tier introduced: {newTier}");
 		}
+	}
+
+	protected override Node GetSpawnParent()
+	{
+		// Spawn enemies to EntityLayer for Y-sorting
+		return Game.Instance.EntityLayer;
 	}
 
 	protected override void InitializeSpawnedObject(Enemy enemy)

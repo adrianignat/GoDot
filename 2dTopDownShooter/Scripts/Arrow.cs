@@ -54,7 +54,7 @@ public partial class Arrow : RigidBody2D
 		// Add to arrows group for cleanup on restart
 		AddToGroup(GameConstants.ArrowsGroup);
 
-		_player = GetTree().Root.GetNode("main").GetNode<Player>("Player");
+		_player = Game.Instance.Player;
 		// Use whichever level is set (they're mutually exclusive)
 		_maxEnemiesCanHit = 1 + BouncingLevel + PiercingLevel;
 		_currentSpeed = Speed;
@@ -150,8 +150,8 @@ public partial class Arrow : RigidBody2D
 
 		foreach (Node2D enemy in enemies)
 		{
-			// Get the distance between the player and this enemy
-			float distance = _player.GlobalPosition.DistanceSquaredTo(enemy.GlobalPosition);
+			// Get the distance between the arrow and this enemy
+			float distance = GlobalPosition.DistanceSquaredTo(enemy.GlobalPosition);
 
 			// Check if this enemy is closer than the previous closest enemy
 			if (distance < closestDistance)

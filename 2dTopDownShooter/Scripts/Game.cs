@@ -48,6 +48,8 @@ namespace dTopDownShooter.Scripts
 
 		public Node2D MainWindow { get; set; }
 
+		public Node2D EntityLayer { get; set; }
+
 		public Player Player { get; set; }
 
 		public override void _EnterTree()
@@ -55,12 +57,19 @@ namespace dTopDownShooter.Scripts
 			// Set singleton BEFORE any child _Ready() methods run
 			// This ensures Game.Instance returns this node when children connect to signals
 			_gameInstance = this;
+
+			// Initialize core references early so other scripts can use them
+			// _EnterTree runs before children's _Ready methods
+			MainWindow = this;
+			EntityLayer = GetNode<Node2D>("EntityLayer");
+			Player = EntityLayer.GetNode<Player>("Player");
 		}
 
 		public override void _Ready()
 		{
 			MainWindow = GetTree().Root.GetNode<Node2D>("main");
-			Player = MainWindow.GetNode<Player>("Player");
+			EntityLayer = MainWindow.GetNode<Node2D>("EntityLayer");
+			Player = EntityLayer.GetNode<Player>("Player");
 
 			// Position player at map center if MapGenerator exists
 			var mapGenerator = MainWindow.GetNodeOrNull<MapGenerator>("MapGenerator");

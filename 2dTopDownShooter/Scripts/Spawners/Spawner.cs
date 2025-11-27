@@ -48,6 +48,16 @@ namespace dTopDownShooter.Scripts.Spawners
 			return MaxObjects == 0 || MaxObjects >= spawnedObjects;
 		}
 
+		/// <summary>
+		/// Returns the parent node where spawned objects should be added.
+		/// Override to use EntityLayer for Y-sorted objects.
+		/// Default adds to scene root.
+		/// </summary>
+		protected virtual Node GetSpawnParent()
+		{
+			return GetTree().Root;
+		}
+
 		public override void _Process(double delta)
 		{
 			if (Game.Instance.IsPaused)
@@ -69,7 +79,7 @@ namespace dTopDownShooter.Scripts.Spawners
 			var spawnedObject = Scene.Instantiate<T>();
 			spawnedObject.GlobalPosition = GetLocation();
 			InitializeSpawnedObject(spawnedObject);
-			GetTree().Root.AddChild(spawnedObject);
+			GetSpawnParent().AddChild(spawnedObject);
 
 			if (MaxObjects != 0)
 				spawnedObjects++;

@@ -88,10 +88,27 @@ namespace dTopDownShooter.Scripts
 
 		public void Regenerate()
 		{
-			// Clear all existing map children
+			// Clear all existing map children (background, ground tiles, decorations)
 			foreach (Node child in GetChildren())
 			{
 				child.QueueFree();
+			}
+
+			// Clear buildings and trees from EntityLayer (they were added there for Y-sorting)
+			if (Game.Instance.EntityLayer != null)
+			{
+				var entityLayer = Game.Instance.EntityLayer;
+				foreach (Node child in entityLayer.GetChildren())
+				{
+					// Remove buildings and trees (but not Player)
+					if (child.Name.ToString().StartsWith("Fort") ||
+						child.Name.ToString().StartsWith("House") ||
+						child.Name.ToString().StartsWith("WoodTower") ||
+						child.Name.ToString().StartsWith("Tree"))
+					{
+						child.QueueFree();
+					}
+				}
 			}
 
 			// Reset state
@@ -376,15 +393,26 @@ namespace dTopDownShooter.Scripts
 		private void CreateFort(Vector2I tilePos)
 		{
 			var towerTexture = GD.Load<Texture2D>(TowerTextures[_random.Next(TowerTextures.Length)]);
+			var worldPos = TileToWorld(tilePos);
 
+			// Get texture dimensions
+			float textureHeight = towerTexture.GetHeight();
+
+			// Create a container node positioned at the base (bottom) of the building for Y-sorting
+			// The base Y is the center Y plus half the texture height (accounting for centered sprites)
+			float baseY = worldPos.Y + textureHeight / 2 - 20; // -20 is where collision is
+			var buildingContainer = new Node2D();
+			buildingContainer.Name = "Fort";
+			buildingContainer.Position = new Vector2(worldPos.X, baseY);
+
+			// Sprite is offset upward so it renders above the base position
 			var tower = new Sprite2D();
 			tower.Texture = towerTexture;
-			tower.Position = TileToWorld(tilePos);
-			tower.ZIndex = 0;
-			AddChild(tower);
+			tower.Position = new Vector2(0, -(textureHeight / 2 - 20));
+			buildingContainer.AddChild(tower);
 
+			// Collision body relative to container (at the base)
 			var towerBody = new StaticBody2D();
-			towerBody.Position = TileToWorld(tilePos);
 			towerBody.CollisionLayer = 1;
 			towerBody.CollisionMask = 0;
 
@@ -392,9 +420,11 @@ namespace dTopDownShooter.Scripts
 			var towerShape = new RectangleShape2D();
 			towerShape.Size = new Vector2(48, 48);
 			towerCollision.Shape = towerShape;
-			towerCollision.Position = new Vector2(0, 20);
 			towerBody.AddChild(towerCollision);
-			AddChild(towerBody);
+			buildingContainer.AddChild(towerBody);
+
+			// Add to EntityLayer for Y-sorting
+			Game.Instance.EntityLayer.AddChild(buildingContainer);
 
 			for (int dx = -1; dx <= 1; dx++)
 			{
@@ -425,14 +455,26 @@ namespace dTopDownShooter.Scripts
 					var texture = GD.Load<Texture2D>(textures[_random.Next(textures.Length)]);
 					var worldPos = TileToWorld(tilePos);
 
+					// Get texture dimensions
+					float textureHeight = texture.GetHeight();
+
+					// Calculate base Y for Y-sorting (collision is at bottom third)
+					float collisionOffsetY = collisionSize.Y * 0.3f;
+					float baseY = worldPos.Y + collisionOffsetY;
+
+					// Create container at base position for Y-sorting
+					var buildingContainer = new Node2D();
+					buildingContainer.Name = isHouse ? "House" : "WoodTower";
+					buildingContainer.Position = new Vector2(worldPos.X, baseY);
+
+					// Sprite offset upward from base
 					var building = new Sprite2D();
 					building.Texture = texture;
-					building.Position = worldPos;
-					building.ZIndex = 0;
-					AddChild(building);
+					building.Position = new Vector2(0, -collisionOffsetY);
+					buildingContainer.AddChild(building);
 
+					// Collision at base
 					var body = new StaticBody2D();
-					body.Position = worldPos;
 					body.CollisionLayer = 1;
 					body.CollisionMask = 0;
 
@@ -440,11 +482,13 @@ namespace dTopDownShooter.Scripts
 					var shape = new RectangleShape2D();
 					shape.Size = new Vector2(collisionSize.X * 0.6f, collisionSize.Y * 0.3f);
 					collision.Shape = shape;
-					collision.Position = new Vector2(0, collisionSize.Y * 0.3f);
 					body.AddChild(collision);
-					AddChild(body);
+					buildingContainer.AddChild(body);
 
-					// Track house positions for shelter system
+					// Add to EntityLayer for Y-sorting
+					Game.Instance.EntityLayer.AddChild(buildingContainer);
+
+					// Track house positions for shelter system (use actual world position, not base)
 					if (isHouse)
 					{
 						_housePositions.Add(worldPos);
@@ -512,6 +556,9 @@ namespace dTopDownShooter.Scripts
 			int minY = SpawnMargin;
 			int maxY = SpawnMargin + PlayableHeight;
 
+			// Calculate frame size (Hframes=4, Vframes=3)
+			float frameHeight = treeTexture.GetHeight() / 3f;
+
 			for (int i = 0; i < numTrees; i++)
 			{
 				int attempts = 0;
@@ -544,17 +591,28 @@ namespace dTopDownShooter.Scripts
 
 					if (!_occupiedTiles.Contains(tilePos) && !IsNearOccupied(tilePos, 1))
 					{
+						var worldPos = TileToWorld(tilePos);
+
+						// Trunk collision is at Y+40 from center, so base is at worldPos.Y + 40
+						float trunkOffsetY = 40;
+						float baseY = worldPos.Y + trunkOffsetY;
+
+						// Create container at base (trunk) position for Y-sorting
+						var treeContainer = new Node2D();
+						treeContainer.Name = "Tree";
+						treeContainer.Position = new Vector2(worldPos.X, baseY);
+
+						// Sprite offset upward
 						var tree = new Sprite2D();
 						tree.Texture = treeTexture;
 						tree.Hframes = 4;
 						tree.Vframes = 3;
 						tree.Frame = _random.Next(0, 6);
-						tree.Position = TileToWorld(tilePos);
-						tree.ZIndex = 1;
-						AddChild(tree);
+						tree.Position = new Vector2(0, -trunkOffsetY);
+						treeContainer.AddChild(tree);
 
+						// Collision at base (trunk)
 						var body = new StaticBody2D();
-						body.Position = TileToWorld(tilePos);
 						body.CollisionLayer = 1;
 						body.CollisionMask = 0;
 
@@ -562,9 +620,11 @@ namespace dTopDownShooter.Scripts
 						var shape = new CircleShape2D();
 						shape.Radius = 16;
 						collision.Shape = shape;
-						collision.Position = new Vector2(0, 40);
 						body.AddChild(collision);
-						AddChild(body);
+						treeContainer.AddChild(body);
+
+						// Add to EntityLayer for Y-sorting
+						Game.Instance.EntityLayer.AddChild(treeContainer);
 
 						_occupiedTiles.Add(tilePos);
 						break;

@@ -15,10 +15,13 @@ script = ExtResource("1_owta4")
 z_index = -1
 script = ExtResource("7_mapgen")
 
-[node name="Player" parent="." instance=ExtResource("1_n17b8")]
+[node name="EntityLayer" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" parent="EntityLayer" instance=ExtResource("1_n17b8")]
 position = Vector2(1055, 550)
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
+[node name="Camera2D" type="Camera2D" parent="EntityLayer/Player"]
 position = Vector2(2, -12)
 zoom = Vector2(2, 2)
 limit_left = -2048
