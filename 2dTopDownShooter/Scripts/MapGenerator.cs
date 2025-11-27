@@ -366,14 +366,18 @@ namespace dTopDownShooter.Scripts
 			FillRectWithTerrain(startX, startY, width, height, isGrass: false);
 		}
 
+		// Minimum tile distance between buildings to prevent overlap
+		private const int BuildingSpacing = 3;
+
 		private void PlaceStructures()
 		{
 			// Center of the playable area (accounting for spawn margin offset)
 			int centerX = SpawnMargin + PlayableWidth / 2;
 			int centerY = SpawnMargin + PlayableHeight / 2;
-			for (int x = centerX - 2; x <= centerX + 2; x++)
+			// Reserve larger area around player spawn
+			for (int x = centerX - 3; x <= centerX + 3; x++)
 			{
-				for (int y = centerY - 2; y <= centerY + 2; y++)
+				for (int y = centerY - 3; y <= centerY + 3; y++)
 				{
 					_occupiedTiles.Add(new Vector2I(x, y));
 				}
@@ -414,7 +418,7 @@ namespace dTopDownShooter.Scripts
 			for (int i = 0; i < Math.Min(count, corners.Count); i++)
 			{
 				var pos = corners[i];
-				if (!_occupiedTiles.Contains(pos))
+				if (!_occupiedTiles.Contains(pos) && !IsNearOccupied(pos, BuildingSpacing))
 				{
 					CreateFort(pos);
 				}
@@ -438,13 +442,8 @@ namespace dTopDownShooter.Scripts
 
 			Game.Instance.EntityLayer.AddChild(tower);
 
-			for (int dx = -1; dx <= 1; dx++)
-			{
-				for (int dy = -1; dy <= 1; dy++)
-				{
-					_occupiedTiles.Add(new Vector2I(tilePos.X + dx, tilePos.Y + dy));
-				}
-			}
+			// Mark larger area as occupied to prevent overlapping buildings
+			MarkAreaOccupied(tilePos, BuildingSpacing);
 		}
 
 		private void PlaceBuildings(int count, string[] textures, Vector2 collisionSize)
@@ -465,7 +464,7 @@ namespace dTopDownShooter.Scripts
 				int y = _random.Next(SpawnMargin + 1, SpawnMargin + PlayableHeight - 1);
 				var tilePos = new Vector2I(x, y);
 
-				if (!_occupiedTiles.Contains(tilePos) && !IsNearOccupied(tilePos, 2))
+				if (!_occupiedTiles.Contains(tilePos) && !IsNearOccupied(tilePos, BuildingSpacing))
 				{
 					var worldPos = TileToWorld(tilePos);
 					float baseY = worldPos.Y + baseOffsetY;
@@ -497,13 +496,8 @@ namespace dTopDownShooter.Scripts
 						_houseBodies.Add(body);
 					}
 
-					for (int dx = -1; dx <= 1; dx++)
-					{
-						for (int dy = -1; dy <= 1; dy++)
-						{
-							_occupiedTiles.Add(new Vector2I(x + dx, y + dy));
-						}
-					}
+					// Mark larger area as occupied to prevent overlapping buildings
+					MarkAreaOccupied(tilePos, BuildingSpacing);
 
 					placed++;
 				}
@@ -731,6 +725,17 @@ namespace dTopDownShooter.Scripts
 				}
 			}
 			return false;
+		}
+
+		private void MarkAreaOccupied(Vector2I pos, int radius)
+		{
+			for (int dx = -radius; dx <= radius; dx++)
+			{
+				for (int dy = -radius; dy <= radius; dy++)
+				{
+					_occupiedTiles.Add(new Vector2I(pos.X + dx, pos.Y + dy));
+				}
+			}
 		}
 
 		private Vector2 TileToWorld(Vector2I tilePos)

@@ -23,11 +23,18 @@ public partial class EnemySpawner : Spawner<Enemy>
 	[Export]
 	public float DayTransitionSpawnRetention = 0.7f;
 
+	/// <summary>
+	/// Chance (0.0 to 1.0) that a spawned enemy will be a TNT goblin instead of a regular goblin.
+	/// </summary>
+	[Export]
+	public float TntGoblinSpawnChance = 0.15f;
+
 	private Camera2D _camera;
 	private List<EnemyTier> _availableTiers = new() { EnemyTier.Blue };
 	private int _nextTierIndex = 1; // Start at Red (index 1 in enum)
 	private float _initialSpawnRate;
 	private Timer _tierTimer;
+	private PackedScene _tntGoblinScene;
 
 	Array<Node> _validSpawnTiles;
 
@@ -35,6 +42,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 	{
 		base._Ready();
 		_initialSpawnRate = ObjectsPerSecond;
+		_tntGoblinScene = GD.Load<PackedScene>("res://Entities/Characters/Enemies/tnt_goblin.tscn");
 
 		var timer = GetNode<Timer>("IncreaseSpawnRate");
 		timer.Timeout += () => ObjectsPerSecond *= SpawnIncreaseRate;
@@ -115,6 +123,28 @@ public partial class EnemySpawner : Spawner<Enemy>
 	{
 		// Spawn enemies to EntityLayer for Y-sorting
 		return Game.Instance.EntityLayer;
+	}
+
+	protected override void Spawn()
+	{
+		// TNT goblins only appear starting day 3
+		if (Game.Instance.CurrentDay >= 3 && GD.Randf() < TntGoblinSpawnChance)
+		{
+			SpawnTntGoblin();
+		}
+		else
+		{
+			// Call base implementation for regular enemy
+			base.Spawn();
+		}
+	}
+
+	private void SpawnTntGoblin()
+	{
+		var tntGoblin = _tntGoblinScene.Instantiate<TntGoblin>();
+		tntGoblin.GlobalPosition = GetLocation();
+		tntGoblin.Tier = GetWeightedRandomTier();
+		GetSpawnParent().AddChild(tntGoblin);
 	}
 
 	protected override void InitializeSpawnedObject(Enemy enemy)

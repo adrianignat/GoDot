@@ -12,9 +12,9 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 		private const int UpgradeOptionCount = 3;
 
-		private readonly PackedScene _normalScene = GD.Load<PackedScene>("res://Entities/upgrade_normal.tscn");
-		private readonly PackedScene _epicScene = GD.Load<PackedScene>("res://Entities/upgrade_epic.tscn");
-		private readonly PackedScene _legendaryScene = GD.Load<PackedScene>("res://Entities/upgrade_legendary.tscn");
+		private readonly PackedScene _normalScene = GD.Load<PackedScene>("res://Entities/Upgrades/upgrade_normal.tscn");
+		private readonly PackedScene _epicScene = GD.Load<PackedScene>("res://Entities/Upgrades/upgrade_epic.tscn");
+		private readonly PackedScene _legendaryScene = GD.Load<PackedScene>("res://Entities/Upgrades/upgrade_legendary.tscn");
 
 		private readonly RandomNumberGenerator _rng = new();
 		private readonly Upgrade[] _upgrades = new Upgrade[UpgradeOptionCount];

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b66njlkl1yhwy"]
 
-[ext_resource type="PackedScene" uid="uid://btocigi4olhw0" path="res://Entities/upgrade_normal.tscn" id="2_v18vl"]
+[ext_resource type="PackedScene" uid="uid://btocigi4olhw0" path="res://Entities/Upgrades/upgrade_normal.tscn" id="2_v18vl"]
 
 [node name="UpgradeSelection" type="Node2D"]
 scale = Vector2(0.25, 0.25)

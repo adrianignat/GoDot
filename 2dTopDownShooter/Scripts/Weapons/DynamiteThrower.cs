@@ -1,7 +1,7 @@
 using dTopDownShooter.Scripts.Spawners;
 using Godot;
 
-public partial class DynamiteThrower : Spawner<Dynamite>
+public partial class DynamiteThrower : Spawner<Barrel>
 {
     [Export]
     public float ThrowRadius = 200f;
@@ -30,7 +30,7 @@ public partial class DynamiteThrower : Spawner<Dynamite>
 
     public override Vector2 GetLocation()
     {
-        // Dynamite starts at player position
+        // Barrel starts at player position
         // Store target for InitializeSpawnedObject
         _nextTargetPosition = GetTargetPosition();
         return _player.GlobalPosition;
@@ -68,10 +68,10 @@ public partial class DynamiteThrower : Spawner<Dynamite>
         return targetPosition;
     }
 
-    protected override void InitializeSpawnedObject(Dynamite dynamite)
+    protected override void InitializeSpawnedObject(Barrel barrel)
     {
-        dynamite.BlastRadius += BonusBlastRadius;
-        dynamite.StartPosition = _player.GlobalPosition;
-        dynamite.TargetPosition = _nextTargetPosition;
+        barrel.BlastRadius += BonusBlastRadius;
+        barrel.StartPosition = _player.GlobalPosition;
+        barrel.TargetPosition = _nextTargetPosition;
     }
 }
