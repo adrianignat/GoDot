@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://sheep_scene"]
+
+[ext_resource type="Texture2D" uid="uid://ds50n0y36p5v4" path="res://Sprites/Decor/Sheep/HappySheep_Idle.png" id="1_sheep"]
+
+[node name="Sheep" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_sheep")
+hframes = 8
+frame = 0

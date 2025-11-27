@@ -38,7 +38,14 @@ namespace dTopDownShooter.Scripts
 			public static readonly Vector2I BottomRight = new(7, 1);
 		}
 
-		// Building textures
+		// Building scenes
+		private static readonly string TowerScene = "res://Entities/Buildings/Tower.tscn";
+		private static readonly string HouseScene = "res://Entities/Buildings/House.tscn";
+		private static readonly string WoodTowerScene = "res://Entities/Buildings/WoodTower.tscn";
+		private static readonly string TreeScene = "res://Entities/Buildings/Tree.tscn";
+		private static readonly string SheepScene = "res://Entities/Buildings/Sheep.tscn";
+
+		// Building textures for color variants
 		private static readonly string[] TowerTextures = {
 			"res://Sprites/Buildings/Tower/Tower_Blue.png",
 			"res://Sprites/Buildings/Tower/Tower_Red.png",
@@ -60,13 +67,35 @@ namespace dTopDownShooter.Scripts
 			"res://Sprites/Buildings/Wood_Tower/Wood_Tower_Yellow.png",
 		};
 
-		private static readonly string[] DecorTextures = {
-			"res://Sprites/Decor/01.png",
-			"res://Sprites/Decor/02.png",
-			"res://Sprites/Decor/03.png",
-			"res://Sprites/Decor/04.png",
-			"res://Sprites/Decor/05.png",
-			"res://Sprites/Decor/06.png",
+		// Decor items with spawn weights (higher = more common)
+		private static readonly (string path, int weight, int maxCount)[] DecorItems = {
+			// Mushrooms - common
+			("res://Sprites/Decor/01.png", 10, 0),
+			("res://Sprites/Decor/02.png", 10, 0),
+			("res://Sprites/Decor/03.png", 10, 0),
+			// Rocks - common
+			("res://Sprites/Decor/04.png", 10, 0),
+			("res://Sprites/Decor/05.png", 10, 0),
+			("res://Sprites/Decor/06.png", 10, 0),
+			// Bushes - common
+			("res://Sprites/Decor/07.png", 8, 0),
+			("res://Sprites/Decor/08.png", 8, 0),
+			("res://Sprites/Decor/09.png", 8, 0),
+			// Small plants - common
+			("res://Sprites/Decor/10.png", 8, 0),
+			("res://Sprites/Decor/11.png", 8, 0),
+			// Pumpkins - moderate
+			("res://Sprites/Decor/12.png", 4, 3),
+			("res://Sprites/Decor/13.png", 4, 3),
+			// Bones - moderate
+			("res://Sprites/Decor/14.png", 5, 4),
+			("res://Sprites/Decor/15.png", 5, 4),
+			// Skeleton sign - rare (max 1)
+			("res://Sprites/Decor/16.png", 1, 1),
+			// Signpost - rare (max 1)
+			("res://Sprites/Decor/17.png", 1, 1),
+			// Scarecrow - rare (max 1)
+			("res://Sprites/Decor/18.png", 1, 1),
 		};
 
 		private Random _random;
@@ -100,11 +129,12 @@ namespace dTopDownShooter.Scripts
 				var entityLayer = Game.Instance.EntityLayer;
 				foreach (Node child in entityLayer.GetChildren())
 				{
-					// Remove buildings and trees (but not Player)
+					// Remove buildings, trees, and sheep (but not Player)
 					if (child.Name.ToString().StartsWith("Fort") ||
 						child.Name.ToString().StartsWith("House") ||
 						child.Name.ToString().StartsWith("WoodTower") ||
-						child.Name.ToString().StartsWith("Tree"))
+						child.Name.ToString().StartsWith("Tree") ||
+						child.Name.ToString().StartsWith("Sheep"))
 					{
 						child.QueueFree();
 					}
@@ -136,6 +166,7 @@ namespace dTopDownShooter.Scripts
 			PlaceStructures();
 			PlaceDecorations();
 			PlaceTrees();
+			// PlaceSheep(); // Disabled for now - too distracting
 			CreateMapBoundaries();
 		}
 
@@ -392,39 +423,20 @@ namespace dTopDownShooter.Scripts
 
 		private void CreateFort(Vector2I tilePos)
 		{
-			var towerTexture = GD.Load<Texture2D>(TowerTextures[_random.Next(TowerTextures.Length)]);
 			var worldPos = TileToWorld(tilePos);
+			float baseY = worldPos.Y + 30; // Base of tower visual
 
-			// Get texture dimensions
-			float textureHeight = towerTexture.GetHeight();
+			// Instance the tower scene
+			var towerScene = GD.Load<PackedScene>(TowerScene);
+			var tower = towerScene.Instantiate<Node2D>();
+			tower.Name = "Fort";
+			tower.Position = new Vector2(worldPos.X, baseY);
 
-			// Create a container node positioned at the base (bottom) of the building for Y-sorting
-			// The base Y is the center Y plus half the texture height (accounting for centered sprites)
-			float baseY = worldPos.Y + textureHeight / 2 - 20; // -20 is where collision is
-			var buildingContainer = new Node2D();
-			buildingContainer.Name = "Fort";
-			buildingContainer.Position = new Vector2(worldPos.X, baseY);
+			// Randomize texture color
+			var sprite = tower.GetNode<Sprite2D>("Sprite");
+			sprite.Texture = GD.Load<Texture2D>(TowerTextures[_random.Next(TowerTextures.Length)]);
 
-			// Sprite is offset upward so it renders above the base position
-			var tower = new Sprite2D();
-			tower.Texture = towerTexture;
-			tower.Position = new Vector2(0, -(textureHeight / 2 - 20));
-			buildingContainer.AddChild(tower);
-
-			// Collision body relative to container (at the base)
-			var towerBody = new StaticBody2D();
-			towerBody.CollisionLayer = 1;
-			towerBody.CollisionMask = 0;
-
-			var towerCollision = new CollisionShape2D();
-			var towerShape = new RectangleShape2D();
-			towerShape.Size = new Vector2(48, 48);
-			towerCollision.Shape = towerShape;
-			towerBody.AddChild(towerCollision);
-			buildingContainer.AddChild(towerBody);
-
-			// Add to EntityLayer for Y-sorting
-			Game.Instance.EntityLayer.AddChild(buildingContainer);
+			Game.Instance.EntityLayer.AddChild(tower);
 
 			for (int dx = -1; dx <= 1; dx++)
 			{
@@ -438,6 +450,9 @@ namespace dTopDownShooter.Scripts
 		private void PlaceBuildings(int count, string[] textures, Vector2 collisionSize)
 		{
 			bool isHouse = textures == HouseTextures;
+			string scenePath = isHouse ? HouseScene : WoodTowerScene;
+			float baseOffsetY = isHouse ? 35 : 50;
+
 			int placed = 0;
 			int attempts = 0;
 
@@ -452,46 +467,33 @@ namespace dTopDownShooter.Scripts
 
 				if (!_occupiedTiles.Contains(tilePos) && !IsNearOccupied(tilePos, 2))
 				{
-					var texture = GD.Load<Texture2D>(textures[_random.Next(textures.Length)]);
 					var worldPos = TileToWorld(tilePos);
+					float baseY = worldPos.Y + baseOffsetY;
 
-					// Get texture dimensions
-					float textureHeight = texture.GetHeight();
+					// Instance the building scene
+					var buildingScene = GD.Load<PackedScene>(scenePath);
+					var building = buildingScene.Instantiate<Node2D>();
+					building.Name = isHouse ? "House" : "WoodTower";
+					building.Position = new Vector2(worldPos.X, baseY);
 
-					// Calculate base Y for Y-sorting (collision is at bottom third)
-					float collisionOffsetY = collisionSize.Y * 0.3f;
-					float baseY = worldPos.Y + collisionOffsetY;
+					// Randomize texture color
+					var sprite = building.GetNode<Sprite2D>("Sprite");
+					sprite.Texture = GD.Load<Texture2D>(textures[_random.Next(textures.Length)]);
 
-					// Create container at base position for Y-sorting
-					var buildingContainer = new Node2D();
-					buildingContainer.Name = isHouse ? "House" : "WoodTower";
-					buildingContainer.Position = new Vector2(worldPos.X, baseY);
-
-					// Sprite offset upward from base
-					var building = new Sprite2D();
-					building.Texture = texture;
-					building.Position = new Vector2(0, -collisionOffsetY);
-					buildingContainer.AddChild(building);
-
-					// Collision at base
-					var body = new StaticBody2D();
-					body.CollisionLayer = 1;
-					body.CollisionMask = 0;
-
-					var collision = new CollisionShape2D();
-					var shape = new RectangleShape2D();
-					shape.Size = new Vector2(collisionSize.X * 0.6f, collisionSize.Y * 0.3f);
-					collision.Shape = shape;
-					body.AddChild(collision);
-					buildingContainer.AddChild(body);
+					// For wood towers, randomize which frame to show (4 variants in spritesheet)
+					if (!isHouse)
+					{
+						sprite.Frame = _random.Next(4);
+					}
 
 					// Add to EntityLayer for Y-sorting
-					Game.Instance.EntityLayer.AddChild(buildingContainer);
+					Game.Instance.EntityLayer.AddChild(building);
 
-					// Track house positions for shelter system (use actual world position, not base)
+					// Track house positions for shelter system
 					if (isHouse)
 					{
 						_housePositions.Add(worldPos);
+						var body = building.GetNode<StaticBody2D>("CollisionBody");
 						_houseBodies.Add(body);
 					}
 
@@ -510,7 +512,17 @@ namespace dTopDownShooter.Scripts
 
 		private void PlaceDecorations()
 		{
-			int numDecorations = _random.Next(10, 20);
+			int numDecorations = _random.Next(15, 25);
+
+			// Track spawn counts for items with max limits
+			var spawnCounts = new Dictionary<string, int>();
+
+			// Calculate total weight for weighted random selection
+			int totalWeight = 0;
+			foreach (var item in DecorItems)
+			{
+				totalWeight += item.weight;
+			}
 
 			for (int i = 0; i < numDecorations; i++)
 			{
@@ -526,7 +538,11 @@ namespace dTopDownShooter.Scripts
 
 					if (!_occupiedTiles.Contains(tilePos))
 					{
-						var texture = GD.Load<Texture2D>(DecorTextures[_random.Next(DecorTextures.Length)]);
+						// Weighted random selection
+						var selectedItem = SelectWeightedDecor(totalWeight, spawnCounts);
+						if (selectedItem == null) break; // All items maxed out
+
+						var texture = GD.Load<Texture2D>(selectedItem.Value.path);
 
 						var decor = new Sprite2D();
 						decor.Texture = texture;
@@ -538,16 +554,55 @@ namespace dTopDownShooter.Scripts
 						decor.ZIndex = -1;
 						AddChild(decor);
 
+						// Track spawn count
+						if (!spawnCounts.ContainsKey(selectedItem.Value.path))
+							spawnCounts[selectedItem.Value.path] = 0;
+						spawnCounts[selectedItem.Value.path]++;
+
 						break;
 					}
 				}
 			}
 		}
 
+		private (string path, int weight, int maxCount)? SelectWeightedDecor(int totalWeight, Dictionary<string, int> spawnCounts)
+		{
+			// Build list of available items (not maxed out)
+			var availableItems = new List<(string path, int weight, int maxCount)>();
+			int availableWeight = 0;
+
+			foreach (var item in DecorItems)
+			{
+				// Check if item has reached max count (0 = unlimited)
+				if (item.maxCount > 0)
+				{
+					int currentCount = spawnCounts.GetValueOrDefault(item.path, 0);
+					if (currentCount >= item.maxCount)
+						continue;
+				}
+				availableItems.Add(item);
+				availableWeight += item.weight;
+			}
+
+			if (availableItems.Count == 0 || availableWeight == 0)
+				return null;
+
+			// Weighted random selection
+			int roll = _random.Next(availableWeight);
+			int cumulative = 0;
+
+			foreach (var item in availableItems)
+			{
+				cumulative += item.weight;
+				if (roll < cumulative)
+					return item;
+			}
+
+			return availableItems[^1]; // Fallback to last item
+		}
+
 		private void PlaceTrees()
 		{
-			var treeTexture = GD.Load<Texture2D>("res://Sprites/Decor/Trees/Tree.png");
-
 			int numTrees = _random.Next(8, 15);
 
 			// Playable area bounds for tree placement
@@ -556,8 +611,7 @@ namespace dTopDownShooter.Scripts
 			int minY = SpawnMargin;
 			int maxY = SpawnMargin + PlayableHeight;
 
-			// Calculate frame size (Hframes=4, Vframes=3)
-			float frameHeight = treeTexture.GetHeight() / 3f;
+			var treeSceneResource = GD.Load<PackedScene>(TreeScene);
 
 			for (int i = 0; i < numTrees; i++)
 			{
@@ -593,40 +647,71 @@ namespace dTopDownShooter.Scripts
 					{
 						var worldPos = TileToWorld(tilePos);
 
-						// Trunk collision is at Y+40 from center, so base is at worldPos.Y + 40
+						// Trunk collision is at Y+40 from center
 						float trunkOffsetY = 40;
 						float baseY = worldPos.Y + trunkOffsetY;
 
-						// Create container at base (trunk) position for Y-sorting
-						var treeContainer = new Node2D();
-						treeContainer.Name = "Tree";
-						treeContainer.Position = new Vector2(worldPos.X, baseY);
+						// Instance the tree scene
+						var tree = treeSceneResource.Instantiate<Node2D>();
+						tree.Name = "Tree";
+						tree.Position = new Vector2(worldPos.X, baseY);
 
-						// Sprite offset upward
-						var tree = new Sprite2D();
-						tree.Texture = treeTexture;
-						tree.Hframes = 4;
-						tree.Vframes = 3;
-						tree.Frame = _random.Next(0, 6);
-						tree.Position = new Vector2(0, -trunkOffsetY);
-						treeContainer.AddChild(tree);
-
-						// Collision at base (trunk)
-						var body = new StaticBody2D();
-						body.CollisionLayer = 1;
-						body.CollisionMask = 0;
-
-						var collision = new CollisionShape2D();
-						var shape = new CircleShape2D();
-						shape.Radius = 16;
-						collision.Shape = shape;
-						body.AddChild(collision);
-						treeContainer.AddChild(body);
+						// Randomize tree variant (frames 0-5 are full trees)
+						var sprite = tree.GetNode<Sprite2D>("Sprite");
+						sprite.Frame = _random.Next(0, 6);
 
 						// Add to EntityLayer for Y-sorting
-						Game.Instance.EntityLayer.AddChild(treeContainer);
+						Game.Instance.EntityLayer.AddChild(tree);
 
 						_occupiedTiles.Add(tilePos);
+						break;
+					}
+				}
+			}
+		}
+
+		private void PlaceSheep()
+		{
+			int numSheep = _random.Next(2, 5);
+
+			// Playable area bounds
+			int minX = SpawnMargin + 2;
+			int maxX = SpawnMargin + PlayableWidth - 2;
+			int minY = SpawnMargin + 2;
+			int maxY = SpawnMargin + PlayableHeight - 2;
+
+			var sheepSceneResource = GD.Load<PackedScene>(SheepScene);
+
+			for (int i = 0; i < numSheep; i++)
+			{
+				int attempts = 0;
+				while (attempts < 30)
+				{
+					attempts++;
+
+					int x = _random.Next(minX, maxX);
+					int y = _random.Next(minY, maxY);
+					var tilePos = new Vector2I(x, y);
+
+					if (!_occupiedTiles.Contains(tilePos) && !IsNearOccupied(tilePos, 1))
+					{
+						var worldPos = TileToWorld(tilePos);
+
+						// Instance the sheep scene
+						var sheep = sheepSceneResource.Instantiate<Node2D>();
+						sheep.Name = "Sheep";
+						sheep.Position = worldPos;
+
+						// Randomize which sheep frame to show (8 variants)
+						var sprite = sheep.GetNode<Sprite2D>("Sprite");
+						sprite.Frame = _random.Next(0, 8);
+
+						// Random facing direction
+						sprite.FlipH = _random.Next(2) == 0;
+
+						// Add to EntityLayer for Y-sorting
+						Game.Instance.EntityLayer.AddChild(sheep);
+
 						break;
 					}
 				}

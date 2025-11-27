@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://doa7fja1uebb2"]
+
+[ext_resource type="Texture2D" uid="uid://bkq84o757tnnh" path="res://Sprites/Buildings/Wood_Tower/Wood_Tower_Blue.png" id="1_woodtower"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_woodtower"]
+size = Vector2(92, 33)
+
+[node name="WoodTower" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -50)
+texture = ExtResource("1_woodtower")
+hframes = 4
+
+[node name="CollisionBody" type="StaticBody2D" parent="."]
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="CollisionBody"]
+position = Vector2(0, -13.5)
+shape = SubResource("RectangleShape2D_woodtower")

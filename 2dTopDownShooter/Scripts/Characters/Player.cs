@@ -10,6 +10,7 @@ public partial class Player : Character
 	private ushort _score = 0;
 	private Label _scoreLabel;
 	private ColorRect _feetIndicator;
+	private CanvasLayer _feetIndicatorLayer;
 	private Camera2D _camera;
 
 	public bool IsShooting = false;
@@ -33,7 +34,8 @@ public partial class Player : Character
 		Moving = Direction.E;
 
 		_scoreLabel = GetNode<Label>("ScoreLabel");
-		_feetIndicator = GetNode<ColorRect>("FeetIndicatorLayer/FeetIndicator");
+		_feetIndicatorLayer = GetNode<CanvasLayer>("FeetIndicatorLayer");
+		_feetIndicator = _feetIndicatorLayer.GetNode<ColorRect>("FeetIndicator");
 		_camera = GetNodeOrNull<Camera2D>("Camera2D");
 
 		Game.Instance.PlayerTakeDamage += TakeDamage;
@@ -146,7 +148,11 @@ public partial class Player : Character
 
 	private void UpdateFeetIndicator()
 	{
-		if (_feetIndicator == null) return;
+		if (_feetIndicatorLayer == null || _feetIndicator == null) return;
+
+		// Hide feet indicator when game is paused (menus are showing)
+		_feetIndicatorLayer.Visible = !Game.Instance.IsPaused;
+		if (Game.Instance.IsPaused) return;
 
 		// Try to get camera if not cached yet
 		if (_camera == null)
