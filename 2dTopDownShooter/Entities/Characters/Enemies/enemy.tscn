@@ -1,10 +1,7 @@
 [gd_scene load_steps=37 format=3 uid="uid://bi30yxqh33cfp"]
 
 [ext_resource type="Texture2D" uid="uid://cvhfa8bhig7dh" path="res://Sprites/Goblin_Torch_Red.png" id="1_jfter"]
-[ext_resource type="Script" path="res://Scripts/Characters/Enemies/TorchGoblin.cs" id="1_kv5dc"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_n4enc"]
-size = Vector2(90, 86)
+[ext_resource type="Script" uid="uid://ckk4ynh1l7767" path="res://Scripts/Characters/Enemies/TorchGoblin.cs" id="1_kv5dc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2b63j"]
 atlas = ExtResource("1_jfter")
@@ -251,8 +248,12 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_bimp4"]
+radius = 24.0
+height = 68.0
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xmrs5"]
-size = Vector2(129, 130)
+size = Vector2(79.5, 75.25)
 
 [node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
 scale = Vector2(0.5, 0.5)
@@ -263,20 +264,20 @@ script = ExtResource("1_kv5dc")
 Speed = 50.0
 Health = 100
 
-[node name="EnemyCollision" type="CollisionShape2D" parent="."]
-position = Vector2(5, -3)
-shape = SubResource("RectangleShape2D_n4enc")
-
 [node name="EnemyAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_wfccv")
 animation = &"walk"
+
+[node name="EnemyCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -4)
+shape = SubResource("CapsuleShape2D_bimp4")
 
 [node name="AttackRange" type="Area2D" parent="."]
 collision_layer = 4
 collision_mask = 11
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRange"]
-position = Vector2(6.5, -10)
+position = Vector2(0, -4)
 shape = SubResource("RectangleShape2D_xmrs5")
 
 [connection signal="body_entered" from="AttackRange" to="." method="OnAttackRangeEntered"]
