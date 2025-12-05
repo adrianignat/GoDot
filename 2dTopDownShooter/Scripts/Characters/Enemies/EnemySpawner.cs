@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public partial class EnemySpawner : Spawner<Enemy>
 {
 	[Export]
-	public float SpawnIncreaseRate = 1.05f;
+	public float SpawnIncreaseRate = 1.1f;
 
 	/// <summary>
 	/// Time in seconds before each new enemy tier is introduced.
