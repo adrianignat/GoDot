@@ -23,6 +23,8 @@ namespace dTopDownShooter.Scripts.Upgrades
 		private ushort _gold;
 		private ushort _goldRequiredToUpdate;
 		private ushort _currentUpgradeStep;
+		private int _pendingUpgrades = 0;
+		private bool _isShowingSelection = false;
 
 		public override void _Ready()
 		{
@@ -30,7 +32,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 			_goldRequiredToUpdate = FirstUpgrade;
 
 			// Connect to signals in _Ready, not constructor, to ensure Game.Instance is valid
-			Game.Instance.UpgradeReady += ShowSelectionScreen;
+			Game.Instance.UpgradeReady += OnUpgradeReady;
 			Game.Instance.GoldAcquired += OnGoldAcquired;
 
 			Hide();
@@ -62,16 +64,45 @@ namespace dTopDownShooter.Scripts.Upgrades
 			}
 		}
 
+		private void OnUpgradeReady()
+		{
+			if (_isShowingSelection)
+			{
+				// Already showing selection screen - queue this upgrade
+				_pendingUpgrades++;
+				GD.Print($"Upgrade queued. Pending upgrades: {_pendingUpgrades}");
+			}
+			else
+			{
+				// Not showing - display the selection screen
+				ShowSelectionScreen();
+			}
+		}
+
 		private void SelectUpgrade(int index)
 		{
 			Game.Instance.EmitSignal(Game.SignalName.UpgradeSelected, _upgrades[index]);
-			Hide();
-			Game.Instance.IsPaused = false;
+
+			if (_pendingUpgrades > 0)
+			{
+				// More upgrades waiting - show next selection
+				_pendingUpgrades--;
+				GD.Print($"Showing next upgrade. Remaining: {_pendingUpgrades}");
+				ShowSelectionScreen();
+			}
+			else
+			{
+				// No more upgrades - close and unpause
+				Hide();
+				_isShowingSelection = false;
+				Game.Instance.IsPaused = false;
+			}
 		}
 
 		private void ShowSelectionScreen()
 		{
 			Game.Instance.IsPaused = true;
+			_isShowingSelection = true;
 
 			var usedTypes = new HashSet<UpgradeType>();
 			var lockedArrowType = GetLockedArrowUpgrade();
