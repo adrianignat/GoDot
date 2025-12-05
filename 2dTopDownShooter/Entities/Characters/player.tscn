@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://bnsn5m1gs237v" path="res://Entities/Upgrades/upgrade_epic.tscn" id="10_fbkkw"]
 [ext_resource type="PackedScene" uid="uid://ctvkqee5jvjd2" path="res://Entities/UI/menu.tscn" id="11_qf5yn"]
 [ext_resource type="Material" path="res://Shaders/feet_indicator_material.tres" id="15_feet"]
+[ext_resource type="Script" path="res://Scripts/UI/DashIndicator.cs" id="16_dash"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c601n"]
 radius = 22.0
@@ -518,6 +519,20 @@ offset_left = 35.0
 offset_top = 82.0
 offset_right = 335.0
 offset_bottom = 98.0
+
+[node name="DashIndicator" type="Control" parent="CanvasLayer"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -110.0
+offset_right = -30.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("16_dash")
 
 [node name="UpgradeMenuLayer" type="CanvasLayer" parent="."]
 

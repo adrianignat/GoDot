@@ -18,6 +18,22 @@ public partial class Player : Character
 	public Direction Moving { get; private set; }
 	public int LuckLevel { get; private set; } = 0;
 
+	// Dash state
+	private bool _isDashing = false;
+	private float _dashTimer = 0f;
+	private float _dashCooldownTimer = 0f;
+	private Vector2 _dashDirection;
+	private uint _originalCollisionMask;
+
+	// Dash constants
+	private const float DashDistance = 150f;
+	private const float DashDuration = 0.15f;
+	private const float DashCooldown = 15f;
+
+	public bool IsDashing => _isDashing;
+	public bool CanDash => _dashCooldownTimer <= 0f && !_isDashing;
+	public float DashCooldownRemaining => _dashCooldownTimer;
+
 	// Reference GameConstants for external access
 	public static float MaxMagnetRadius => GameConstants.MaxMagnetRadius;
 	public static float MaxDynamiteBlastRadius => GameConstants.MaxDynamiteBlastRadius;
@@ -49,6 +65,14 @@ public partial class Player : Character
 		// Take damage from the night
 		TakeDamage(GameConstants.PlayerNightDamage);
 		GD.Print($"Night damage! Health: {Health}");
+	}
+
+	internal override void TakeDamage(ushort damage)
+	{
+		// Ignore damage while dashing (invulnerable)
+		if (_isDashing) return;
+
+		base.TakeDamage(damage);
 	}
 
 	private void UpgradeSelected(Upgrade upgdade)
@@ -130,12 +154,31 @@ public partial class Player : Character
 		// Always update feet indicator (even when paused)
 		UpdateFeetIndicator();
 
+		// Update dash cooldown (even when paused so it continues counting down)
+		if (_dashCooldownTimer > 0)
+		{
+			_dashCooldownTimer -= (float)delta;
+		}
+
 		if (Game.Instance.IsPaused)
 		{
 			IsShooting = false;
 			if (!IsDead)
 				_animation.Play("idle");
 			return;
+		}
+
+		// Check for dash input
+		if (Input.IsActionJustPressed("dash") && CanDash)
+		{
+			StartDash();
+		}
+
+		// Process dash if active
+		if (_isDashing)
+		{
+			ProcessDash(delta);
+			return; // Skip normal movement while dashing
 		}
 
 		Vector2 move_input = Input.GetVector("left", "right", "up", "down");
@@ -230,5 +273,107 @@ public partial class Player : Character
 	public DynamiteThrower GetDynamiteThrower()
 	{
 		return GetNode<DynamiteThrower>("DynamiteThrower");
+	}
+
+	private Vector2 DirectionToVector(Direction dir)
+	{
+		return dir switch
+		{
+			Direction.N => new Vector2(0, -1),
+			Direction.S => new Vector2(0, 1),
+			Direction.E => new Vector2(1, 0),
+			Direction.W => new Vector2(-1, 0),
+			Direction.NE => new Vector2(1, -1).Normalized(),
+			Direction.NW => new Vector2(-1, -1).Normalized(),
+			Direction.SE => new Vector2(1, 1).Normalized(),
+			Direction.SW => new Vector2(-1, 1).Normalized(),
+			_ => new Vector2(1, 0)
+		};
+	}
+
+	private void StartDash()
+	{
+		if (!CanDash || IsDead) return;
+
+		_isDashing = true;
+		_dashTimer = DashDuration;
+		_dashCooldownTimer = DashCooldown;
+		_dashDirection = DirectionToVector(Moving);
+
+		// Store original collision mask and disable collisions during dash
+		_originalCollisionMask = CollisionMask;
+		CollisionMask = 0; // Disable all collisions during dash
+	}
+
+	private void EndDash()
+	{
+		_isDashing = false;
+
+		// Restore original collision mask
+		CollisionMask = _originalCollisionMask;
+
+		// Check if we ended inside an obstacle and push out if needed
+		AdjustPositionIfInsideObstacle();
+	}
+
+	private void AdjustPositionIfInsideObstacle()
+	{
+		// Use a shape query to check if we're inside any obstacle
+		var spaceState = GetWorld2D().DirectSpaceState;
+		var collisionNode = GetNodeOrNull<CollisionShape2D>("PlayerCollisionShape");
+		if (collisionNode == null || collisionNode.Shape == null) return;
+
+		var shape = collisionNode.Shape;
+
+		var query = new PhysicsShapeQueryParameters2D();
+		query.Shape = shape;
+		// Account for the collision shape's local position and player's scale
+		Vector2 shapeGlobalPos = GlobalPosition + collisionNode.Position * Scale;
+		// Create transform with scale built in
+		query.Transform = new Transform2D(Scale.X, 0, 0, Scale.Y, shapeGlobalPos.X, shapeGlobalPos.Y);
+		// Check against Map (layer 1) and Environment (layer 4) - layers that are obstacles
+		query.CollisionMask = (1 << 0) | (1 << 3); // Layers 1 and 4 (0-indexed)
+
+		var results = spaceState.IntersectShape(query);
+
+		if (results.Count > 0)
+		{
+			// We're inside an obstacle - move back along dash direction until we're clear
+			Vector2 pushBackDirection = -_dashDirection;
+			float pushBackStep = 5f;
+			int maxIterations = 50; // Prevent infinite loop
+
+			for (int i = 0; i < maxIterations; i++)
+			{
+				GlobalPosition += pushBackDirection * pushBackStep;
+				shapeGlobalPos = GlobalPosition + collisionNode.Position * Scale;
+				query.Transform = new Transform2D(Scale.X, 0, 0, Scale.Y, shapeGlobalPos.X, shapeGlobalPos.Y);
+				results = spaceState.IntersectShape(query);
+
+				if (results.Count == 0)
+				{
+					// We're clear, add a small extra buffer
+					GlobalPosition += pushBackDirection * 5f;
+					break;
+				}
+			}
+		}
+	}
+
+	private void ProcessDash(double delta)
+	{
+		if (!_isDashing) return;
+
+		float dashSpeed = DashDistance / DashDuration;
+		Vector2 dashVelocity = _dashDirection * dashSpeed;
+
+		Velocity = dashVelocity;
+		MoveAndSlide(); // This will pass through everything since collision mask is 0
+
+		_dashTimer -= (float)delta;
+		if (_dashTimer <= 0)
+		{
+			EndDash();
+		}
 	}
 }

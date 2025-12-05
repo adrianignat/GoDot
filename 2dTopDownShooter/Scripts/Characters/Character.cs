@@ -34,7 +34,7 @@ namespace dTopDownShooter.Scripts.Characters
         /// Applies damage to the character, handling underflow protection.
         /// Triggers <see cref="OnDamaged"/> or <see cref="OnKilled"/> as appropriate.
         /// </summary>
-        internal void TakeDamage(ushort damage)
+        internal virtual void TakeDamage(ushort damage)
         {
             // Check before subtracting to prevent unsigned underflow
             if (damage >= Health)
