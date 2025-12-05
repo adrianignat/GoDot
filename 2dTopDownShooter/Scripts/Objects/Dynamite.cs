@@ -13,20 +13,15 @@ public partial class Dynamite : Area2D
 	public float BlastRadius { get; set; } = 100f;
 
 	private Sprite2D _sprite;
-	private Timer _fuseTimer;
+	private float _fuseTimeRemaining;
 	private bool _hasExploded = false;
 
 	public override void _Ready()
 	{
 		_sprite = GetNode<Sprite2D>("Sprite");
 
-		// Setup fuse timer
-		_fuseTimer = new Timer();
-		_fuseTimer.WaitTime = FuseTime;
-		_fuseTimer.OneShot = true;
-		_fuseTimer.Timeout += Explode;
-		AddChild(_fuseTimer);
-		_fuseTimer.Start();
+		// Initialize fuse timer (pause-aware)
+		_fuseTimeRemaining = FuseTime;
 	}
 
 	public override void _Process(double delta)
@@ -34,11 +29,22 @@ public partial class Dynamite : Area2D
 		if (_hasExploded)
 			return;
 
-		// Flicker effect as fuse burns
-		var timeLeft = _fuseTimer.TimeLeft;
-		if (timeLeft < 0.5f)
+		// Don't process when game is paused
+		if (Game.Instance.IsPaused)
+			return;
+
+		// Count down fuse timer
+		_fuseTimeRemaining -= (float)delta;
+		if (_fuseTimeRemaining <= 0)
 		{
-			_sprite.Modulate = new Color(1, 1, 1, (float)(0.5f + 0.5f * Mathf.Sin(timeLeft * 30)));
+			Explode();
+			return;
+		}
+
+		// Flicker effect as fuse burns
+		if (_fuseTimeRemaining < 0.5f)
+		{
+			_sprite.Modulate = new Color(1, 1, 1, (float)(0.5f + 0.5f * Mathf.Sin(_fuseTimeRemaining * 30)));
 		}
 	}
 

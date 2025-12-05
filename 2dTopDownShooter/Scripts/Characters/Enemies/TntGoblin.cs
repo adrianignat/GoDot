@@ -25,9 +25,13 @@ public partial class TntGoblin : Enemy
 	[Export]
 	public float ThrowCooldown = 3.0f;
 
+	[Export]
+	public float ThrowAnimationDelay = 0.25f;
+
 	private bool _isWithinThrowRange = false;
 	private bool _isThrowing = false;
 	private float _timeUntilNextThrow;
+	private float _throwDelayTimer = -1f;
 	private PackedScene _dynamiteScene;
 	private Vector2 _throwTargetPosition;
 
@@ -83,6 +87,17 @@ public partial class TntGoblin : Enemy
 		// Check distance to player
 		float distanceToPlayer = GlobalPosition.DistanceTo(_player.GlobalPosition);
 		_isWithinThrowRange = distanceToPlayer <= ThrowRange;
+
+		// Handle throw delay timer (pause-aware)
+		if (_throwDelayTimer > 0)
+		{
+			_throwDelayTimer -= (float)delta;
+			if (_throwDelayTimer <= 0)
+			{
+				SpawnDynamite();
+				_throwDelayTimer = -1f;
+			}
+		}
 
 		// Handle throwing
 		if (_isWithinThrowRange && !_isThrowing)
@@ -152,9 +167,8 @@ public partial class TntGoblin : Enemy
 			_throwTargetPosition = _player.GlobalPosition;
 		}
 
-		// Spawn dynamite at the right moment (middle of throw animation)
-		var timer = GetTree().CreateTimer(0.25f);
-		timer.Timeout += SpawnDynamite;
+		// Spawn dynamite at the right moment (middle of throw animation) - pause-aware
+		_throwDelayTimer = ThrowAnimationDelay;
 	}
 
 	private void SpawnDynamite()

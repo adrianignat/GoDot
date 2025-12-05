@@ -34,10 +34,6 @@ script = ExtResource("2_nc1g4")
 Scene = ExtResource("2_tddb0")
 ObjectsPerSecond = 1.0
 
-[node name="IncreaseSpawnRate" type="Timer" parent="EnemySpawner"]
-wait_time = 30.0
-autostart = true
-
 [node name="LootSpawner" type="Node2D" parent="."]
 script = ExtResource("5_5ncms")
 GoldScene = ExtResource("6_b3xnh")

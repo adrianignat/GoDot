@@ -154,18 +154,18 @@ public partial class Player : Character
 		// Always update feet indicator (even when paused)
 		UpdateFeetIndicator();
 
-		// Update dash cooldown (even when paused so it continues counting down)
-		if (_dashCooldownTimer > 0)
-		{
-			_dashCooldownTimer -= (float)delta;
-		}
-
 		if (Game.Instance.IsPaused)
 		{
 			IsShooting = false;
 			if (!IsDead)
 				_animation.Play("idle");
 			return;
+		}
+
+		// Update dash cooldown (only when not paused)
+		if (_dashCooldownTimer > 0)
+		{
+			_dashCooldownTimer -= (float)delta;
 		}
 
 		// Check for dash input

@@ -15,12 +15,19 @@ public partial class EnemyDynamite : Area2D
 	[Export]
 	public float BlastRadius { get; set; } = 60f;
 
+	[Export]
+	public float FuseTime { get; set; } = 1.0f;
+
 	public Vector2 StartPosition { get; set; }
 	public Vector2 TargetPosition { get; set; }
 
 	private AnimatedSprite2D _animation;
 	private bool _hasExploded = false;
 	private bool _showBlastRadius = false;
+	private bool _fuseStarted = false;
+	private float _fuseTimer = 0f;
+	private Tween _throwTween;
+	private bool _wasPaused = false;
 
 	public override void _Ready()
 	{
@@ -47,19 +54,53 @@ public partial class EnemyDynamite : Area2D
 	{
 		_animation.Play("fuse");
 
-		var tween = CreateTween();
-		tween.SetParallel(true);
+		_throwTween = CreateTween();
+		_throwTween.SetParallel(true);
 
 		// Move to target position with arc
-		tween.TweenProperty(this, "global_position", TargetPosition, ThrowDuration)
+		_throwTween.TweenProperty(this, "global_position", TargetPosition, ThrowDuration)
 			.SetEase(Tween.EaseType.Out)
 			.SetTrans(Tween.TransitionType.Quad);
 
 		// Rotate while flying
-		tween.TweenProperty(_animation, "rotation", Mathf.Tau * 2, ThrowDuration);
+		_throwTween.TweenProperty(_animation, "rotation", Mathf.Tau * 2, ThrowDuration);
 
-		tween.SetParallel(false);
-		tween.TweenCallback(Callable.From(StartFuse));
+		_throwTween.SetParallel(false);
+		_throwTween.TweenCallback(Callable.From(StartFuse));
+	}
+
+	public override void _Process(double delta)
+	{
+		// Handle pause/unpause for tween and animation
+		bool isPaused = Game.Instance.IsPaused;
+		if (isPaused && !_wasPaused)
+		{
+			// Game just paused - pause tween and animation
+			if (_throwTween != null && _throwTween.IsValid())
+				_throwTween.Pause();
+			_animation.Pause();
+			_wasPaused = true;
+		}
+		else if (!isPaused && _wasPaused)
+		{
+			// Game just unpaused - resume tween and animation
+			if (_throwTween != null && _throwTween.IsValid())
+				_throwTween.Play();
+			_animation.Play();
+			_wasPaused = false;
+		}
+
+		if (isPaused)
+			return;
+
+		if (_fuseStarted && !_hasExploded)
+		{
+			_fuseTimer -= (float)delta;
+			if (_fuseTimer <= 0)
+			{
+				Explode();
+			}
+		}
 	}
 
 	private void StartFuse()
@@ -71,9 +112,9 @@ public partial class EnemyDynamite : Area2D
 		_showBlastRadius = true;
 		QueueRedraw();
 
-		// Wait 1 second with fuse burning, then explode
-		var timer = GetTree().CreateTimer(1.0f);
-		timer.Timeout += Explode;
+		// Start fuse timer (pause-aware)
+		_fuseStarted = true;
+		_fuseTimer = FuseTime;
 	}
 
 	private void Explode()

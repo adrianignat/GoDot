@@ -33,7 +33,9 @@ public partial class EnemySpawner : Spawner<Enemy>
 	private List<EnemyTier> _availableTiers = new() { EnemyTier.Blue };
 	private int _nextTierIndex = 1; // Start at Red (index 1 in enum)
 	private float _initialSpawnRate;
-	private Timer _tierTimer;
+	private float _tierTimer;
+	private float _spawnRateIncreaseTimer;
+	private const float SpawnRateIncreaseInterval = 30f;
 	private PackedScene _tntGoblinScene;
 
 	Array<Node> _validSpawnTiles;
@@ -44,22 +46,40 @@ public partial class EnemySpawner : Spawner<Enemy>
 		_initialSpawnRate = ObjectsPerSecond;
 		_tntGoblinScene = GD.Load<PackedScene>("res://Entities/Characters/Enemies/tnt_goblin.tscn");
 
-		var timer = GetNode<Timer>("IncreaseSpawnRate");
-		timer.Timeout += () => ObjectsPerSecond *= SpawnIncreaseRate;
+		// Initialize manual timers (pause-aware)
+		_spawnRateIncreaseTimer = SpawnRateIncreaseInterval;
+		_tierTimer = TierIntroductionInterval;
 
 		_camera = GetTree().Root.GetNode("main").GetNode("EntityLayer").GetNode("Player").GetNode<Camera2D>("Camera2D");
 		_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
 
-		// Setup timer for introducing new enemy tiers
-		_tierTimer = new Timer();
-		_tierTimer.WaitTime = TierIntroductionInterval;
-		_tierTimer.OneShot = false;
-		_tierTimer.Timeout += OnTierTimerTimeout;
-		AddChild(_tierTimer);
-		_tierTimer.Start();
-
 		// Subscribe to day transition signals
 		Game.Instance.DayStarted += OnDayStarted;
+	}
+
+	public override void _Process(double delta)
+	{
+		base._Process(delta);
+
+		// Don't update timers when paused
+		if (Game.Instance.IsPaused)
+			return;
+
+		// Spawn rate increase timer
+		_spawnRateIncreaseTimer -= (float)delta;
+		if (_spawnRateIncreaseTimer <= 0)
+		{
+			ObjectsPerSecond *= SpawnIncreaseRate;
+			_spawnRateIncreaseTimer = SpawnRateIncreaseInterval;
+		}
+
+		// Tier introduction timer
+		_tierTimer -= (float)delta;
+		if (_tierTimer <= 0)
+		{
+			OnTierTimerTimeout();
+			_tierTimer = TierIntroductionInterval;
+		}
 	}
 
 	private void OnDayStarted(int dayNumber)
@@ -78,8 +98,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 		ResetTierByOne();
 
 		// Restart tier timer for new day
-		_tierTimer.Stop();
-		_tierTimer.Start();
+		_tierTimer = TierIntroductionInterval;
 
 		// Refresh valid spawn tiles (map regenerated)
 		_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
