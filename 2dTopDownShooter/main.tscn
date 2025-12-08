@@ -12,7 +12,6 @@
 script = ExtResource("1_owta4")
 
 [node name="MapGenerator" type="Node2D" parent="."]
-z_index = -1
 script = ExtResource("7_mapgen")
 
 [node name="EntityLayer" type="Node2D" parent="."]
