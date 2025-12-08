@@ -1,146 +1,21 @@
-[gd_scene load_steps=16 format=4 uid="uid://s5504q20elix"]
+[gd_scene load_steps=3 format=4 uid="uid://s5504q20elix"]
 
-[ext_resource type="Texture2D" uid="uid://bt782n2ngvohh" path="res://Sprites/Terrain/Tilemap_color1.png" id="1_vi8rk"]
-[ext_resource type="Texture2D" uid="uid://c1sobhqt0kgyc" path="res://Sprites/Decor/13.png" id="2_5ri5t"]
-[ext_resource type="Texture2D" uid="uid://c6sjh4glws435" path="res://Sprites/Terrain/Water Background color.png" id="3_83nrs"]
-[ext_resource type="Texture2D" uid="uid://b1njq3k0mdi7g" path="res://Sprites/Decor/Trees/Tree1.png" id="4_lv6vx"]
-[ext_resource type="Texture2D" uid="uid://5qwg8g5x0f1n" path="res://Sprites/Decor/Trees/Tree2.png" id="5_vh3wp"]
-[ext_resource type="Texture2D" uid="uid://bgspsokl718l8" path="res://Sprites/Decor/Bushes/Bushe1.png" id="6_n7yvd"]
+[ext_resource type="PackedScene" uid="uid://bgwtsvsae74f" path="res://Entities/MapPieces/main_map_piece.tscn" id="1_fek6j"]
 [ext_resource type="PackedScene" uid="uid://doa7fja1uebb2" path="res://Entities/Buildings/WoodTower.tscn" id="7_ullbk"]
-[ext_resource type="PackedScene" path="res://Entities/Buildings/Sheep.tscn" id="8_t4gha"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aw0ek"]
-texture = ExtResource("1_vi8rk")
-texture_region_size = Vector2i(64, 64)
-0:0/0 = 0
-0:0/0/terrain_set = 0
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, 32, -16, 32, -16, -16, 32, -16, 32, -32)
-1:0/0 = 0
-1:0/0/terrain_set = 0
-1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, -16, -16, -16, 32, -16, 32, -32)
-2:0/0 = 0
-2:0/0/terrain_set = 0
-2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, -16, 16, -16, 16, 32, 32, 32, 32, -32)
-2:1/0 = 0
-2:1/0/terrain_set = 0
-2:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(16, -32, 16, 32, 32, 32, 32, -32)
-1:1/0 = 0
-1:1/0/terrain_set = 0
-0:1/0 = 0
-0:1/0/terrain_set = 0
-0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, 32, -16, 32, -16, -32)
-0:2/0 = 0
-0:2/0/terrain_set = 0
-0:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, 32, 32, 32, 32, 16, -16, 16, -16, -32)
-1:2/0 = 0
-1:2/0/terrain_set = 0
-1:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 16, -32, 32, 32, 32, 32, 16)
-2:2/0 = 0
-2:2/0/terrain_set = 0
-2:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 16, -32, 32, 32, 32, 32, -32, 16, -32, 16, 16)
-5:3/0 = 0
-5:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, 32, 32, 32, 32, 16, -16, 16, -16, -32)
-5:2/0 = 0
-5:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, 32, -16, 32, -16, -32)
-6:2/0 = 0
-7:2/0 = 0
-7:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(32, 32, 32, -32, 16, -32, 16, 32)
-7:3/0 = 0
-7:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 32, 32, 32, 32, -32, 16, -32, 16, 16, -32, 16)
-6:3/0 = 0
-6:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 32, 32, 32, 32, 16, -32, 16)
-7:1/0 = 0
-7:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(32, 32, 32, -32, 16, -32, 16, 32)
-6:1/0 = 0
-5:1/0 = 0
-5:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, -32, 32, -16, 32, -16, -32)
-5:0/0 = 0
-5:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(32, -32, -32, -32, -32, 32, -16, 32, -16, -16, 32, -16)
-6:0/0 = 0
-6:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(32, -32, -32, -32, -32, -16, 32, -16)
-7:0/0 = 0
-7:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(32, 32, 32, -32, -32, -32, -32, -16, 16, -16, 16, 32)
+[node name="map" instance=ExtResource("1_fek6j")]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_leqge"]
-texture = ExtResource("2_5ri5t")
-texture_region_size = Vector2i(64, 64)
-0:0/0 = 0
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-21.66689, 5.098091, 28.676765, 4.4608307, 14.657017, 18.799217, -23.897305, 13.382492)
+[node name="Grass" parent="." index="0"]
+tile_map_data = PackedByteArray("AAABAAAAAQABAAAAAAACAAAAAQABAAAAAAADAAAAAQABAAAAAAAGAAAAAQABAAAAAAAHAAAAAQABAAAAAAAJAAAAAQABAAAAAAAAAAEAAQABAAEAAAAAAAIAAQABAAEAAAAAAAMAAQABAAEAAAAAAAQAAQABAAEAAAAAAAUAAQABAAEAAAAAAAYAAQABAAEAAAAAAAcAAQABAAEAAAAAAAgAAQABAAEAAAAAAAkAAQABAAEAAAABAAEAAQABAAEAAAACAAEAAQABAAEAAAACAAIAAQABAAEAAAADAAIAAQABAAEAAAAEAAIAAQABAAEAAAAFAAIAAQABAAEAAAAFAAMAAQABAAEAAAAGAAMAAQABAAEAAAABAAIAAQABAAEAAAABAAMAAQABAAEAAAABAAQAAQABAAEAAAABAAUAAQABAAEAAAABAAYAAQABAAEAAAABAAcAAQABAAEAAAABAAgAAQABAAEAAAABAAkAAQABAAEAAAACAAMAAQABAAEAAAACAAQAAQABAAEAAAACAAUAAQABAAEAAAACAAYAAQABAAEAAAACAAcAAQABAAEAAAACAAgAAQABAAEAAAACAAkAAQABAAEAAAADAAEAAQABAAEAAAADAAMAAQABAAEAAAADAAQAAQABAAEAAAADAAUAAQABAAEAAAADAAYAAQABAAEAAAADAAcAAQABAAEAAAADAAgAAQABAAEAAAADAAkAAQABAAEAAAAEAAEAAQABAAEAAAAEAAMAAQABAAEAAAAEAAQAAQABAAEAAAAEAAUAAQABAAEAAAAEAAYAAQABAAEAAAAEAAcAAQABAAEAAAAEAAgAAQABAAEAAAAEAAkAAQABAAEAAAAFAAEAAQABAAEAAAAFAAQAAQABAAEAAAAFAAUAAQABAAEAAAAFAAYAAQABAAEAAAAFAAcAAQABAAEAAAAFAAgAAQABAAEAAAAFAAkAAQABAAEAAAAGAAEAAQABAAEAAAAGAAIAAQABAAEAAAAGAAQAAQABAAEAAAAGAAUAAQABAAEAAAAGAAYAAQABAAEAAAAGAAcAAQABAAEAAAAGAAgAAQABAAEAAAAGAAkAAQABAAEAAAAHAAEAAQABAAEAAAAHAAIAAQABAAEAAAAHAAMAAQABAAEAAAAHAAQAAQABAAEAAAAHAAUAAQABAAEAAAAHAAYAAQABAAEAAAAHAAcAAQABAAEAAAAHAAgAAQABAAEAAAAHAAkAAQABAAEAAAAIAAEAAQABAAEAAAAIAAIAAQABAAEAAAAIAAMAAQABAAEAAAAIAAQAAQABAAEAAAAIAAUAAQABAAEAAAAIAAYAAQABAAEAAAAIAAcAAQABAAEAAAAIAAgAAQABAAEAAAAIAAkAAQABAAEAAAAJAAEAAQABAAEAAAAJAAIAAQABAAEAAAAJAAMAAQABAAEAAAAJAAQAAQABAAEAAAAJAAUAAQABAAEAAAAJAAYAAQABAAEAAAAJAAcAAQABAAEAAAAJAAgAAQABAAEAAAAJAAkAAQABAAEAAAAIAAAAAQABAAAAAAAEAAAAAQABAAAAAAAFAAAAAQABAAAAAAAAAAAAAQABAAAAAAA=")
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_juvwu"]
-texture = ExtResource("3_83nrs")
-texture_region_size = Vector2i(64, 64)
-0:0/0 = 0
+[node name="Hills" parent="." index="1"]
+tile_map_data = PackedByteArray("AAADAAQACAAAAAcAAAAEAAQACAABAAcAAAAFAAQACAACAAcAAAACAAMAAQAFAAIAAAACAAQAAQAFAAMAAAAGAAMAAQAHAAIAAAAGAAQAAQAHAAMAAAAFAAMAAQAGAAEAAAAEAAMAAQAGAAEAAAADAAMAAQAGAAEAAAACAAIAAQAFAAEAAAADAAIAAQAGAAEAAAACAAEAAQAFAAEAAAADAAEAAQAGAAEAAAAFAAIAAQAGAAEAAAAGAAIAAQAHAAEAAAAFAAEAAQAGAAEAAAAGAAEAAQAHAAEAAAAFAAAAAQAGAAEAAAAGAAAAAQAHAAEAAAACAAAAAQAFAAEAAAADAAAAAQAGAAEAAAACAP//AQAFAAAAAAADAP//AQAGAAAAAAAFAP//AQAGAAAAAAAGAP//AQAHAAAAAAAEAAAAAQAGAAEAAAAEAP//AQAGAAAAAAAEAAIAAQAGAAEAAAAEAAEAAQAGAAEAAAA=")
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2f5ar"]
-texture = ExtResource("4_lv6vx")
-texture_region_size = Vector2i(64, 64)
-1:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
-2:1/0 = 0
-2:2/0 = 0
-1:2/0 = 0
-0:2/0 = 0
-0:3/0 = 0
-1:3/0 = 0
-1:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(32, -32, -32, -32, -16, 16, 16, 16)
-2:3/0 = 0
-0:0/0 = 0
-2:0/0 = 0
+[node name="Decor_1" parent="." index="2"]
+tile_map_data = PackedByteArray("AAACAAAABgAAAAAAAAAGAAAABgAAAAAAAAA=")
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sc1qq"]
-texture = ExtResource("5_vh3wp")
-texture_region_size = Vector2i(64, 64)
+[node name="Decor_2" parent="." index="3"]
+tile_map_data = PackedByteArray("AAACAAMACgAAAAAAAAAGAAMACgAAAAAAAAAHAAUABwAAAAAAAAAAAAQABwAAAAAAAAA=")
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wufa0"]
-texture = ExtResource("6_n7yvd")
-texture_region_size = Vector2i(64, 64)
-0:0/0 = 0
-1:0/0 = 0
-1:1/0 = 0
-1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, 0, -32, -15.294276, -21.02963, -32, -21.34826)
-0:1/0 = 0
-0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(32, -32, 0, -32, 15.294276, -21.02963, 32, -21.34826)
-
-[sub_resource type="TileSet" id="TileSet_qfssm"]
-tile_size = Vector2i(64, 64)
-physics_layer_0/collision_layer = 1
-terrain_set_0/mode = 0
-terrain_set_0/terrain_0/name = "Grass"
-terrain_set_0/terrain_0/color = Color(0.21826395, 0.5926965, 0.21554479, 1)
-sources/1 = SubResource("TileSetAtlasSource_aw0ek")
-sources/2 = SubResource("TileSetAtlasSource_juvwu")
-sources/7 = SubResource("TileSetAtlasSource_2f5ar")
-sources/8 = SubResource("TileSetAtlasSource_sc1qq")
-sources/9 = SubResource("TileSetAtlasSource_wufa0")
-sources/10 = SubResource("TileSetAtlasSource_leqge")
-
-[node name="map" type="Node2D"]
-y_sort_enabled = true
-
-[node name="Grass" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray("AAAAAAAAAQABAAAAAAABAAAAAQABAAAAAAACAAAAAQABAAAAAAADAAAAAQABAAAAAAAGAAAAAQABAAAAAAAHAAAAAQABAAAAAAAJAAAAAQABAAAAAAAAAAEAAQABAAEAAAAAAAIAAQABAAEAAAAAAAMAAQABAAEAAAAAAAQAAQABAAEAAAAAAAUAAQABAAEAAAAAAAYAAQABAAEAAAAAAAcAAQABAAEAAAAAAAgAAQABAAEAAAAAAAkAAQABAAEAAAABAAEAAQABAAEAAAACAAEAAQABAAEAAAACAAIAAQABAAEAAAADAAIAAQABAAEAAAAEAAIAAQABAAEAAAAFAAIAAQABAAEAAAAFAAMAAQABAAEAAAAGAAMAAQABAAEAAAABAAIAAQABAAEAAAABAAMAAQABAAEAAAABAAQAAQABAAEAAAABAAUAAQABAAEAAAABAAYAAQABAAEAAAABAAcAAQABAAEAAAABAAgAAQABAAEAAAABAAkAAQABAAEAAAACAAMAAQABAAEAAAACAAQAAQABAAEAAAACAAUAAQABAAEAAAACAAYAAQABAAEAAAACAAcAAQABAAEAAAACAAgAAQABAAEAAAACAAkAAQABAAEAAAADAAEAAQABAAEAAAADAAMAAQABAAEAAAADAAQAAQABAAEAAAADAAUAAQABAAEAAAADAAYAAQABAAEAAAADAAcAAQABAAEAAAADAAgAAQABAAEAAAADAAkAAQABAAEAAAAEAAEAAQABAAEAAAAEAAMAAQABAAEAAAAEAAQAAQABAAEAAAAEAAUAAQABAAEAAAAEAAYAAQABAAEAAAAEAAcAAQABAAEAAAAEAAgAAQABAAEAAAAEAAkAAQABAAEAAAAFAAEAAQABAAEAAAAFAAQAAQABAAEAAAAFAAUAAQABAAEAAAAFAAYAAQABAAEAAAAFAAcAAQABAAEAAAAFAAgAAQABAAEAAAAFAAkAAQABAAEAAAAGAAEAAQABAAEAAAAGAAIAAQABAAEAAAAGAAQAAQABAAEAAAAGAAUAAQABAAEAAAAGAAYAAQABAAEAAAAGAAcAAQABAAEAAAAGAAgAAQABAAEAAAAGAAkAAQABAAEAAAAHAAEAAQABAAEAAAAHAAIAAQABAAEAAAAHAAMAAQABAAEAAAAHAAQAAQABAAEAAAAHAAUAAQABAAEAAAAHAAYAAQABAAEAAAAHAAcAAQABAAEAAAAHAAgAAQABAAEAAAAHAAkAAQABAAEAAAAIAAEAAQABAAEAAAAIAAIAAQABAAEAAAAIAAMAAQABAAEAAAAIAAQAAQABAAEAAAAIAAUAAQABAAEAAAAIAAYAAQABAAEAAAAIAAcAAQABAAEAAAAIAAgAAQABAAEAAAAIAAkAAQABAAEAAAAJAAEAAQABAAEAAAAJAAIAAQABAAEAAAAJAAMAAQABAAEAAAAJAAQAAQABAAEAAAAJAAUAAQABAAEAAAAJAAYAAQABAAEAAAAJAAcAAQABAAEAAAAJAAgAAQABAAEAAAAJAAkAAQABAAEAAAAIAAAAAQABAAAAAAAEAAAAAQABAAAAAAAFAAAAAQABAAAAAAA=")
-tile_set = SubResource("TileSet_qfssm")
-
-[node name="Hills" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray("AAADAAIAAQAFAAAAAAADAAMAAQAFAAEAAAADAAQAAQAFAAIAAAADAAUAAQAFAAMAAAAEAAIAAQAGAAAAAAAEAAMAAQAGAAEAAAAEAAQAAQAGAAIAAAAEAAUAAQAGAAMAAAAFAAIAAQAGAAAAAAAFAAMAAQAGAAEAAAAFAAQAAQAGAAIAAAAFAAUAAQAGAAMAAAAGAAIAAQAHAAAAAAAGAAMAAQAHAAEAAAAGAAQAAQAHAAIAAAAGAAUAAQAHAAMAAAAIAP3/BwAAAAAAAAAKAP3/BwACAAAAAAA=")
-tile_set = SubResource("TileSet_qfssm")
-
-[node name="Decor_1" type="TileMapLayer" parent="."]
-z_index = 1
-y_sort_enabled = true
-tile_map_data = PackedByteArray("AAAHAP7/BwAAAAAAAAAJAP7/BwACAAAAAAABAAcACQAAAAAAAAABAAgACQAAAAEAAAACAAcACQABAAAAAAACAAgACQABAAEAAAAHAAYACQAAAAAAAAAHAAcACQAAAAEAAAAIAAYACQABAAAAAAAIAAcACQABAAEAAAAHAAAACQAAAAAAAAAHAAEACQAAAAEAAAAIAAAACQABAAAAAAAIAAEACQABAAEAAAAFAAIACgAAAAAAAAA=")
-tile_set = SubResource("TileSet_qfssm")
-
-[node name="WoodTower" parent="." instance=ExtResource("7_ullbk")]
-position = Vector2(260, 280)
-
-[node name="Sheep" parent="." instance=ExtResource("8_t4gha")]
-position = Vector2(540, 564)
-
-[node name="Sheep2" parent="." instance=ExtResource("8_t4gha")]
-position = Vector2(120, 116)
-
-[node name="Sheep3" parent="." instance=ExtResource("8_t4gha")]
-position = Vector2(550, 219)
+[node name="WoodTower" parent="." index="4" instance=ExtResource("7_ullbk")]
+position = Vector2(287, 91)

@@ -68,16 +68,16 @@ namespace dTopDownShooter.Scripts
 		private void PlaceMapPieces()
 		{
 			// Grid layout (4x4):
-			// Row 0: topleft,    top,    top,    topright
+			// Row 0: top_left,    top,    top,    top_right
 			// Row 1: left,       middle, middle, right
 			// Row 2: left,       middle, middle, right
-			// Row 3: bottomleft, bottom, bottom, bottomright
+			// Row 3: bottom_left, bottom, bottom, bottom_right
 
 			// Place corners (1 random variant each)
-			PlaceMapPiece("topleft", 0, 0, _random.Next(1, MapPieceVariants + 1));
-			PlaceMapPiece("topright", 3, 0, _random.Next(1, MapPieceVariants + 1));
-			PlaceMapPiece("bottomleft", 0, 3, _random.Next(1, MapPieceVariants + 1));
-			PlaceMapPiece("bottomright", 3, 3, _random.Next(1, MapPieceVariants + 1));
+			PlaceMapPiece("top_left", 0, 0, _random.Next(1, MapPieceVariants + 1));
+			PlaceMapPiece("top_right", 3, 0, _random.Next(1, MapPieceVariants + 1));
+			PlaceMapPiece("bottom_left", 0, 3, _random.Next(1, MapPieceVariants + 1));
+			PlaceMapPiece("bottom_right", 3, 3, _random.Next(1, MapPieceVariants + 1));
 
 			// Place edge pieces (2 each, different variants)
 			var topVariants = GetShuffledVariants(2);

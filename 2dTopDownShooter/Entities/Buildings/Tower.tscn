@@ -6,8 +6,7 @@
 size = Vector2(80, 30)
 
 [node name="Tower" type="Node2D"]
-z_index = 1
-z_as_relative = false
+y_sort_enabled = true
 
 [node name="Sprite" type="Sprite2D" parent="."]
 position = Vector2(0, -45)

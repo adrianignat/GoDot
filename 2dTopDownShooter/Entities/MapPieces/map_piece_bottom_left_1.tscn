@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgbaiwsahw6tm"]
+
+[ext_resource type="PackedScene" uid="uid://bgwtsvsae74f" path="res://Entities/MapPieces/main_map_piece.tscn" id="1_3uufy"]
+
+[node name="map" instance=ExtResource("1_3uufy")]
+
+[node name="Decor_1" parent="." index="2"]
+tile_map_data = PackedByteArray(0, 0, 0, 0, 9, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 7, 0, 0, 0, 0, 0, 0, 0, 3, 0, 8, 0, 10, 0, 0, 0, 0, 0, 0, 0, 8, 0, 2, 0, 10, 0, 0, 0, 0, 0, 0, 0)
+
+[node name="Decor_2" parent="." index="3"]
+tile_map_data = PackedByteArray(0, 0, 4, 0, 4, 0, 7, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 0, 7, 0, 0, 0, 0, 0, 0, 0)

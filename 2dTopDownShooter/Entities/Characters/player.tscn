@@ -18,8 +18,8 @@
 [ext_resource type="Script" uid="uid://dta0nr611cmkn" path="res://Scripts/UI/DashIndicator.cs" id="16_dash"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c601n"]
-radius = 22.0
-height = 64.0
+radius = 20.0
+height = 40.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_goldmagnet"]
 radius = 0.0
@@ -453,6 +453,7 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
+y_sort_enabled = true
 scale = Vector2(0.5, 0.5)
 collision_layer = 2
 collision_mask = 13
