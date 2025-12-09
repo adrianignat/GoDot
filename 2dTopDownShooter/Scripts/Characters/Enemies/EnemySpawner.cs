@@ -284,31 +284,54 @@ public partial class EnemySpawner : Spawner<Enemy>
 		float topBound = cameraPosition.Y - viewportSize.Y / 2;
 		float bottomBound = cameraPosition.Y + viewportSize.Y / 2;
 
+		// Get playable area bounds from camera limits (these are set to the map piece area)
+		float mapLeft = camera.LimitLeft;
+		float mapRight = camera.LimitRight;
+		float mapTop = camera.LimitTop;
+		float mapBottom = camera.LimitBottom;
+
 		// Spawn margin - distance outside the visible area to spawn enemies
 		float spawnMargin = GameConstants.SpawnMargin;
 
-		// Randomly choose which side to spawn the enemy on (left, right, top, or bottom)
-		uint side = GD.Randi() % 4;  // Random number between 0 and 3
+		// Determine which sides are available for spawning (have space between camera and map edge)
+		var availableSides = new System.Collections.Generic.List<int>();
+
+		if (leftBound - spawnMargin >= mapLeft) availableSides.Add(0);   // Left
+		if (rightBound + spawnMargin <= mapRight) availableSides.Add(1); // Right
+		if (topBound - spawnMargin >= mapTop) availableSides.Add(2);     // Top
+		if (bottomBound + spawnMargin <= mapBottom) availableSides.Add(3); // Bottom
+
+		// If no sides available (player at corner covering all spawn areas), spawn at random edge of map
+		if (availableSides.Count == 0)
+		{
+			availableSides.Add(0);
+			availableSides.Add(1);
+			availableSides.Add(2);
+			availableSides.Add(3);
+		}
+
+		// Pick a random available side
+		int side = availableSides[(int)(GD.Randi() % availableSides.Count)];
 
 		Vector2 spawnPosition = new();
 
 		switch (side)
 		{
 			case 0: // Spawn on the left
-				spawnPosition.X = leftBound - spawnMargin;
-				spawnPosition.Y = (float)GD.RandRange(topBound - spawnMargin, bottomBound + spawnMargin);
+				spawnPosition.X = Mathf.Max(leftBound - spawnMargin, mapLeft + 32);
+				spawnPosition.Y = (float)GD.RandRange(Mathf.Max(topBound, mapTop + 32), Mathf.Min(bottomBound, mapBottom - 32));
 				break;
 			case 1: // Spawn on the right
-				spawnPosition.X = rightBound + spawnMargin;
-				spawnPosition.Y = (float)GD.RandRange(topBound - spawnMargin, bottomBound + spawnMargin);
+				spawnPosition.X = Mathf.Min(rightBound + spawnMargin, mapRight - 32);
+				spawnPosition.Y = (float)GD.RandRange(Mathf.Max(topBound, mapTop + 32), Mathf.Min(bottomBound, mapBottom - 32));
 				break;
 			case 2: // Spawn on the top
-				spawnPosition.X = (float)GD.RandRange(leftBound - spawnMargin, rightBound + spawnMargin);
-				spawnPosition.Y = topBound - spawnMargin;
+				spawnPosition.X = (float)GD.RandRange(Mathf.Max(leftBound, mapLeft + 32), Mathf.Min(rightBound, mapRight - 32));
+				spawnPosition.Y = Mathf.Max(topBound - spawnMargin, mapTop + 32);
 				break;
 			case 3: // Spawn on the bottom
-				spawnPosition.X = (float)GD.RandRange(leftBound - spawnMargin, rightBound + spawnMargin);
-				spawnPosition.Y = bottomBound + spawnMargin;
+				spawnPosition.X = (float)GD.RandRange(Mathf.Max(leftBound, mapLeft + 32), Mathf.Min(rightBound, mapRight - 32));
+				spawnPosition.Y = Mathf.Min(bottomBound + spawnMargin, mapBottom - 32);
 				break;
 		}
 

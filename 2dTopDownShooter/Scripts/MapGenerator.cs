@@ -40,9 +40,11 @@ namespace dTopDownShooter.Scripts
 
 		public void Regenerate()
 		{
-			// Clear all existing map children (background, map pieces)
+			// Clear all existing map children (background, map pieces) but keep the Player
 			foreach (Node child in GetChildren())
 			{
+				if (child is Player)
+					continue;
 				child.QueueFree();
 			}
 
@@ -139,6 +141,9 @@ namespace dTopDownShooter.Scripts
 
 			var piece = pieceScene.Instantiate<Node2D>();
 
+			// Enable Y-sorting on the piece so its children sort with entities
+			piece.YSortEnabled = true;
+
 			// Position based on grid coordinates
 			// Add SpawnMargin offset to account for the spawn area around the playable map
 			float offsetX = SpawnMargin * TileSize;
@@ -148,7 +153,6 @@ namespace dTopDownShooter.Scripts
 				gridY * PieceSize + offsetY
 			);
 
-			piece.ZIndex = -10;
 			AddChild(piece);
 
 			// Track house positions for shelter system
@@ -175,29 +179,29 @@ namespace dTopDownShooter.Scripts
 
 		private void CreateMapBoundaries()
 		{
-			// Boundary walls surround the playable area, not the full map
-			// This allows enemies to spawn in the margin area outside the playable zone
+			// Boundary walls surround the FULL map (including spawn margin)
+			// This keeps player inside while allowing enemies to spawn in margin and walk in
 			float wallThickness = 64f;
-			float playableX = SpawnMargin * TileSize;
-			float playableY = SpawnMargin * TileSize;
-			float playableW = PlayableWidth * TileSize;
-			float playableH = PlayableHeight * TileSize;
+			float fullMapW = MapWidth * TileSize;
+			float fullMapH = MapHeight * TileSize;
 
-			// Left wall (at left edge of playable area)
-			CreateBoundaryWall(new Vector2(playableX - wallThickness / 2, playableY + playableH / 2), new Vector2(wallThickness, playableH + wallThickness * 2));
-			// Right wall (at right edge of playable area)
-			CreateBoundaryWall(new Vector2(playableX + playableW + wallThickness / 2, playableY + playableH / 2), new Vector2(wallThickness, playableH + wallThickness * 2));
-			// Top wall (at top edge of playable area)
-			CreateBoundaryWall(new Vector2(playableX + playableW / 2, playableY - wallThickness / 2), new Vector2(playableW + wallThickness * 2, wallThickness));
-			// Bottom wall (at bottom edge of playable area)
-			CreateBoundaryWall(new Vector2(playableX + playableW / 2, playableY + playableH + wallThickness / 2), new Vector2(playableW + wallThickness * 2, wallThickness));
+			// Left wall (at left edge of full map)
+			CreateBoundaryWall(new Vector2(-wallThickness / 2, fullMapH / 2), new Vector2(wallThickness, fullMapH + wallThickness * 2));
+			// Right wall (at right edge of full map)
+			CreateBoundaryWall(new Vector2(fullMapW + wallThickness / 2, fullMapH / 2), new Vector2(wallThickness, fullMapH + wallThickness * 2));
+			// Top wall (at top edge of full map)
+			CreateBoundaryWall(new Vector2(fullMapW / 2, -wallThickness / 2), new Vector2(fullMapW + wallThickness * 2, wallThickness));
+			// Bottom wall (at bottom edge of full map)
+			CreateBoundaryWall(new Vector2(fullMapW / 2, fullMapH + wallThickness / 2), new Vector2(fullMapW + wallThickness * 2, wallThickness));
 		}
 
 		private void CreateBoundaryWall(Vector2 position, Vector2 size)
 		{
 			var wall = new StaticBody2D();
 			wall.Position = position;
-			wall.CollisionLayer = 4;
+			// Use layer 10 (bit 9, value 512) - a dedicated boundary layer
+			// We'll set the player to detect this layer
+			wall.CollisionLayer = 512;
 			wall.CollisionMask = 0;
 
 			var collision = new CollisionShape2D();
