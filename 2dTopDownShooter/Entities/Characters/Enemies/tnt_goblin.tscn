@@ -6,6 +6,7 @@
 size = Vector2(90, 86)
 
 [node name="TntGoblin" type="CharacterBody2D" groups=["enemies"]]
+y_sort_enabled = true
 scale = Vector2(0.5, 0.5)
 collision_layer = 4
 collision_mask = 11

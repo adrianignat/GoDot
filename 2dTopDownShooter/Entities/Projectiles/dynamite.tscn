@@ -54,6 +54,7 @@ animations = [{
 }]
 
 [node name="Dynamite" type="Area2D"]
+y_sort_enabled = true
 script = ExtResource("2_script")
 Damage = 100
 ThrowDuration = 0.3

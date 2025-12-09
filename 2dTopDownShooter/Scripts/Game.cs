@@ -61,16 +61,12 @@ namespace dTopDownShooter.Scripts
 			// Initialize core references early so other scripts can use them
 			// _EnterTree runs before children's _Ready methods
 			MainWindow = this;
-			EntityLayer = GetNode<Node2D>("EntityLayer");
+			EntityLayer = GetNode<Node2D>("MapGenerator");
 			Player = EntityLayer.GetNode<Player>("Player");
 		}
 
 		public override void _Ready()
 		{
-			MainWindow = GetTree().Root.GetNode<Node2D>("main");
-			EntityLayer = MainWindow.GetNode<Node2D>("EntityLayer");
-			Player = EntityLayer.GetNode<Player>("Player");
-
 			// Position player at map center if MapGenerator exists
 			var mapGenerator = MainWindow.GetNodeOrNull<MapGenerator>("MapGenerator");
 			if (mapGenerator != null)

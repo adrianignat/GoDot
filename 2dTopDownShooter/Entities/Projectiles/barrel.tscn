@@ -66,6 +66,7 @@ animations = [{
 }]
 
 [node name="Barrel" type="Area2D"]
+y_sort_enabled = true
 script = ExtResource("2_script")
 BlastRadius = 30.0
 

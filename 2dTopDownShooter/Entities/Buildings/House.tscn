@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://mcemxciy28cg" path="res://Sprites/Buildings/House/House_Blue.png" id="1_house"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
-size = Vector2(87.5, 35)
+size = Vector2(88, 48)
 
 [node name="House" type="Node2D"]
 y_sort_enabled = true
@@ -16,5 +16,5 @@ texture = ExtResource("1_house")
 collision_mask = 0
 
 [node name="CollisionShape" type="CollisionShape2D" parent="CollisionBody"]
-position = Vector2(0.25, 16.5)
+position = Vector2(0, -1)
 shape = SubResource("RectangleShape2D_house")

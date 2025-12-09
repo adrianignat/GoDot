@@ -29,7 +29,6 @@ public partial class EnemySpawner : Spawner<Enemy>
 	[Export]
 	public float TntGoblinSpawnChance = 0.15f;
 
-	private Camera2D _camera;
 	private List<EnemyTier> _availableTiers = new() { EnemyTier.Blue };
 	private int _nextTierIndex = 1; // Start at Red (index 1 in enum)
 	private float _initialSpawnRate;
@@ -50,7 +49,6 @@ public partial class EnemySpawner : Spawner<Enemy>
 		_spawnRateIncreaseTimer = SpawnRateIncreaseInterval;
 		_tierTimer = TierIntroductionInterval;
 
-		_camera = GetTree().Root.GetNode("main").GetNode("EntityLayer").GetNode("Player").GetNode<Camera2D>("Camera2D");
 		_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
 
 		// Subscribe to day transition signals
@@ -214,6 +212,10 @@ public partial class EnemySpawner : Spawner<Enemy>
 		// Refresh spawn tiles if needed (after map regeneration)
 		RefreshValidSpawnTilesIfNeeded();
 
+		// Get camera fresh each time from the current player
+		var player = Game.Instance.Player;
+		var camera = player.GetNode<Camera2D>("Camera2D");
+
 		bool isValidSpawn = false;
 		int attempts = 0;
 
@@ -222,7 +224,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 		{
 			attempts++;
 			// Get a random position outside the camera view
-			spawnPosition = GetRandomSpawnPositionOutsideCamera(_camera);
+			spawnPosition = GetRandomSpawnPositionOutsideCamera(camera);
 
 			foreach (TileMapLayer tilemap in _validSpawnTiles)
 			{
@@ -237,7 +239,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 		// Fallback if no valid position found
 		if (!isValidSpawn)
 		{
-			spawnPosition = GetRandomSpawnPositionOutsideCamera(_camera);
+			spawnPosition = GetRandomSpawnPositionOutsideCamera(camera);
 		}
 
 		return spawnPosition;

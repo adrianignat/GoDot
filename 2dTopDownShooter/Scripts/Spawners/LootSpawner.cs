@@ -24,8 +24,8 @@ namespace dTopDownShooter.Scripts.Spawners
 		public void Spawn(Vector2 position)
 		{
 			var gold = GoldScene.Instantiate<Gold>();
-			gold.GlobalPosition = position;
-			GetTree().Root.CallDeferred("add_child",gold);
+			gold.Position = position;
+			Game.Instance.EntityLayer.CallDeferred("add_child", gold);
 		}
 	}
 }
