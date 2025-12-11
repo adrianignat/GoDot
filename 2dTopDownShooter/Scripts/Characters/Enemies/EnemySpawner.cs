@@ -137,7 +137,7 @@ public partial class EnemySpawner : Spawner<Enemy>
 	protected override void Spawn()
 	{
 		// TNT goblins only appear starting day 3
-		if (Game.Instance.CurrentDay >= 3 && GD.Randf() < TntGoblinSpawnChance)
+		if (GD.Randf() < TntGoblinSpawnChance)
 		{
 			SpawnTntGoblin();
 		}
@@ -206,71 +206,73 @@ public partial class EnemySpawner : Spawner<Enemy>
 		// Visible area
 		Vector2 center = camera.GetScreenCenterPosition();
 		Vector2 halfView = GetViewportRect().Size / camera.Zoom / 2;
-		float viewLeft = center.X - halfView.X;
-		float viewRight = center.X + halfView.X;
-		float viewTop = center.Y - halfView.Y;
-		float viewBottom = center.Y + halfView.Y;
-
-		// Map bounds (playable area)
-		float mapLeft = camera.LimitLeft;
-		float mapRight = camera.LimitRight;
-		float mapTop = camera.LimitTop;
-		float mapBottom = camera.LimitBottom;
 
 		// Spawn margin outside camera view
 		float margin = GameConstants.SpawnMargin;
 
-		// Collect available spawn edges (parts of map outside camera view)
-		var edges = new List<(float x1, float y1, float x2, float y2)>();
+		// Spawn distance range (from just outside camera to further out)
+		float minSpawnDistance = margin;
+		float maxSpawnDistance = margin + 200f; // Can spawn up to 200px beyond the camera edge
 
-		// Left edge: map left to camera left (if there's space)
-		if (viewLeft - margin > mapLeft)
-			edges.Add((mapLeft, Mathf.Max(mapTop, viewTop), viewLeft - margin, Mathf.Min(mapBottom, viewBottom)));
-
-		// Right edge: camera right to map right (if there's space)
-		if (viewRight + margin < mapRight)
-			edges.Add((viewRight + margin, Mathf.Max(mapTop, viewTop), mapRight, Mathf.Min(mapBottom, viewBottom)));
-
-		// Top edge: map top to camera top (if there's space)
-		if (viewTop - margin > mapTop)
-			edges.Add((Mathf.Max(mapLeft, viewLeft), mapTop, Mathf.Min(mapRight, viewRight), viewTop - margin));
-
-		// Bottom edge: camera bottom to map bottom (if there's space)
-		if (viewBottom + margin < mapBottom)
-			edges.Add((Mathf.Max(mapLeft, viewLeft), viewBottom + margin, Mathf.Min(mapRight, viewRight), mapBottom));
-
-		// If no edges available (player view covers entire map), spawn at map center
-		if (edges.Count == 0)
-			return new Vector2((mapLeft + mapRight) / 2, (mapTop + mapBottom) / 2);
-
-		// Pick random edge weighted by area
-		var areas = new List<float>();
-		float totalArea = 0;
-		foreach (var (x1, y1, x2, y2) in edges)
+		// Try to find a valid spawn location
+		for (int attempt = 0; attempt < GameConstants.MaxSpawnAttempts; attempt++)
 		{
-			float area = (x2 - x1) * (y2 - y1);
-			areas.Add(area);
-			totalArea += area;
+			Vector2 spawnPos = GetRandomSpawnPosition(center, halfView, minSpawnDistance, maxSpawnDistance);
+
+			if (IsValidSpawnLocation(spawnPos))
+				return spawnPos;
 		}
 
-		float pick = (float)GD.RandRange(0, totalArea);
-		float cumulative = 0;
-		int edgeIndex = 0;
-		for (int i = 0; i < areas.Count; i++)
-		{
-			cumulative += areas[i];
-			if (pick <= cumulative)
-			{
-				edgeIndex = i;
-				break;
-			}
-		}
+		// Fallback: return a position outside camera regardless of collision
+		return GetRandomSpawnPosition(center, halfView, minSpawnDistance, maxSpawnDistance);
+	}
 
-		// Random point within selected edge rect
-		var (ex1, ey1, ex2, ey2) = edges[edgeIndex];
+	private Vector2 GetRandomSpawnPosition(Vector2 center, Vector2 halfView, float minDistance, float maxDistance)
+	{
+		// Pick a random direction (angle in radians)
+		float angle = (float)GD.RandRange(0, Mathf.Tau);
+
+		// Pick which edge to spawn from based on angle
+		// This ensures enemies spawn outside the camera view in all directions
+		float cosAngle = Mathf.Cos(angle);
+		float sinAngle = Mathf.Sin(angle);
+
+		// Calculate intersection with camera edge rectangle
+		// We need to find where a ray from center at 'angle' intersects the camera boundary
+		float tX = cosAngle != 0 ? (halfView.X + minDistance) / Mathf.Abs(cosAngle) : float.MaxValue;
+		float tY = sinAngle != 0 ? (halfView.Y + minDistance) / Mathf.Abs(sinAngle) : float.MaxValue;
+
+		// Use the smaller t to get the edge intersection
+		float t = Mathf.Min(tX, tY);
+
+		// Add random distance beyond the edge
+		float extraDistance = (float)GD.RandRange(0, maxDistance - minDistance);
+		t += extraDistance;
+
+		// Calculate spawn position
 		return new Vector2(
-			(float)GD.RandRange(ex1, ex2),
-			(float)GD.RandRange(ey1, ey2)
+			center.X + cosAngle * t,
+			center.Y + sinAngle * t
 		);
+	}
+
+	private bool IsValidSpawnLocation(Vector2 position)
+	{
+		// Use physics query to check for collisions at spawn point
+		var spaceState = GetWorld2D().DirectSpaceState;
+
+		// Create a small circle shape for the query
+		var shape = new CircleShape2D();
+		shape.Radius = 16f; // Small radius to check for obstacles
+
+		var query = new PhysicsShapeQueryParameters2D();
+		query.Shape = shape;
+		query.Transform = new Transform2D(0, position);
+		query.CollisionMask = 1; // Layer 1 = Map (terrain, buildings, trees)
+
+		var results = spaceState.IntersectShape(query, 1);
+
+		// Valid if no collisions found
+		return results.Count == 0;
 	}
 }
