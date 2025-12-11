@@ -147,9 +147,14 @@ public partial class Arrow : RigidBody2D
 		float closestDistance = Mathf.Inf;
 
 		var enemies = GetTree().GetNodesInGroup(GameConstants.EnemiesGroup);
+		var viewRect = GetVisibleRect();
 
 		foreach (Node2D enemy in enemies)
 		{
+			// Only target visible enemies
+			if (!viewRect.HasPoint(enemy.GlobalPosition))
+				continue;
+
 			// Get the distance between the arrow and this enemy
 			float distance = GlobalPosition.DistanceSquaredTo(enemy.GlobalPosition);
 
@@ -162,5 +167,13 @@ public partial class Arrow : RigidBody2D
 		}
 
 		return closestEnemy;
+	}
+
+	private Rect2 GetVisibleRect()
+	{
+		var camera = _player.GetNode<Camera2D>("Camera2D");
+		Vector2 center = camera.GetScreenCenterPosition();
+		Vector2 halfSize = GetViewportRect().Size / camera.Zoom / 2;
+		return new Rect2(center - halfSize, halfSize * 2);
 	}
 }

@@ -1,7 +1,6 @@
 using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Spawners;
 using Godot;
-using Godot.Collections;
 using System.Collections.Generic;
 
 public partial class EnemySpawner : Spawner<Enemy>
@@ -37,8 +36,6 @@ public partial class EnemySpawner : Spawner<Enemy>
 	private const float SpawnRateIncreaseInterval = 30f;
 	private PackedScene _tntGoblinScene;
 
-	Array<Node> _validSpawnTiles;
-
 	public override void _Ready()
 	{
 		base._Ready();
@@ -48,8 +45,6 @@ public partial class EnemySpawner : Spawner<Enemy>
 		// Initialize manual timers (pause-aware)
 		_spawnRateIncreaseTimer = SpawnRateIncreaseInterval;
 		_tierTimer = TierIntroductionInterval;
-
-		_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
 
 		// Subscribe to day transition signals
 		Game.Instance.DayStarted += OnDayStarted;
@@ -97,9 +92,6 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 		// Restart tier timer for new day
 		_tierTimer = TierIntroductionInterval;
-
-		// Refresh valid spawn tiles (map regenerated)
-		_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
 
 		GD.Print($"Day {dayNumber}: Spawn rate = {ObjectsPerSecond}, Available tiers = {string.Join(", ", _availableTiers)}");
 	}
@@ -209,144 +201,76 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 	public override Vector2 GetLocation()
 	{
-		// Refresh spawn tiles if needed (after map regeneration)
-		RefreshValidSpawnTilesIfNeeded();
+		var camera = Game.Instance.Player.GetNode<Camera2D>("Camera2D");
 
-		// Get camera fresh each time from the current player
-		var player = Game.Instance.Player;
-		var camera = player.GetNode<Camera2D>("Camera2D");
+		// Visible area
+		Vector2 center = camera.GetScreenCenterPosition();
+		Vector2 halfView = GetViewportRect().Size / camera.Zoom / 2;
+		float viewLeft = center.X - halfView.X;
+		float viewRight = center.X + halfView.X;
+		float viewTop = center.Y - halfView.Y;
+		float viewBottom = center.Y + halfView.Y;
 
-		bool isValidSpawn = false;
-		int attempts = 0;
-
-		Vector2 spawnPosition = new();
-		while (!isValidSpawn && attempts < GameConstants.MaxSpawnAttempts)
-		{
-			attempts++;
-			// Get a random position outside the camera view
-			spawnPosition = GetRandomSpawnPositionOutsideCamera(camera);
-
-			foreach (TileMapLayer tilemap in _validSpawnTiles)
-			{
-				if (IsWithinTileMapLayer(tilemap, spawnPosition))
-				{
-					isValidSpawn = true;
-					break;
-				}
-			}
-		}
-
-		// Fallback if no valid position found
-		if (!isValidSpawn)
-		{
-			spawnPosition = GetRandomSpawnPositionOutsideCamera(camera);
-		}
-
-		return spawnPosition;
-	}
-
-	private void RefreshValidSpawnTilesIfNeeded()
-	{
-		// Check if tiles need refreshing (empty or contains freed nodes)
-		bool needsRefresh = _validSpawnTiles == null || _validSpawnTiles.Count == 0;
-
-		if (!needsRefresh)
-		{
-			// Check if the first tile is still valid (not freed)
-			foreach (var node in _validSpawnTiles)
-			{
-				if (!GodotObject.IsInstanceValid(node))
-				{
-					needsRefresh = true;
-					break;
-				}
-			}
-		}
-
-		if (needsRefresh)
-		{
-			_validSpawnTiles = GetTree().GetNodesInGroup(GameConstants.ValidSpawnLocationGroup);
-			GD.Print($"Refreshed valid spawn tiles: {_validSpawnTiles.Count} found");
-		}
-	}
-
-	public Vector2 GetRandomSpawnPositionOutsideCamera(Camera2D camera)
-	{
-		// Use GetScreenCenterPosition() to get the actual view center (accounts for camera limits)
-		Vector2 cameraPosition = camera.GetScreenCenterPosition();
-		Vector2 screenSize = GetViewportRect().Size;
-		Vector2 cameraZoom = camera.Zoom;
-		Vector2 viewportSize = screenSize / cameraZoom;
-
-		// Get the boundaries of the visible area
-		float leftBound = cameraPosition.X - viewportSize.X / 2;
-		float rightBound = cameraPosition.X + viewportSize.X / 2;
-		float topBound = cameraPosition.Y - viewportSize.Y / 2;
-		float bottomBound = cameraPosition.Y + viewportSize.Y / 2;
-
-		// Get playable area bounds from camera limits (these are set to the map piece area)
+		// Map bounds (playable area)
 		float mapLeft = camera.LimitLeft;
 		float mapRight = camera.LimitRight;
 		float mapTop = camera.LimitTop;
 		float mapBottom = camera.LimitBottom;
 
-		// Spawn margin - distance outside the visible area to spawn enemies
-		float spawnMargin = GameConstants.SpawnMargin;
+		// Spawn margin outside camera view
+		float margin = GameConstants.SpawnMargin;
 
-		// Determine which sides are available for spawning (have space between camera and map edge)
-		var availableSides = new System.Collections.Generic.List<int>();
+		// Collect available spawn edges (parts of map outside camera view)
+		var edges = new List<(float x1, float y1, float x2, float y2)>();
 
-		if (leftBound - spawnMargin >= mapLeft) availableSides.Add(0);   // Left
-		if (rightBound + spawnMargin <= mapRight) availableSides.Add(1); // Right
-		if (topBound - spawnMargin >= mapTop) availableSides.Add(2);     // Top
-		if (bottomBound + spawnMargin <= mapBottom) availableSides.Add(3); // Bottom
+		// Left edge: map left to camera left (if there's space)
+		if (viewLeft - margin > mapLeft)
+			edges.Add((mapLeft, Mathf.Max(mapTop, viewTop), viewLeft - margin, Mathf.Min(mapBottom, viewBottom)));
 
-		// If no sides available (player at corner covering all spawn areas), spawn at random edge of map
-		if (availableSides.Count == 0)
+		// Right edge: camera right to map right (if there's space)
+		if (viewRight + margin < mapRight)
+			edges.Add((viewRight + margin, Mathf.Max(mapTop, viewTop), mapRight, Mathf.Min(mapBottom, viewBottom)));
+
+		// Top edge: map top to camera top (if there's space)
+		if (viewTop - margin > mapTop)
+			edges.Add((Mathf.Max(mapLeft, viewLeft), mapTop, Mathf.Min(mapRight, viewRight), viewTop - margin));
+
+		// Bottom edge: camera bottom to map bottom (if there's space)
+		if (viewBottom + margin < mapBottom)
+			edges.Add((Mathf.Max(mapLeft, viewLeft), viewBottom + margin, Mathf.Min(mapRight, viewRight), mapBottom));
+
+		// If no edges available (player view covers entire map), spawn at map center
+		if (edges.Count == 0)
+			return new Vector2((mapLeft + mapRight) / 2, (mapTop + mapBottom) / 2);
+
+		// Pick random edge weighted by area
+		var areas = new List<float>();
+		float totalArea = 0;
+		foreach (var (x1, y1, x2, y2) in edges)
 		{
-			availableSides.Add(0);
-			availableSides.Add(1);
-			availableSides.Add(2);
-			availableSides.Add(3);
+			float area = (x2 - x1) * (y2 - y1);
+			areas.Add(area);
+			totalArea += area;
 		}
 
-		// Pick a random available side
-		int side = availableSides[(int)(GD.Randi() % availableSides.Count)];
-
-		Vector2 spawnPosition = new();
-
-		switch (side)
+		float pick = (float)GD.RandRange(0, totalArea);
+		float cumulative = 0;
+		int edgeIndex = 0;
+		for (int i = 0; i < areas.Count; i++)
 		{
-			case 0: // Spawn on the left
-				spawnPosition.X = Mathf.Max(leftBound - spawnMargin, mapLeft + 32);
-				spawnPosition.Y = (float)GD.RandRange(Mathf.Max(topBound, mapTop + 32), Mathf.Min(bottomBound, mapBottom - 32));
+			cumulative += areas[i];
+			if (pick <= cumulative)
+			{
+				edgeIndex = i;
 				break;
-			case 1: // Spawn on the right
-				spawnPosition.X = Mathf.Min(rightBound + spawnMargin, mapRight - 32);
-				spawnPosition.Y = (float)GD.RandRange(Mathf.Max(topBound, mapTop + 32), Mathf.Min(bottomBound, mapBottom - 32));
-				break;
-			case 2: // Spawn on the top
-				spawnPosition.X = (float)GD.RandRange(Mathf.Max(leftBound, mapLeft + 32), Mathf.Min(rightBound, mapRight - 32));
-				spawnPosition.Y = Mathf.Max(topBound - spawnMargin, mapTop + 32);
-				break;
-			case 3: // Spawn on the bottom
-				spawnPosition.X = (float)GD.RandRange(Mathf.Max(leftBound, mapLeft + 32), Mathf.Min(rightBound, mapRight - 32));
-				spawnPosition.Y = Mathf.Min(bottomBound + spawnMargin, mapBottom - 32);
-				break;
+			}
 		}
 
-		return spawnPosition;
-	}
-
-	private static bool IsWithinTileMapLayer(TileMapLayer tilemapLayer, Vector2 position)
-	{
-		// Convert world position to map coordinates (tile position)
-		Vector2I mapCoords = tilemapLayer.LocalToMap(position);
-
-		// Check if the map coordinates are within the tilemap bounds
-		// You can adjust the bounds check based on your game requirements
-		var tilemapBounds = tilemapLayer.GetCellTileData(mapCoords);
-
-		return tilemapBounds != null;
+		// Random point within selected edge rect
+		var (ex1, ey1, ex2, ey2) = edges[edgeIndex];
+		return new Vector2(
+			(float)GD.RandRange(ex1, ex2),
+			(float)GD.RandRange(ey1, ey2)
+		);
 	}
 }

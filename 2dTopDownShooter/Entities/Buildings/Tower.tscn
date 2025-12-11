@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://v8qaoo84bsug" path="res://Sprites/Buildings/Tower/Tower_Blue.png" id="1_tower"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tower"]
-size = Vector2(80, 64)
+size = Vector2(80, 69)
 
 [node name="Tower" type="Node2D"]
 y_sort_enabled = true
@@ -16,5 +16,5 @@ texture = ExtResource("1_tower")
 collision_mask = 0
 
 [node name="CollisionShape" type="CollisionShape2D" parent="CollisionBody"]
-position = Vector2(1, 0)
+position = Vector2(1, -2.5)
 shape = SubResource("RectangleShape2D_tower")

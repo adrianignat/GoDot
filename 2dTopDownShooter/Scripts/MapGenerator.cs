@@ -64,7 +64,6 @@ namespace dTopDownShooter.Scripts
 		private void GenerateMap()
 		{
 			PlaceMapPieces();
-			CreateMapBoundaries();
 		}
 
 		private void PlaceMapPieces()
@@ -176,42 +175,7 @@ namespace dTopDownShooter.Scripts
 				}
 			}
 		}
-
-		private void CreateMapBoundaries()
-		{
-			// Boundary walls surround the FULL map (including spawn margin)
-			// This keeps player inside while allowing enemies to spawn in margin and walk in
-			float wallThickness = 64f;
-			float fullMapW = MapWidth * TileSize;
-			float fullMapH = MapHeight * TileSize;
-
-			// Left wall (at left edge of full map)
-			CreateBoundaryWall(new Vector2(-wallThickness / 2, fullMapH / 2), new Vector2(wallThickness, fullMapH + wallThickness * 2));
-			// Right wall (at right edge of full map)
-			CreateBoundaryWall(new Vector2(fullMapW + wallThickness / 2, fullMapH / 2), new Vector2(wallThickness, fullMapH + wallThickness * 2));
-			// Top wall (at top edge of full map)
-			CreateBoundaryWall(new Vector2(fullMapW / 2, -wallThickness / 2), new Vector2(fullMapW + wallThickness * 2, wallThickness));
-			// Bottom wall (at bottom edge of full map)
-			CreateBoundaryWall(new Vector2(fullMapW / 2, fullMapH + wallThickness / 2), new Vector2(fullMapW + wallThickness * 2, wallThickness));
-		}
-
-		private void CreateBoundaryWall(Vector2 position, Vector2 size)
-		{
-			var wall = new StaticBody2D();
-			wall.Position = position;
-			// Use layer 10 (bit 9, value 512) - a dedicated boundary layer
-			// We'll set the player to detect this layer
-			wall.CollisionLayer = 512;
-			wall.CollisionMask = 0;
-
-			var collision = new CollisionShape2D();
-			var shape = new RectangleShape2D();
-			shape.Size = size;
-			collision.Shape = shape;
-			wall.AddChild(collision);
-			AddChild(wall);
-		}
-
+		
 		public Vector2 GetPlayerSpawnPosition()
 		{
 			// Spawn in center of the playable area

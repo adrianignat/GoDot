@@ -1,3 +1,4 @@
+using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Spawners;
 using dTopDownShooter.Scripts.Upgrades;
 using Godot;
@@ -10,6 +11,7 @@ public partial class Bow : Spawner<Arrow>
 
 	private AnimatedSprite2D _playerAnimation;
 	private Player _player;
+	private Camera2D _camera;
 
 	/// <summary>
 	/// Number of additional enemies arrows can bounce through.
@@ -31,10 +33,18 @@ public partial class Bow : Spawner<Arrow>
 	{
 		_playerAnimation = GetParent().GetNode<AnimatedSprite2D>("PlayerAnimations");
 		_player = GetParent<Player>();
+		_camera = _player.GetNode<Camera2D>("Camera2D");
 	}
 
 	public override bool CanSpawn()
 	{
+		// Don't shoot if no enemies are visible
+		if (!HasVisibleEnemy())
+		{
+			_arrowQueued = false;
+			return false;
+		}
+
 		if (!_player.IsShooting && !_arrowQueued)
 		{
 			_arrowQueued = true;
@@ -46,6 +56,26 @@ public partial class Bow : Spawner<Arrow>
 			return true;
 		}
 		return false;
+	}
+
+	private bool HasVisibleEnemy()
+	{
+		var viewRect = GetVisibleRect();
+		var enemies = GetTree().GetNodesInGroup(GameConstants.EnemiesGroup);
+
+		foreach (Node2D enemy in enemies)
+		{
+			if (viewRect.HasPoint(enemy.GlobalPosition))
+				return true;
+		}
+		return false;
+	}
+
+	public Rect2 GetVisibleRect()
+	{
+		Vector2 center = _camera.GetScreenCenterPosition();
+		Vector2 halfSize = GetViewportRect().Size / _camera.Zoom / 2;
+		return new Rect2(center - halfSize, halfSize * 2);
 	}
 
 	protected override void InitializeSpawnedObject(Arrow arrow)
