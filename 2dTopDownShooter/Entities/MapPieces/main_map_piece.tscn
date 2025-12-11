@@ -131,7 +131,6 @@ texture = ExtResource("6_mx0lh")
 texture_region_size = Vector2i(64, 64)
 0:0/size_in_atlas = Vector2i(2, 2)
 0:0/0 = 0
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)
 
 [sub_resource type="TileSet" id="TileSet_qfssm"]
 tile_size = Vector2i(64, 64)

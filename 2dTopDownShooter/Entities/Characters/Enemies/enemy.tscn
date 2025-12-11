@@ -270,6 +270,7 @@ sprite_frames = SubResource("SpriteFrames_wfccv")
 animation = &"walk"
 
 [node name="EnemyCollision" type="CollisionShape2D" parent="."]
+visibility_layer = 2
 position = Vector2(0, -4)
 shape = SubResource("CapsuleShape2D_bimp4")
 
