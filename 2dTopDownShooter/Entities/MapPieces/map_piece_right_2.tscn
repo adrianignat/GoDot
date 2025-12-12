@@ -15,7 +15,7 @@ tile_map_data = PackedByteArray("AAAJAAQAAQAHAAEAAAAJAAUAAQAHAAIAAAAJAAYAAQAHAAM
 tile_map_data = PackedByteArray("AAAJAAEABAAAAAAAAAA=")
 
 [node name="Decor_2" parent="." index="3"]
-tile_map_data = PackedByteArray("AAAIAAUABwAAAAAAAAA=")
+tile_map_data = PackedByteArray("AAAJAAUABwAAAAAAAAAGAAEABwAAAAAAAAAEAAEABwAAAAAAAAA=")
 
 [node name="WoodTower" parent="." index="4" instance=ExtResource("2_uiuie")]
 position = Vector2(355, 160)
