@@ -23,7 +23,7 @@ public partial class TntGoblin : Enemy
 	public float ThrowRange = 150f;
 
 	[Export]
-	public float ThrowCooldown = 3.0f;
+	public float ThrowCooldown = 1.5f;
 
 	[Export]
 	public float ThrowAnimationDelay = 0.25f;
@@ -68,9 +68,9 @@ public partial class TntGoblin : Enemy
 			spriteFrames = new SpriteFrames();
 			var animations = new (string name, int row, int frameCount, bool loop, float speed)[]
 			{
-				("idle", 0, 6, true, 8.0f),     // Ready stance (row 0)
-				("throw", 1, 6, false, 15.0f),  // Throwing motion (row 1)
-				("walk", 2, 7, true, 10.0f)     // Walking (row 2)
+				("idle", 0, 6, true, 10.0f),    // Ready stance (row 0)
+				("walk", 1, 6, true, 10.0f),    // Walking (row 1)
+				("attack", 2, 7, false, 10.0f)  // Attack/throw motion (row 2)
 			};
 			BuildAnimationFrames(spriteFrames, texture, animations);
 			TierSpriteFramesCache[Tier] = spriteFrames;
@@ -99,14 +99,16 @@ public partial class TntGoblin : Enemy
 			}
 		}
 
-		// Handle throwing
-		if (_isWithinThrowRange && !_isThrowing)
+		// Cooldown always counts down (even while chasing)
+		if (_timeUntilNextThrow > 0)
 		{
 			_timeUntilNextThrow -= (float)delta;
-			if (_timeUntilNextThrow <= 0)
-			{
-				ThrowDynamite();
-			}
+		}
+
+		// Throw when in range, not on cooldown, and not already throwing
+		if (_isWithinThrowRange && !_isThrowing && _timeUntilNextThrow <= 0)
+		{
+			ThrowDynamite();
 		}
 	}
 
@@ -126,7 +128,7 @@ public partial class TntGoblin : Enemy
 		if (distance <= ThrowRange)
 		{
 			Velocity = Vector2.Zero;
-			if (_animation.Animation != "idle" && _animation.Animation != "throw")
+			if (_animation.Animation != "idle" && _animation.Animation != "attack")
 			{
 				_animation.Play("idle");
 			}
@@ -150,7 +152,7 @@ public partial class TntGoblin : Enemy
 	private void ThrowDynamite()
 	{
 		_isThrowing = true;
-		_animation.Play("throw");
+		_animation.Play("attack");
 
 		// Calculate and store target position NOW (not when dynamite spawns)
 		// This prevents the dynamite from tracking player movement during throw animation
@@ -185,7 +187,7 @@ public partial class TntGoblin : Enemy
 
 	protected override void OnAnimationFinished()
 	{
-		if (_animation.Animation == "throw")
+		if (_animation.Animation == "attack")
 		{
 			_isThrowing = false;
 			_timeUntilNextThrow = ThrowCooldown;

@@ -49,9 +49,9 @@ public partial class TorchGoblin : Enemy
 			{
 				("idle", 0, 7, true, 10.0f),
 				("walk", 1, 6, true, 10.0f),
-				("attack", 2, 6, false, 30.0f),
-				("attack_down", 3, 6, false, 30.0f),
-				("attack_up", 4, 6, false, 30.0f)
+				("attack", 2, 6, false, 10.0f),
+				("attack_down", 3, 6, false, 10.0f),
+				("attack_up", 4, 6, false, 10.0f)
 			};
 			BuildAnimationFrames(spriteFrames, texture, animations);
 			TierSpriteFramesCache[Tier] = spriteFrames;
@@ -111,7 +111,6 @@ public partial class TorchGoblin : Enemy
 		}
 
 		_animation.Play(animationName);
-		Game.Instance.EmitSignal(Game.SignalName.PlayerTakeDamage, Damage);
 	}
 
 	protected override void OnAnimationFinished()
@@ -120,6 +119,12 @@ public partial class TorchGoblin : Enemy
 		string currentAnim = _animation.Animation;
 		if (currentAnim.StartsWith("attack"))
 		{
+			// Deal damage when attack animation completes (if still in range)
+			if (_withinRange)
+			{
+				Game.Instance.EmitSignal(Game.SignalName.PlayerTakeDamage, Damage);
+			}
+
 			_isAttacking = false;
 			_timeUntilNextAttack = _attackSpeed;
 
