@@ -1,0 +1,122 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Texture2D" path="res://Sprites/Characters/Enemies/Shaman/Shaman_Projectile.png" id="1_proj"]
+[ext_resource type="Texture2D" path="res://Sprites/Characters/Enemies/Shaman/Shaman_Explosion.png" id="2_expl"]
+[ext_resource type="Script" path="res://Scripts/Weapons/ShamanProjectile.cs" id="3_script"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fly1"]
+atlas = ExtResource("1_proj")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fly2"]
+atlas = ExtResource("1_proj")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fly3"]
+atlas = ExtResource("1_proj")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exp1"]
+atlas = ExtResource("2_expl")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exp2"]
+atlas = ExtResource("2_expl")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exp3"]
+atlas = ExtResource("2_expl")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exp4"]
+atlas = ExtResource("2_expl")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exp5"]
+atlas = ExtResource("2_expl")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exp6"]
+atlas = ExtResource("2_expl")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exp7"]
+atlas = ExtResource("2_expl")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exp8"]
+atlas = ExtResource("2_expl")
+region = Rect2(896, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_proj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fly1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fly2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fly3")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exp1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exp2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exp3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exp4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exp5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exp6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exp7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exp8")
+}],
+"loop": false,
+"name": &"explode",
+"speed": 15.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_coll"]
+radius = 16.0
+
+[node name="ShamanProjectile" type="RigidBody2D"]
+y_sort_enabled = true
+collision_layer = 16
+collision_mask = 3
+gravity_scale = 0.0
+script = ExtResource("3_script")
+Damage = 10
+Speed = 300.0
+
+[node name="ProjectileAnimations" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_proj")
+animation = &"fly"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_coll")
+
+[node name="Lifespan" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="OnCollision"]

@@ -28,6 +28,12 @@ public partial class EnemySpawner : Spawner<Enemy>
 	[Export]
 	public float TntGoblinSpawnChance = 0.15f;
 
+	/// <summary>
+	/// Chance (0.0 to 1.0) that a spawned enemy will be a Shaman instead of a regular goblin.
+	/// </summary>
+	[Export]
+	public float ShamanSpawnChance = 0.10f;
+
 	private List<EnemyTier> _availableTiers = new() { EnemyTier.Blue };
 	private int _nextTierIndex = 1; // Start at Red (index 1 in enum)
 	private float _initialSpawnRate;
@@ -35,12 +41,14 @@ public partial class EnemySpawner : Spawner<Enemy>
 	private float _spawnRateIncreaseTimer;
 	private const float SpawnRateIncreaseInterval = 30f;
 	private PackedScene _tntGoblinScene;
+	private PackedScene _shamanScene;
 
 	public override void _Ready()
 	{
 		base._Ready();
 		_initialSpawnRate = ObjectsPerSecond;
 		_tntGoblinScene = GD.Load<PackedScene>("res://Entities/Characters/Enemies/tnt_goblin.tscn");
+		_shamanScene = GD.Load<PackedScene>("res://Entities/Characters/Enemies/shaman.tscn");
 
 		// Initialize manual timers (pause-aware)
 		_spawnRateIncreaseTimer = SpawnRateIncreaseInterval;
@@ -136,10 +144,15 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 	protected override void Spawn()
 	{
-		// TNT goblins only appear starting day 3
-		if (GD.Randf() < TntGoblinSpawnChance)
+		float roll = GD.Randf();
+
+		if (roll < TntGoblinSpawnChance)
 		{
 			SpawnTntGoblin();
+		}
+		else if (roll < TntGoblinSpawnChance + ShamanSpawnChance)
+		{
+			SpawnShaman();
 		}
 		else
 		{
@@ -154,6 +167,14 @@ public partial class EnemySpawner : Spawner<Enemy>
 		tntGoblin.GlobalPosition = GetLocation();
 		tntGoblin.Tier = GetWeightedRandomTier();
 		GetSpawnParent().AddChild(tntGoblin);
+	}
+
+	private void SpawnShaman()
+	{
+		var shaman = _shamanScene.Instantiate<Shaman>();
+		shaman.GlobalPosition = GetLocation();
+		shaman.Tier = GetWeightedRandomTier();
+		GetSpawnParent().AddChild(shaman);
 	}
 
 	protected override void InitializeSpawnedObject(Enemy enemy)
