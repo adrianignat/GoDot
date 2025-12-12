@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://kf4yahvpwqck"]
+[gd_scene load_steps=11 format=3 uid="uid://kf4yahvpwqck"]
 
 [ext_resource type="Texture2D" uid="uid://ba3c7vw7nkb2p" path="res://Sprites/Decor/Sheep/HappySheep_Idle.png" id="1_sheep"]
+[ext_resource type="Script" uid="uid://c68hdui0sjc2b" path="res://Scripts/Objects/Sheep.cs" id="2_pmaji"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_k16kx"]
 atlas = ExtResource("1_sheep")
@@ -66,3 +67,4 @@ y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_ou367")
 animation = &"idle"
 frame_progress = 0.9131688
+script = ExtResource("2_pmaji")
