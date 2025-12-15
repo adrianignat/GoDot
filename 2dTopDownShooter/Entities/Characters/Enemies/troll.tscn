@@ -99,7 +99,6 @@ radius = 59.0
 height = 164.0
 
 [node name="Troll" type="CharacterBody2D"]
-position = Vector2(380, 240)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1

@@ -4,7 +4,7 @@ using Godot;
 /// <summary>
 /// Dynamite thrown by TNT Goblins that damages the player.
 /// </summary>
-public partial class EnemyDynamite : Area2D
+public partial class EnemyDynamite : RigidBody2D
 {
 	[Export]
 	public ushort Damage { get; set; } = 10; // Same as goblin melee damage
