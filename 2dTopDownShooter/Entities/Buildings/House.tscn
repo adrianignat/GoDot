@@ -5,16 +5,15 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
 size = Vector2(88, 48)
 
-[node name="House" type="Node2D"]
+[node name="House" type="StaticBody2D"]
+visibility_layer = 2
 y_sort_enabled = true
+collision_layer = 8
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+position = Vector2(0, -1)
+shape = SubResource("RectangleShape2D_house")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 position = Vector2(0, -35)
 texture = ExtResource("1_house")
-
-[node name="CollisionBody" type="StaticBody2D" parent="."]
-collision_mask = 0
-
-[node name="CollisionShape" type="CollisionShape2D" parent="CollisionBody"]
-position = Vector2(0, -1)
-shape = SubResource("RectangleShape2D_house")

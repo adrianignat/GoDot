@@ -1,7 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://enemy_dynamite001"]
+[gd_scene load_steps=11 format=3 uid="uid://13jfgsh3wwbu"]
 
-[ext_resource type="Texture2D" path="res://Sprites/Characters/Goblins/TNT/Dynamite/Dynamite.png" id="1_dynamite"]
-[ext_resource type="Script" path="res://Scripts/Objects/EnemyDynamite.cs" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://cbe31pj4i4asp" path="res://Sprites/Characters/Goblins/TNT/Dynamite/Dynamite.png" id="1_dynamite"]
+[ext_resource type="Script" uid="uid://cn74gvw44msrj" path="res://Scripts/Objects/EnemyDynamite.cs" id="2_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_frame1"]
 atlas = ExtResource("1_dynamite")
@@ -53,14 +53,22 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="EnemyDynamite" type="Area2D"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e2rob"]
+radius = 2.0
+height = 18.0
+
+[node name="EnemyDynamite" type="RigidBody2D"]
 y_sort_enabled = true
+collision_layer = 16
+collision_mask = 11
 script = ExtResource("2_script")
-Damage = 10
-ThrowDuration = 0.5
-BlastRadius = 60.0
 
 [node name="Animation" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_fuse")
 animation = &"fuse"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-4.7683716e-07, 1)
+rotation = 0.502891
+shape = SubResource("CapsuleShape2D_e2rob")
