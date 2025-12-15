@@ -1,0 +1,112 @@
+[gd_scene load_steps=16 format=3 uid="uid://cbtgyhfu1nxc3"]
+
+[ext_resource type="Texture2D" uid="uid://dj82ejcpgrmp2" path="res://Sprites/Characters/Enemies/Troll/Troll_Idle.png" id="1_w2vco"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kcs7b"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(0, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tigio"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(384, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vepnw"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(768, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qps07"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(1152, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_noqoj"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(1536, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xscy3"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(1920, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jbnq4"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(2304, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_37um1"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(2688, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qrngr"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(3072, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uommk"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(3456, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xxrra"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(3840, 0, 384, 384)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nsqnj"]
+atlas = ExtResource("1_w2vco")
+region = Rect2(4224, 0, 384, 384)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_r0pgb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kcs7b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tigio")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vepnw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qps07")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_noqoj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xscy3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jbnq4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_37um1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qrngr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uommk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xxrra")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nsqnj")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 15.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_tex8g"]
+radius = 59.0
+height = 164.0
+
+[node name="Troll" type="CharacterBody2D"]
+position = Vector2(380, 240)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_r0pgb")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-8, 1)
+shape = SubResource("CapsuleShape2D_tex8g")
