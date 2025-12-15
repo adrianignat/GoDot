@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=4 uid="uid://o8bjtgfquubf"]
+[gd_scene load_steps=3 format=4 uid="uid://dnklrkii7vjmp"]
 
-[ext_resource type="PackedScene" uid="uid://bgwtsvsae74f" path="res://Entities/MapPieces/main_map_piece.tscn" id="1_2dhng"]
+[ext_resource type="PackedScene" uid="uid://bgwtsvsae74f" path="res://Entities/MapPieces/main_map_piece.tscn" id="1_0ro4m"]
+[ext_resource type="PackedScene" uid="uid://mb1euaenbdro" path="res://Entities/Buildings/House.tscn" id="2_0foa3"]
 
-[node name="map" instance=ExtResource("1_2dhng")]
+[node name="map" instance=ExtResource("1_0ro4m")]
 
 [node name="Layer_2_Foam" parent="." index="1"]
 tile_map_data = PackedByteArray()
@@ -17,7 +18,13 @@ tile_map_data = PackedByteArray()
 tile_map_data = PackedByteArray()
 
 [node name="Decor_1" parent="." index="5"]
-tile_map_data = PackedByteArray("AAABAAkABgAAAAAAAAACAAgABgAAAAAAAAAHAAgABgAAAAAAAAAIAAkABgAAAAAAAAAHAAEABgAAAAAAAAAIAAAABgAAAAAAAAACAAEABgAAAAAAAAABAAAABgAAAAAAAAA=")
+tile_map_data = PackedByteArray("AAAIAAgABQAAAAAAAAACAAkABgAAAAAAAAAJAAIABgAAAAAAAAABAAEABQAAAAAAAAAHAAUABQAAAAAAAAACAAUABQAAAAAAAAA=")
 
 [node name="Decor_2" parent="." index="6"]
 tile_map_data = PackedByteArray()
+
+[node name="House" parent="." index="7" instance=ExtResource("2_0foa3")]
+position = Vector2(72, 580)
+
+[node name="House2" parent="." index="8" instance=ExtResource("2_0foa3")]
+position = Vector2(572, 81)
