@@ -86,3 +86,4 @@ dash={
 2d_physics/layer_4="Environment"
 2d_physics/layer_5="Projectiles"
 2d_physics/layer_6="Loot"
+2d_physics/layer_7="Interaction"
