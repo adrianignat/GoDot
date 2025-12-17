@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=4 uid="uid://dmbulbyf30rm4"]
 
-[ext_resource type="PackedScene" uid="uid://bgwtsvsae74f" path="res://Entities/MapPieces/main_map_piece.tscn" id="1_7e3dq"]
-[ext_resource type="PackedScene" uid="uid://cbtgyhfu1nxc3" path="res://Entities/Characters/Enemies/troll.tscn" id="2_308sa"]
+[ext_resource type="PackedScene" uid="uid://bgwtsvsae74f" path="res://Entities/MapPieces/main_map_piece.tscn" id="1_gi64n"]
+[ext_resource type="PackedScene" uid="uid://cbtgyhfu1nxc3" path="res://Entities/Characters/Enemies/troll.tscn" id="2_0cj8i"]
 
-[node name="map" instance=ExtResource("1_7e3dq")]
+[node name="map" instance=ExtResource("1_gi64n")]
 
 [node name="Layer_2_Foam" parent="." index="1"]
 tile_map_data = PackedByteArray()
@@ -23,5 +23,5 @@ tile_map_data = PackedByteArray("AAAIAAgABgAAAAAAAAAHAAEABgAAAAAAAAAGAAAABgAAAAA
 [node name="Decor_2" parent="." index="6"]
 tile_map_data = PackedByteArray()
 
-[node name="Troll" parent="." index="7" instance=ExtResource("2_308sa")]
+[node name="Troll" parent="." index="7" instance=ExtResource("2_0cj8i")]
 position = Vector2(317, 214)
