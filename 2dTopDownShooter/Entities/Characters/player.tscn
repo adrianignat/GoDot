@@ -503,7 +503,6 @@ offset_bottom = -41.0
 text = "Score: 0"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="PlayerHealthBar" parent="CanvasLayer" instance=ExtResource("6_a3846")]
 offset_left = 35.0
@@ -534,7 +533,6 @@ grow_vertical = 0
 script = ExtResource("16_dash")
 
 [node name="UpgradeMenuLayer" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="UpgradeMenu" type="Control" parent="UpgradeMenuLayer"]
 layout_mode = 3

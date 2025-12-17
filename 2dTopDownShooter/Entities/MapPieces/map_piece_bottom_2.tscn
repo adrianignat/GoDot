@@ -1,39 +1,41 @@
-[gd_scene load_steps=6 format=4 uid="uid://d138eeqmx7g56"]
+[gd_scene load_steps=5 format=4 uid="uid://d138eeqmx7g56"]
 
 [ext_resource type="PackedScene" uid="uid://bgwtsvsae74f" path="res://Entities/MapPieces/main_map_piece.tscn" id="1_25v7h"]
 [ext_resource type="PackedScene" uid="uid://dj2llsd27l7pa" path="res://Entities/Buildings/Tower.tscn" id="2_d63wf"]
 [ext_resource type="PackedScene" uid="uid://mb1euaenbdro" path="res://Entities/Buildings/House.tscn" id="3_mmi5n"]
 [ext_resource type="PackedScene" uid="uid://4oq6xvox7ntc" path="res://Entities/Buildings/tower_ruins.tscn" id="4_mmi5n"]
-[ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/Characters/player.tscn" id="5_w05lp"]
 
 [node name="map" instance=ExtResource("1_25v7h")]
 
-[node name="Layer_2_Foam" parent="." index="1"]
+[node name="NoSpawn" parent="." index="0"]
+tile_map_data = PackedByteArray("AAAAAAgAAQAAAAAAAAAAAAkAAQAAAAAAAAAJAAgAAQAAAAAAAAAJAAkAAQAAAAAAAAA=")
+
+[node name="Layer_1_Water" parent="." index="1"]
+tile_map_data = PackedByteArray("AAAAAAgAAgAAAAAAAAAAAAkAAgAAAAAAAAAJAAgAAgAAAAAAAAAJAAkAAgAAAAAAAAA=")
+
+[node name="Layer_2_Foam" parent="." index="2"]
 tile_map_data = PackedByteArray("AAAAAAcABAAAAAAAAAABAAkABAAAAAAAAAACAAkABAAAAAAAAAADAAkABAAAAAAAAAAEAAkABAAAAAAAAAAFAAkABAAAAAAAAAAGAAkABAAAAAAAAAAHAAkABAAAAAAAAAAIAAkABAAAAAAAAAAIAAgABAAAAAAAAAAIAAcABAAAAAAAAAAJAAcABAAAAAAAAAABAAgABAAAAAAAAAABAAcABAAAAAAAAAA=")
 
-[node name="Layer_3_Grass" parent="." index="2"]
+[node name="Layer_3_Grass" parent="." index="3"]
 tile_map_data = PackedByteArray("AAABAAEAAQABAAEAAAACAAEAAQABAAEAAAADAAEAAQABAAEAAAAEAAEAAQABAAEAAAAFAAEAAQABAAEAAAAGAAEAAQABAAEAAAAHAAEAAQABAAEAAAAIAAEAAQABAAEAAAAJAAEAAQABAAEAAAABAAIAAQABAAEAAAABAAMAAQABAAEAAAABAAQAAQABAAEAAAABAAUAAQABAAEAAAABAAYAAQABAAEAAAABAAcAAQABAAEAAAABAAgAAQAAAAEAAAABAAkAAQAAAAIAAAAAAAUAAQABAAEAAAAAAAYAAQABAAEAAAAAAAcAAQABAAIAAAACAAIAAQABAAEAAAACAAMAAQABAAEAAAACAAQAAQABAAEAAAACAAUAAQABAAEAAAACAAYAAQABAAEAAAACAAcAAQABAAEAAAACAAgAAQABAAEAAAACAAkAAQABAAIAAAADAAIAAQABAAEAAAADAAMAAQABAAEAAAADAAQAAQABAAEAAAADAAUAAQABAAEAAAADAAYAAQABAAEAAAADAAcAAQABAAEAAAADAAgAAQABAAEAAAADAAkAAQABAAIAAAAEAAIAAQABAAEAAAAEAAMAAQABAAEAAAAEAAQAAQABAAEAAAAEAAUAAQABAAEAAAAEAAYAAQABAAEAAAAEAAcAAQABAAEAAAAEAAgAAQABAAEAAAAEAAkAAQABAAIAAAAFAAIAAQABAAEAAAAFAAMAAQABAAEAAAAFAAQAAQABAAEAAAAFAAUAAQABAAEAAAAFAAYAAQABAAEAAAAFAAcAAQABAAEAAAAFAAgAAQABAAEAAAAFAAkAAQABAAIAAAAGAAIAAQABAAEAAAAGAAMAAQABAAEAAAAGAAQAAQABAAEAAAAGAAUAAQABAAEAAAAGAAYAAQABAAEAAAAGAAcAAQABAAEAAAAGAAgAAQABAAEAAAAGAAkAAQABAAIAAAAHAAIAAQABAAEAAAAHAAMAAQABAAEAAAAHAAQAAQABAAEAAAAHAAUAAQABAAEAAAAHAAYAAQABAAEAAAAHAAcAAQABAAEAAAAHAAgAAQABAAEAAAAHAAkAAQABAAIAAAAIAAIAAQABAAEAAAAIAAMAAQABAAEAAAAIAAQAAQABAAEAAAAIAAUAAQABAAEAAAAIAAYAAQABAAEAAAAIAAcAAQABAAEAAAAIAAgAAQACAAEAAAAIAAkAAQACAAIAAAAJAAIAAQABAAEAAAAJAAMAAQABAAEAAAAJAAQAAQABAAEAAAAJAAUAAQABAAEAAAAJAAYAAQABAAEAAAAJAAcAAQABAAIAAAAAAAAAAQABAAEAAAAAAAEAAQABAAEAAAAAAAIAAQABAAEAAAAAAAMAAQABAAEAAAAAAAQAAQABAAEAAAABAAAAAQABAAEAAAACAAAAAQABAAEAAAADAAAAAQABAAEAAAAEAAAAAQABAAEAAAAFAAAAAQABAAEAAAAGAAAAAQABAAEAAAAHAAAAAQABAAEAAAAIAAAAAQABAAEAAAAJAAAAAQABAAEAAAA=")
 
-[node name="Layer_4_Shadow" parent="." index="3"]
+[node name="Layer_4_Shadow" parent="." index="4"]
 tile_map_data = PackedByteArray()
 
-[node name="Layer_5_Hills" parent="." index="4"]
+[node name="Layer_5_Hills" parent="." index="5"]
 tile_map_data = PackedByteArray()
 
-[node name="Decor_1" parent="." index="5"]
+[node name="Decor_1" parent="." index="6"]
 tile_map_data = PackedByteArray("AAADAAIABgAAAAAAAAAEAAIABgAAAAAAAAAFAAIABgAAAAAAAAA=")
 
-[node name="Decor_2" parent="." index="6"]
+[node name="Decor_2" parent="." index="7"]
 tile_map_data = PackedByteArray("AAAEAAIABQAAAAAAAAACAAQABQAAAAAAAAAGAAgABQAAAAAAAAABAAcABwAAAAAAAAADAAgABwAAAAAAABA=")
 
-[node name="House" parent="." index="7" instance=ExtResource("3_mmi5n")]
+[node name="House" parent="." index="8" instance=ExtResource("3_mmi5n")]
 position = Vector2(586, 53)
 
-[node name="Tower" parent="." index="8" instance=ExtResource("2_d63wf")]
+[node name="Tower" parent="." index="9" instance=ExtResource("2_d63wf")]
 position = Vector2(111, 254)
 
-[node name="TowerRuins" parent="." index="9" instance=ExtResource("4_mmi5n")]
+[node name="TowerRuins" parent="." index="10" instance=ExtResource("4_mmi5n")]
 position = Vector2(500, 290)
-
-[node name="Player" parent="." index="10" instance=ExtResource("5_w05lp")]
-position = Vector2(110, 567)
