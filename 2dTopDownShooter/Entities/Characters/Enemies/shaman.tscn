@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://b4tvyxkjpecm0"]
 
-[ext_resource type="Script" path="res://Scripts/Characters/Enemies/Shaman.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://bouu7k6slah0g" path="res://Scripts/Characters/Enemies/Shaman.cs" id="1_script"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_placeholder"]
 animations = [{
