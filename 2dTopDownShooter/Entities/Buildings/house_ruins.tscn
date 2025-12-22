@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://cpvrgvbt475ci"]
+
+[ext_resource type="Script" uid="uid://c5abxo54vlkh6" path="res://Scripts/Objects/HouseRuins.cs" id="1_02cda"]
+[ext_resource type="Texture2D" uid="uid://bcmmltvrer0at" path="res://Sprites/Buildings/House/House_Destroyed.png" id="1_w0n72"]
+[ext_resource type="Texture2D" uid="uid://dgkjijrfwilcp" path="res://Sprites/Buildings/House/House_Construction.png" id="3_te817"]
+[ext_resource type="Texture2D" uid="uid://mcemxciy28cg" path="res://Sprites/Buildings/House/House_Blue.png" id="4_shmtr"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_02cda"]
+radius = 130.06152
+
+[node name="house_ruins" type="Node2D"]
+script = ExtResource("1_02cda")
+DestroyedTexture = ExtResource("1_w0n72")
+ConstructionTexture = ExtResource("3_te817")
+BuiltTexture = ExtResource("4_shmtr")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_w0n72")
+metadata/_edit_group_ = true
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_02cda")
+
+[node name="WorkerSpawnPoint" type="Marker2D" parent="."]
+position = Vector2(126, 3)
+
+[node name="WorkerWorkPoint" type="Marker2D" parent="."]
+position = Vector2(50, 46)
+
+[node name="Timer" type="Timer" parent="."]
