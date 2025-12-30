@@ -11,6 +11,7 @@ namespace dTopDownShooter.Scripts
 		public const float NightDuration = 60f;          // 1 minute
 		public const float NightDamageInterval = 3f;     // Damage every 3 seconds
 		public const float ShelterRadius = 80f;          // Distance to count as "in shelter"
+		public const float BuildDetectionRadius = 130f;   // Distance to trigger building construction
 		public const float FadeDuration = 2.0f;          // Day transition fade duration
 
 		// Combat

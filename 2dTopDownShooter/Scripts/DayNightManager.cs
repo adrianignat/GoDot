@@ -128,10 +128,10 @@ namespace dTopDownShooter.Scripts
 			Game.Instance.CurrentPhase = GamePhase.ShelterWarning;
 			_shelterMarked = true;
 
-			// Pick a random house as shelter
+			// Pick shelter - prioritizes built house ruins if available
 			if (_mapGenerator != null)
 			{
-				_currentShelterPosition = _mapGenerator.GetRandomHousePosition();
+				_currentShelterPosition = _mapGenerator.GetShelterPosition();
 			}
 			else
 			{

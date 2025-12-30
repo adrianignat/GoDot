@@ -25,9 +25,13 @@ namespace dTopDownShooter.Scripts
 		private const string MapPiecesPath = "res://Entities/MapPieces/";
 		private const int MapPieceVariants = 3;  // Each type has 3 variants (_1, _2, _3)
 
+		// Quest buildings
+		private const string HouseRuinsPath = "res://Entities/Buildings/house_ruins.tscn";
+
 		private Random _random;
 		private List<Vector2> _housePositions = new();
 		private List<StaticBody2D> _houseBodies = new();
+		private HouseRuins _houseRuinsInstance;
 
 		public override void _Ready()
 		{
@@ -51,6 +55,7 @@ namespace dTopDownShooter.Scripts
 			// Reset state
 			_housePositions.Clear();
 			_houseBodies.Clear();
+			_houseRuinsInstance = null;
 
 			// Generate new map
 			CallDeferred(nameof(GenerateMapDeferred));
@@ -64,6 +69,7 @@ namespace dTopDownShooter.Scripts
 		private void GenerateMap()
 		{
 			PlaceMapPieces();
+			SpawnHouseRuins();
 		}
 
 		private void PlaceMapPieces()
@@ -158,6 +164,36 @@ namespace dTopDownShooter.Scripts
 			CollectHousesFromPiece(piece);
 		}
 
+		private void SpawnHouseRuins()
+		{
+			var houseRuinsScene = GD.Load<PackedScene>(HouseRuinsPath);
+			if (houseRuinsScene == null)
+			{
+				GD.PrintErr($"Failed to load house ruins: {HouseRuinsPath}");
+				return;
+			}
+
+			_houseRuinsInstance = houseRuinsScene.Instantiate<HouseRuins>();
+
+			// Place at a random position within the playable area, but not too close to center (player spawn)
+			var bounds = GetPlayableAreaBounds();
+			float margin = 200f; // stay away from edges
+			float centerExclusion = 300f; // stay away from player spawn
+
+			Vector2 position;
+			int attempts = 0;
+			do
+			{
+				float x = bounds.Position.X + margin + (float)_random.NextDouble() * (bounds.Size.X - margin * 2);
+				float y = bounds.Position.Y + margin + (float)_random.NextDouble() * (bounds.Size.Y - margin * 2);
+				position = new Vector2(x, y);
+				attempts++;
+			} while (position.DistanceTo(GetPlayerSpawnPosition()) < centerExclusion && attempts < 20);
+
+			_houseRuinsInstance.Position = position;
+			AddChild(_houseRuinsInstance);
+		}
+
 		private void CollectHousesFromPiece(Node2D piece)
 		{
 			foreach (Node child in piece.GetChildren())
@@ -215,6 +251,16 @@ namespace dTopDownShooter.Scripts
 				return GetPlayerSpawnPosition(); // Fallback to center
 
 			return _housePositions[_random.Next(_housePositions.Count)];
+		}
+
+		public Vector2 GetShelterPosition()
+		{
+			// If house ruins is built, use it as shelter
+			if (_houseRuinsInstance != null && _houseRuinsInstance.IsBuilt)
+				return _houseRuinsInstance.GlobalPosition;
+
+			// Otherwise pick a random house
+			return GetRandomHousePosition();
 		}
 	}
 }
