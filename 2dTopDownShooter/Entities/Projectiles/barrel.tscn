@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://barrel001"]
 
 [ext_resource type="Texture2D" uid="uid://db6wlvpsxc644" path="res://Sprites/Characters/Goblins/Barrel/Blue/Barrel_Blue.png" id="1_barrel"]
-[ext_resource type="Script" uid="uid://d1cv85hbld62r" path="res://Scripts/Objects/Barrel.cs" id="2_script"]
+[ext_resource type="Script" path="res://Scripts/Objects/Barrel.cs" id="2_script"]
 
 [sub_resource type="AtlasTexture" id="fuse3"]
 atlas = ExtResource("1_barrel")

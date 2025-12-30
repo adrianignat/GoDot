@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://tower_arrow_001"]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" uid="uid://tower_arrow_script" path="res://Scripts/Weapons/TowerArrow.cs" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://knight_arrow" path="res://Sprites/Characters/Knights/Archer/Arrow.png" id="2_arrow"]
+[ext_resource type="Script" path="res://Scripts/Weapons/TowerArrow.cs" id="1_script"]
+[ext_resource type="Texture2D" path="res://Sprites/Characters/Knights/Archer/Arrow.png" id="2_arrow"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arrow"]
 size = Vector2(40, 10)

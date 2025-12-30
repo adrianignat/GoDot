@@ -1,6 +1,6 @@
 [gd_scene load_steps=24 format=3 uid="uid://bklc6qtvk0bf8"]
 
-[ext_resource type="Script" uid="uid://c2yjsqulw6ocg" path="res://Scripts/Characters/Enemies/TntGoblin.cs" id="1_script"]
+[ext_resource type="Script" path="res://Scripts/Characters/Enemies/TntGoblin.cs" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://brgeovqintq2b" path="res://Sprites/Characters/Goblins/TNT/Blue/TNT_Blue.png" id="2_6teal"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=155 format=3 uid="uid://b3esvubhkwjtg"]
 
-[ext_resource type="Script" uid="uid://u7atgyq5lekq" path="res://Scripts/Characters/Worker.cs" id="1_2mfix"]
+[ext_resource type="Script" path="res://Scripts/Characters/Worker.cs" id="1_2mfix"]
 [ext_resource type="Texture2D" uid="uid://cd6l35kbp2fi0" path="res://Sprites/Characters/Knights/Pawn/Blue/Pawn_Run Axe.png" id="1_c4d8y"]
 [ext_resource type="Texture2D" uid="uid://duixpnymuyort" path="res://Sprites/Characters/Knights/Pawn/Blue/Pawn_Idle Axe.png" id="1_q3ao3"]
 [ext_resource type="Texture2D" uid="uid://b1j0gegcxeti6" path="res://Sprites/Characters/Knights/Pawn/Blue/Pawn_Idle.png" id="1_y6bhx"]

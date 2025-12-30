@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://dynamite001"]
 
 [ext_resource type="Texture2D" uid="uid://cbe31pj4i4asp" path="res://Sprites/Characters/Goblins/TNT/Dynamite/Dynamite.png" id="1_dynamite"]
-[ext_resource type="Script" uid="uid://barmlo1wcetr3" path="res://Scripts/Objects/Dynamite.cs" id="2_script"]
+[ext_resource type="Script" path="res://Scripts/Objects/Dynamite.cs" id="2_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_frame1"]
 atlas = ExtResource("1_dynamite")
