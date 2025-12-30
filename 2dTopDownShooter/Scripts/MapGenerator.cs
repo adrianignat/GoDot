@@ -27,11 +27,13 @@ namespace dTopDownShooter.Scripts
 
 		// Quest buildings
 		private const string HouseRuinsPath = "res://Entities/Buildings/house_ruins.tscn";
+		private const string TowerRuinsPath = "res://Entities/Buildings/tower_ruins.tscn";
 
 		private Random _random;
 		private List<Vector2> _housePositions = new();
 		private List<StaticBody2D> _houseBodies = new();
 		private HouseRuins _houseRuinsInstance;
+		private TowerRuins _towerRuinsInstance;
 
 		public override void _Ready()
 		{
@@ -56,6 +58,7 @@ namespace dTopDownShooter.Scripts
 			_housePositions.Clear();
 			_houseBodies.Clear();
 			_houseRuinsInstance = null;
+			_towerRuinsInstance = null;
 
 			// Generate new map
 			CallDeferred(nameof(GenerateMapDeferred));
@@ -70,6 +73,7 @@ namespace dTopDownShooter.Scripts
 		{
 			PlaceMapPieces();
 			SpawnHouseRuins();
+			SpawnTowerRuins();
 		}
 
 		private void PlaceMapPieces()
@@ -175,23 +179,29 @@ namespace dTopDownShooter.Scripts
 
 			_houseRuinsInstance = houseRuinsScene.Instantiate<HouseRuins>();
 
-			// Place at a random position within the playable area, but not too close to center (player spawn)
-			var bounds = GetPlayableAreaBounds();
-			float margin = 200f; // stay away from edges
-			float centerExclusion = 300f; // stay away from player spawn
-
-			Vector2 position;
-			int attempts = 0;
-			do
-			{
-				float x = bounds.Position.X + margin + (float)_random.NextDouble() * (bounds.Size.X - margin * 2);
-				float y = bounds.Position.Y + margin + (float)_random.NextDouble() * (bounds.Size.Y - margin * 2);
-				position = new Vector2(x, y);
-				attempts++;
-			} while (position.DistanceTo(GetPlayerSpawnPosition()) < centerExclusion && attempts < 20);
-
-			_houseRuinsInstance.Position = position;
+			// TODO: Add designated spawn points on map pieces for quest buildings
+			// For now, spawn near player for testing
+			Vector2 playerSpawn = GetPlayerSpawnPosition();
+			_houseRuinsInstance.Position = playerSpawn + new Vector2(200, 150);
 			AddChild(_houseRuinsInstance);
+		}
+
+		private void SpawnTowerRuins()
+		{
+			var towerRuinsScene = GD.Load<PackedScene>(TowerRuinsPath);
+			if (towerRuinsScene == null)
+			{
+				GD.PrintErr($"Failed to load tower ruins: {TowerRuinsPath}");
+				return;
+			}
+
+			_towerRuinsInstance = towerRuinsScene.Instantiate<TowerRuins>();
+
+			// TODO: Add designated spawn points on map pieces for quest buildings
+			// For now, spawn near player for testing
+			Vector2 playerSpawn = GetPlayerSpawnPosition();
+			_towerRuinsInstance.Position = playerSpawn + new Vector2(-200, 150);
+			AddChild(_towerRuinsInstance);
 		}
 
 		private void CollectHousesFromPiece(Node2D piece)

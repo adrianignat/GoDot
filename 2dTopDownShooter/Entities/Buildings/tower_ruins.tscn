@@ -1,12 +1,12 @@
 [gd_scene load_steps=6 format=3 uid="uid://4oq6xvox7ntc"]
 
-[ext_resource type="Script" uid="uid://c7gpruawtux5w" path="res://Scripts/Objects/TowerRuins.cs" id="1_4n1mu"]
+[ext_resource type="Script" uid="uid://c5eyucqj8c1va" path="res://Scripts/Objects/TowerRuins.cs" id="1_4n1mu"]
 [ext_resource type="Texture2D" uid="uid://y74abucwpswm" path="res://Sprites/Buildings/Tower/Tower_Destroyed.png" id="2_f7ucc"]
 [ext_resource type="Texture2D" uid="uid://ce4lhvhiwjy6u" path="res://Sprites/Buildings/Tower/Tower_Construction.png" id="3_dx55q"]
 [ext_resource type="Texture2D" uid="uid://v8qaoo84bsug" path="res://Sprites/Buildings/Tower/Tower_Blue.png" id="4_slq3l"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_f7ucc"]
-radius = 195.0314
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_collision"]
+size = Vector2(63, 67)
 
 [node name="TowerRuins" type="Node2D"]
 script = ExtResource("1_4n1mu")
@@ -18,13 +18,13 @@ BuildTimeRequired = 6.0
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_f7ucc")
 
-[node name="Area2D" type="Area2D" parent="."]
-collision_layer = 64
-collision_mask = 2
+[node name="CollisionBody" type="StaticBody2D" parent="."]
+position = Vector2(0, 40)
+collision_layer = 8
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(-1, 38.5)
-shape = SubResource("CircleShape2D_f7ucc")
+[node name="CollisionShape" type="CollisionShape2D" parent="CollisionBody"]
+position = Vector2(0.5, -1.5)
+shape = SubResource("RectangleShape2D_collision")
 
 [node name="WorkerSpawnPoint" type="Marker2D" parent="."]
 position = Vector2(156, 132)
@@ -32,5 +32,8 @@ position = Vector2(156, 132)
 [node name="WorkerWorkPoint" type="Marker2D" parent="."]
 position = Vector2(72, 81)
 
+[node name="ArcherSpawnPoint" type="Marker2D" parent="."]
+position = Vector2(0, -50)
+
 [node name="Timer" type="Timer" parent="."]
-wait_time = 2.0
+process_mode = 1

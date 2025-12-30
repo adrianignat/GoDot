@@ -1,8 +1,8 @@
-[gd_scene load_steps=18 format=3 uid="uid://tower_archer_001"]
+[gd_scene load_steps=19 format=3 uid="uid://chu3f7imtsq1m"]
 
-[ext_resource type="Script" uid="uid://tower_archer_script" path="res://Scripts/Characters/TowerArcher.cs" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://archer_idle" path="res://Sprites/Characters/Knights/Archer/Blue/Archer_Idle.png" id="2_idle"]
-[ext_resource type="Texture2D" uid="uid://archer_shoot" path="res://Sprites/Characters/Knights/Archer/Blue/Archer_Shoot.png" id="3_shoot"]
+[ext_resource type="Script" uid="uid://bm7ioalme0v6" path="res://Scripts/Characters/TowerArcher.cs" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dl1osw1q3nood" path="res://Sprites/Characters/Knights/Archer/Blue/Archer_Idle.png" id="2_idle"]
+[ext_resource type="Texture2D" uid="uid://b0wrb8nx7rhfi" path="res://Sprites/Characters/Knights/Archer/Blue/Archer_Shoot.png" id="3_shoot"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_idle_0"]
 atlas = ExtResource("2_idle")

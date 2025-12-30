@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://tower_arrow_001"]
+
+[ext_resource type="Script" uid="uid://tower_arrow_script" path="res://Scripts/Weapons/TowerArrow.cs" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://knight_arrow" path="res://Sprites/Characters/Knights/Archer/Arrow.png" id="2_arrow"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_arrow"]
+size = Vector2(40, 10)
+
+[node name="TowerArrow" type="Area2D"]
+collision_layer = 16
+collision_mask = 4
+monitoring = true
+monitorable = true
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("2_arrow")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_arrow")
+
+[node name="Lifespan" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="OnBodyEntered"]

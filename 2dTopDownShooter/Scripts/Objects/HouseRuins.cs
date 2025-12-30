@@ -65,7 +65,7 @@ public partial class HouseRuins : Node2D
 	{
 		_playerInRange = true;
 
-		SpawnWorker();
+		SpawnOrRecallWorker();
 
 		if (_state == HouseState.Destroyed)
 			StartBuilding();
@@ -79,18 +79,24 @@ public partial class HouseRuins : Node2D
 		_buildTimer.Stop();
 		SendWorkerBack();
 	}
-	private void SpawnWorker()
+	private void SpawnOrRecallWorker()
 	{
-		// check if worker exists and is still valid (not queued for deletion)
-		if (GodotObject.IsInstanceValid(_workerInstance) || WorkerScene == null)
+		if (WorkerScene == null)
 			return;
 
+		// If worker already exists and is valid, recall it to work point
+		if (GodotObject.IsInstanceValid(_workerInstance))
+		{
+			_workerInstance.MoveTo(_workerWorkPoint.GlobalPosition);
+			_workerInstance.FaceTowards(_workerWorkPoint.GlobalPosition);
+			return;
+		}
+
+		// Spawn new worker
 		_workerInstance = WorkerScene.Instantiate<Worker>();
 		GetParent().AddChild(_workerInstance);
 		_workerInstance.GlobalPosition = _workerSpawnPoint.GlobalPosition;
-		// tell worker to move to work point
 		_workerInstance.MoveTo(_workerWorkPoint.GlobalPosition);
-		// make the worker face the work point
 		_workerInstance.FaceTowards(_workerWorkPoint.GlobalPosition);
 	}
 	private void StartBuilding()
@@ -122,8 +128,8 @@ public partial class HouseRuins : Node2D
 			return;
 
 		// tell worker to walk back to spawn point and despawn when arrived
+		// don't null the reference - worker will be freed on despawn and IsInstanceValid will return false
 		_workerInstance.MoveToAndDespawn(_workerSpawnPoint.GlobalPosition);
 		_workerInstance.FaceTowards(_workerSpawnPoint.GlobalPosition);
-		_workerInstance = null;
 	}
 }

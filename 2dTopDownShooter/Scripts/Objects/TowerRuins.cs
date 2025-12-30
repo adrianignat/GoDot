@@ -1,3 +1,4 @@
+using dTopDownShooter.Scripts;
 using Godot;
 
 public partial class TowerRuins : Node2D
@@ -7,14 +8,17 @@ public partial class TowerRuins : Node2D
 	[Export] public Texture2D BuiltTexture;
 
 	[Export] public PackedScene WorkerScene;
+	[Export] public PackedScene ArcherScene;
 	[Export] public float BuildTimeRequired = 5f;
 
 	private Sprite2D _sprite;
 	private Timer _buildTimer;
-	private Area2D _area;
 	private Marker2D _workerSpawnPoint;
+	private Marker2D _workerWorkPoint;
+	private Marker2D _archerSpawnPoint;
 
 	private Worker _workerInstance;
+	private TowerArcher _archerInstance;
 	private float _buildProgress = 0f;
 	private bool _playerInRange = false;
 
@@ -24,78 +28,90 @@ public partial class TowerRuins : Node2D
 		Building,
 		Built
 	}
-
 	private TowerState _state = TowerState.Destroyed;
+
+	public bool IsBuilt => _state == TowerState.Built;
 
 	public override void _Ready()
 	{
 		_sprite = GetNode<Sprite2D>("Sprite2D");
 		_buildTimer = GetNode<Timer>("Timer");
-		_area = GetNode<Area2D>("Area2D");
-		_workerSpawnPoint = GetNode<Marker2D>("Marker2D");
+		_workerSpawnPoint = GetNode<Marker2D>("WorkerSpawnPoint");
+		_workerWorkPoint = GetNode<Marker2D>("WorkerWorkPoint");
+		_archerSpawnPoint = GetNode<Marker2D>("ArcherSpawnPoint");
 
-		_area.BodyEntered += OnBodyEntered;
-		_area.BodyExited += OnBodyExited;
 		_buildTimer.Timeout += OnBuildTick;
+		_buildTimer.WaitTime = 1.0;
 
 		_sprite.Texture = DestroyedTexture;
-		// fallback: load worker scene if not assigned in the inspector
+
 		if (WorkerScene == null)
-		{
 			WorkerScene = GD.Load<PackedScene>("res://Entities/Characters/worker.tscn");
-		}
+
+		if (ArcherScene == null)
+			ArcherScene = GD.Load<PackedScene>("res://Entities/Characters/archer.tscn");
 	}
 
-	private void OnBodyEntered(Node body)
+	public override void _Process(double delta)
 	{
-		if (body is not Player)
+		var player = Game.Instance?.Player;
+		if (player == null || _state == TowerState.Built)
 			return;
 
+		float distance = GlobalPosition.DistanceTo(player.GlobalPosition);
+		bool inRange = distance <= GameConstants.BuildDetectionRadius;
+
+		if (inRange && !_playerInRange)
+			OnPlayerEntered();
+		else if (!inRange && _playerInRange)
+			OnPlayerExited();
+	}
+
+	private void OnPlayerEntered()
+	{
 		_playerInRange = true;
 
-		// ensure worker spawns when player enters the area
-		SpawnWorker();
+		SpawnOrRecallWorker();
 
 		if (_state == TowerState.Destroyed)
 			StartBuilding();
+		else if (_state == TowerState.Building)
+			_buildTimer.Start();
 	}
 
-	private void OnBodyExited(Node body)
+	private void OnPlayerExited()
 	{
-		if (body is not Player)
-			return;
-
 		_playerInRange = false;
-
 		_buildTimer.Stop();
+		SendWorkerBack();
+	}
 
-		if (_workerInstance == null)
+	private void SpawnOrRecallWorker()
+	{
+		if (WorkerScene == null)
 			return;
 
-		if (_state == TowerState.Built)
+		// If worker already exists and is valid, recall it to work point
+		if (GodotObject.IsInstanceValid(_workerInstance))
 		{
-			_workerInstance.Despawn();
-			_workerInstance = null;
+			_workerInstance.MoveTo(_workerWorkPoint.GlobalPosition);
+			_workerInstance.FaceTowards(_workerWorkPoint.GlobalPosition);
+			return;
 		}
-		else
-		{
-			_workerInstance.Idle();
-		}
+
+		// Spawn new worker
+		_workerInstance = WorkerScene.Instantiate<Worker>();
+		GetParent().AddChild(_workerInstance);
+		_workerInstance.GlobalPosition = _workerSpawnPoint.GlobalPosition;
+		_workerInstance.MoveTo(_workerWorkPoint.GlobalPosition);
+		_workerInstance.FaceTowards(_workerWorkPoint.GlobalPosition);
 	}
 
 	private void StartBuilding()
 	{
 		_state = TowerState.Building;
 		_sprite.Texture = ConstructionTexture;
-
-		SpawnWorker();
 		_buildTimer.Start();
-	}
-
-	private void StopBuilding()
-	{
-		_buildTimer.Stop();
-		DespawnWorker();
 	}
 
 	private void OnBuildTick()
@@ -113,32 +129,28 @@ public partial class TowerRuins : Node2D
 	{
 		_state = TowerState.Built;
 		_sprite.Texture = BuiltTexture;
-
 		_buildTimer.Stop();
-		DespawnWorker();
+		SendWorkerBack();
+		SpawnArcher();
 	}
 
-	private void SpawnWorker()
+	private void SendWorkerBack()
 	{
-		if (_workerInstance != null || WorkerScene == null)
+		if (!GodotObject.IsInstanceValid(_workerInstance))
 			return;
 
-		_workerInstance = WorkerScene.Instantiate<Worker>();
-		AddChild(_workerInstance);
-		_workerInstance.GlobalPosition = _workerSpawnPoint.GlobalPosition;
-
-		//tell worker where to go
-		_workerInstance.MoveTo(GlobalPosition);
-		// make the worker face the tower
-		_workerInstance.FaceTowards(GlobalPosition);
+		// don't null the reference - worker will be freed on despawn and IsInstanceValid will return false
+		_workerInstance.MoveToAndDespawn(_workerSpawnPoint.GlobalPosition);
+		_workerInstance.FaceTowards(_workerSpawnPoint.GlobalPosition);
 	}
 
-	private void DespawnWorker()
+	private void SpawnArcher()
 	{
-		if (_workerInstance == null)
+		if (ArcherScene == null || GodotObject.IsInstanceValid(_archerInstance))
 			return;
 
-		_workerInstance.QueueFree();
-		_workerInstance = null;
+		_archerInstance = ArcherScene.Instantiate<TowerArcher>();
+		AddChild(_archerInstance);
+		_archerInstance.Position = _archerSpawnPoint.Position;
 	}
 }
