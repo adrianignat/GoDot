@@ -156,25 +156,60 @@ public partial class EnemySpawner : Spawner<Enemy>
 		}
 		else
 		{
-			// Call base implementation for regular enemy
-			base.Spawn();
+			SpawnRegularEnemy();
 		}
+	}
+
+	private void SpawnRegularEnemy()
+	{
+		var spawnPos = GetValidSpawnLocation();
+		if (spawnPos == null)
+			return;
+
+		var enemy = Scene.Instantiate<Enemy>();
+		enemy.GlobalPosition = spawnPos.Value;
+		InitializeSpawnedObject(enemy);
+		GetSpawnParent().AddChild(enemy);
 	}
 
 	private void SpawnTntGoblin()
 	{
+		var spawnPos = GetValidSpawnLocation();
+		if (spawnPos == null)
+			return;
+
 		var tntGoblin = _tntGoblinScene.Instantiate<TntGoblin>();
-		tntGoblin.GlobalPosition = GetLocation();
+		tntGoblin.GlobalPosition = spawnPos.Value;
 		tntGoblin.Tier = GetWeightedRandomTier();
 		GetSpawnParent().AddChild(tntGoblin);
 	}
 
 	private void SpawnShaman()
 	{
+		var spawnPos = GetValidSpawnLocation();
+		if (spawnPos == null)
+			return;
+
 		var shaman = _shamanScene.Instantiate<Shaman>();
-		shaman.GlobalPosition = GetLocation();
+		shaman.GlobalPosition = spawnPos.Value;
 		shaman.Tier = GetWeightedRandomTier();
 		GetSpawnParent().AddChild(shaman);
+	}
+
+	/// <summary>
+	/// Gets a valid spawn location that is not in a no-spawn zone (water, etc.).
+	/// Returns null if no valid location found after retries.
+	/// </summary>
+	private Vector2? GetValidSpawnLocation()
+	{
+		const int maxRetries = 5;
+		for (int attempt = 0; attempt < maxRetries; attempt++)
+		{
+			var pos = GetLocation();
+			if (!Game.Instance.IsInNoSpawnZone(pos))
+				return pos;
+		}
+		return null;
 	}
 
 	protected override void InitializeSpawnedObject(Enemy enemy)
@@ -279,6 +314,15 @@ public partial class EnemySpawner : Spawner<Enemy>
 
 	private bool IsValidSpawnLocation(Vector2 position)
 	{
+		// Check if position is within playable map bounds
+		var mapGenerator = Game.Instance.MainWindow.GetNodeOrNull<MapGenerator>("MapGenerator");
+		if (mapGenerator != null)
+		{
+			Rect2 playableArea = mapGenerator.GetPlayableAreaBounds();
+			if (!playableArea.HasPoint(position))
+				return false;
+		}
+
 		// Use physics query to check for collisions at spawn point
 		var spaceState = GetWorld2D().DirectSpaceState;
 
@@ -289,11 +333,13 @@ public partial class EnemySpawner : Spawner<Enemy>
 		var query = new PhysicsShapeQueryParameters2D();
 		query.Shape = shape;
 		query.Transform = new Transform2D(0, position);
-		query.CollisionMask = 1; // Layer 1 = Map (terrain, buildings, trees)
+		// Check Map (layer 1) and Water (layer 7) - both are invalid spawn locations
+		query.CollisionMask = GameConstants.MapCollisionLayer | GameConstants.WaterCollisionLayer;
 
 		var results = spaceState.IntersectShape(query, 1);
 
 		// Valid if no collisions found
 		return results.Count == 0;
 	}
+
 }

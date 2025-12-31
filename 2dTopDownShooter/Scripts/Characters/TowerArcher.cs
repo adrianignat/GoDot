@@ -4,9 +4,9 @@ using Godot;
 public partial class TowerArcher : Node2D
 {
 	[Export] public PackedScene ArrowScene;
-	[Export] public float FireRate = 0.5f; // arrows per second (one every 2 seconds)
-	[Export] public float DetectionRange = 300f;
-	[Export] public float PlayerActivationRange = 200f;
+	[Export] public float FireRate = 1.5f; // arrows per second
+	[Export] public float DetectionRange = 400f;
+	[Export] public float PlayerActivationRange = 500f;
 
 	private AnimatedSprite2D _sprite;
 	private Timer _fireTimer;
@@ -41,6 +41,9 @@ public partial class TowerArcher : Node2D
 
 	public override void _Process(double delta)
 	{
+		if (Game.Instance.IsPaused)
+			return;
+
 		if (_isShooting)
 			return;
 
@@ -58,6 +61,10 @@ public partial class TowerArcher : Node2D
 
 	private void OnFireTimerTimeout()
 	{
+		// Don't shoot when paused
+		if (Game.Instance.IsPaused)
+			return;
+
 		// Only shoot when player is in range
 		if (!IsPlayerInRange())
 			return;

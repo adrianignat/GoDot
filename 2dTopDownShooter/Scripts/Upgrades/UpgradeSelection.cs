@@ -34,9 +34,22 @@ namespace dTopDownShooter.Scripts.Upgrades
 			// Connect to signals in _Ready, not constructor, to ensure Game.Instance is valid
 			Game.Instance.UpgradeReady += OnUpgradeReady;
 			Game.Instance.GoldAcquired += OnGoldAcquired;
+			Game.Instance.PlayerHealthChanged += OnPlayerHealthChanged;
 
 			Hide();
 			InitializeButtons();
+		}
+
+		private void OnPlayerHealthChanged(ushort health)
+		{
+			// If player dies while upgrade selection is showing, hide it
+			if (health == 0 && _isShowingSelection)
+			{
+				Hide();
+				_isShowingSelection = false;
+				_pendingUpgrades = 0;
+				// Note: Don't unpause - player death pauses the game
+			}
 		}
 
 		private void InitializeButtons()
@@ -54,6 +67,10 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 		private void OnGoldAcquired(ushort amount)
 		{
+			// Don't process gold if player is dead
+			if (Game.Instance.Player.IsDead)
+				return;
+
 			_gold += amount;
 
 			if (_gold >= _goldRequiredToUpdate)
@@ -66,6 +83,10 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 		private void OnUpgradeReady()
 		{
+			// Don't show upgrades if player is dead
+			if (Game.Instance.Player.IsDead)
+				return;
+
 			if (_isShowingSelection)
 			{
 				// Already showing selection screen - queue this upgrade

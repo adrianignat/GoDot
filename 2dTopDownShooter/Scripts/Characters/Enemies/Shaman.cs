@@ -19,14 +19,30 @@ public partial class Shaman : Enemy
 	[Export]
 	private float PreferredDistance = 200f;
 
+	private const int ProjectileSpawnFrame = 7; // 0-indexed, so frame 8
+
 	private PackedScene _projectileScene;
 	private bool _isAttacking = false;
+	private bool _projectileSpawned = false;
 	private float _timeUntilNextAttack;
 
 	protected override void OnReady()
 	{
 		_projectileScene = GD.Load<PackedScene>("res://Entities/Projectiles/shaman_projectile.tscn");
-		_timeUntilNextAttack = AttackCooldown;
+		// Randomize initial attack time to stagger attacks across multiple shamans
+		_timeUntilNextAttack = (float)GD.RandRange(0, AttackCooldown);
+
+		_animation.FrameChanged += OnFrameChanged;
+	}
+
+	private void OnFrameChanged()
+	{
+		// Spawn projectile on frame 8 (index 7) of attack animation
+		if (_animation.Animation == "attack" && _animation.Frame == ProjectileSpawnFrame && !_projectileSpawned)
+		{
+			SpawnProjectile();
+			_projectileSpawned = true;
+		}
 	}
 
 	protected override void LoadSpriteForTier()
@@ -140,6 +156,7 @@ public partial class Shaman : Enemy
 	private void Attack()
 	{
 		_isAttacking = true;
+		_projectileSpawned = false;
 		_animation.Play("attack");
 	}
 
@@ -147,9 +164,7 @@ public partial class Shaman : Enemy
 	{
 		if (_animation.Animation == "attack")
 		{
-			// Spawn projectile at end of attack animation
-			SpawnProjectile();
-
+			// Projectile was already spawned on frame 8 via OnFrameChanged
 			_isAttacking = false;
 			_timeUntilNextAttack = AttackCooldown;
 			_animation.Play("walk");

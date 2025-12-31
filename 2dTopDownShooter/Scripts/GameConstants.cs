@@ -29,6 +29,10 @@ namespace dTopDownShooter.Scripts
 		public const float SpawnMargin = 50f;            // Distance outside camera to spawn enemies
 		public const int MaxSpawnAttempts = 100;         // Max tries to find valid spawn location
 
+		// Collision Layers (bitmask values)
+		public const uint MapCollisionLayer = 1;         // Layer 1: terrain, buildings, trees
+		public const uint WaterCollisionLayer = 128;     // Layer 7: water tiles
+
 		// Node Groups
 		public const string EnemiesGroup = "enemies";
 		public const string GoldGroup = "gold";

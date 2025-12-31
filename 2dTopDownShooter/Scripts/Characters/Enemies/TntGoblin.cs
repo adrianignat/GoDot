@@ -49,7 +49,8 @@ public partial class TntGoblin : Enemy
 
 	protected override void OnReady()
 	{
-		_timeUntilNextThrow = 0; // Throw immediately when first in range
+		// Randomize initial throw time to stagger attacks across multiple goblins
+		_timeUntilNextThrow = (float)GD.RandRange(0, ThrowCooldown);
 		_dynamiteScene = GD.Load<PackedScene>("res://Entities/Projectiles/enemy_dynamite.tscn");
 	}
 

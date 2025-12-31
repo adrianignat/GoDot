@@ -171,6 +171,36 @@ namespace dTopDownShooter.Scripts
 			GD.Print("Cleaned up all entities for restart");
 		}
 
+		/// <summary>
+		/// Check if a world position is in a no-spawn zone (water, etc.) by querying the NoSpawn TileMapLayer.
+		/// </summary>
+		public bool IsInNoSpawnZone(Vector2 worldPosition)
+		{
+			var mapGenerator = MainWindow.GetNodeOrNull<Node2D>("MapGenerator");
+			if (mapGenerator == null)
+				return false;
+
+			// Check all map pieces for NoSpawn layers
+			foreach (Node child in mapGenerator.GetChildren())
+			{
+				if (child is not Node2D mapPiece)
+					continue;
+
+				var noSpawnLayer = mapPiece.GetNodeOrNull<TileMapLayer>("NoSpawn");
+				if (noSpawnLayer == null)
+					continue;
+
+				// Convert world position to tile coordinates
+				Vector2I cell = noSpawnLayer.LocalToMap(noSpawnLayer.ToLocal(worldPosition));
+
+				// If there's a tile at this position, it's a no-spawn zone
+				if (noSpawnLayer.GetCellSourceId(cell) != -1)
+					return true;
+			}
+
+			return false;
+		}
+
 		[Signal]
 		public delegate void EnemyKilledEventHandler(Enemy enemy);
 

@@ -3,8 +3,8 @@ using Godot;
 
 public partial class TowerArrow : Area2D
 {
-	[Export] public ushort Damage { get; set; } = 50;
-	[Export] public float Speed { get; set; } = 400f;
+	[Export] public ushort Damage { get; set; } = 100;
+	[Export] public float Speed { get; set; } = 600f;
 
 	private Vector2 _direction;
 

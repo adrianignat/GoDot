@@ -301,6 +301,13 @@ namespace dTopDownShooter.Scripts
 				gold.QueueFree();
 			}
 
+			// Remove all dynamite (player and enemy)
+			var dynamiteNodes = GetTree().GetNodesInGroup(GameConstants.DynamiteGroup);
+			foreach (Node dynamite in dynamiteNodes)
+			{
+				dynamite.QueueFree();
+			}
+
 			GD.Print("Cleaned up entities for day transition");
 		}
 

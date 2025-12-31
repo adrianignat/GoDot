@@ -295,15 +295,48 @@ public partial class Player : Character
 	{
 		if (!CanDash || IsDead) return;
 
-		_isDashing = true;
-		_dashTimer = DashDuration;
-		_dashCooldownTimer = DashCooldown;
 		_dashDirection = DirectionToVector(Moving);
+
+		// Calculate actual dash distance (may be reduced if water is in the way)
+		float actualDashDistance = CalculateSafeDashDistance();
+
+		if (actualDashDistance <= 0)
+			return; // Can't dash at all (water right in front)
+
+		_isDashing = true;
+		_dashTimer = DashDuration * (actualDashDistance / DashDistance);
+		_dashCooldownTimer = DashCooldown;
 
 		// Store original collision mask and disable collisions during dash
 		_originalCollisionMask = CollisionMask;
 		CollisionMask = 0; // Disable all collisions during dash
 	}
+
+	private float CalculateSafeDashDistance()
+	{
+		Vector2 landingPos = GlobalPosition + _dashDirection * DashDistance;
+
+		// If landing position is not in no-spawn zone, full dash
+		if (!Game.Instance.IsInNoSpawnZone(landingPos))
+			return DashDistance;
+
+		// Landing is in no-spawn zone (water) - trace back to find safe spot
+		const float stepSize = 10f;
+		float distance = DashDistance;
+
+		while (distance > 0)
+		{
+			distance -= stepSize;
+			Vector2 checkPos = GlobalPosition + _dashDirection * distance;
+
+			if (!Game.Instance.IsInNoSpawnZone(checkPos))
+				return distance;
+		}
+
+		// No safe landing found
+		return 0;
+	}
+
 
 	private void EndDash()
 	{
@@ -331,8 +364,8 @@ public partial class Player : Character
 		Vector2 shapeGlobalPos = GlobalPosition + collisionNode.Position * Scale;
 		// Create transform with scale built in
 		query.Transform = new Transform2D(Scale.X, 0, 0, Scale.Y, shapeGlobalPos.X, shapeGlobalPos.Y);
-		// Check against Map (layer 1) and Environment (layer 4) - layers that are obstacles
-		query.CollisionMask = (1 << 0) | (1 << 3); // Layers 1 and 4 (0-indexed)
+		// Check against Map (layer 1) and Environment (layer 4) - water is handled during dash
+		query.CollisionMask = GameConstants.MapCollisionLayer | (1 << 3);
 
 		var results = spaceState.IntersectShape(query);
 
