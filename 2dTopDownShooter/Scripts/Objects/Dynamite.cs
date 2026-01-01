@@ -29,10 +29,6 @@ public partial class Dynamite : Area2D
 		if (_hasExploded)
 			return;
 
-		// Don't process when game is paused
-		if (Game.Instance.IsPaused)
-			return;
-
 		// Count down fuse timer
 		_fuseTimeRemaining -= (float)delta;
 		if (_fuseTimeRemaining <= 0)

@@ -62,9 +62,6 @@ public partial class TorchGoblin : Enemy
 
 	public override void _Process(double delta)
 	{
-		if (Game.Instance.IsPaused)
-			return;
-
 		if (_withinRange && !_isAttacking && _timeUntilNextAttack <= 0)
 		{
 			Attack();
@@ -76,9 +73,6 @@ public partial class TorchGoblin : Enemy
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (Game.Instance.IsPaused)
-			return;
-
 		// Don't move while attacking
 		if (_isAttacking)
 			return;

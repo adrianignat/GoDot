@@ -22,6 +22,9 @@ namespace dTopDownShooter.Scripts.UI
 
 		public override void _Ready()
 		{
+			// UI must process during pause to handle button clicks
+			ProcessMode = ProcessModeEnum.Always;
+
 			Layer = 90; // Below fade overlay but above game
 
 			CreateUI();

@@ -62,10 +62,6 @@ public partial class EnemySpawner : Spawner<Enemy>
 	{
 		base._Process(delta);
 
-		// Don't update timers when paused
-		if (Game.Instance.IsPaused)
-			return;
-
 		// Spawn rate increase timer
 		_spawnRateIncreaseTimer -= (float)delta;
 		if (_spawnRateIncreaseTimer <= 0)

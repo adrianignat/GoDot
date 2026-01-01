@@ -97,9 +97,6 @@ public partial class Shaman : Enemy
 
 	public override void _Process(double delta)
 	{
-		if (Game.Instance.IsPaused)
-			return;
-
 		if (!_isAttacking)
 		{
 			_timeUntilNextAttack -= (float)delta;
@@ -113,9 +110,6 @@ public partial class Shaman : Enemy
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (Game.Instance.IsPaused)
-			return;
-
 		// Don't move while attacking
 		if (_isAttacking)
 			return;

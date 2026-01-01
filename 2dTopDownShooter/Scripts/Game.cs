@@ -16,7 +16,15 @@ namespace dTopDownShooter.Scripts
 	{
 		private static Game _gameInstance;
 
-		internal bool IsPaused { get; set; }
+		internal bool IsPaused
+		{
+			get => GetTree()?.Paused ?? false;
+			set
+			{
+				if (GetTree() != null)
+					GetTree().Paused = value;
+			}
+		}
 
 		internal bool ShouldRestart { get; set; } = false;
 

@@ -60,6 +60,19 @@ public partial class Player : Character
 		Game.Instance.NightDamageTick += OnNightDamageTick;
 	}
 
+	public override void _Notification(int what)
+	{
+		// Hide feet indicator when paused (menus showing)
+		if (what == NotificationPaused && _feetIndicatorLayer != null)
+		{
+			_feetIndicatorLayer.Visible = false;
+		}
+		else if (what == NotificationUnpaused && _feetIndicatorLayer != null)
+		{
+			_feetIndicatorLayer.Visible = true;
+		}
+	}
+
 	private void OnNightDamageTick()
 	{
 		// Take damage from the night
@@ -119,14 +132,6 @@ public partial class Player : Character
 
 	public override void _Process(double delta)
 	{
-		if (Game.Instance.IsPaused)
-		{
-			IsShooting = false;
-			if (!IsDead)
-				_animation.Play("idle");
-			return;
-		}
-
 		var move_input = Input.GetVector("left", "right", "up", "down");
 		if (move_input != Vector2.Zero)
 		{
@@ -151,18 +156,9 @@ public partial class Player : Character
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// Always update feet indicator (even when paused)
 		UpdateFeetIndicator();
 
-		if (Game.Instance.IsPaused)
-		{
-			IsShooting = false;
-			if (!IsDead)
-				_animation.Play("idle");
-			return;
-		}
-
-		// Update dash cooldown (only when not paused)
+		// Update dash cooldown
 		if (_dashCooldownTimer > 0)
 		{
 			_dashCooldownTimer -= (float)delta;
@@ -192,10 +188,6 @@ public partial class Player : Character
 	private void UpdateFeetIndicator()
 	{
 		if (_feetIndicatorLayer == null || _feetIndicator == null) return;
-
-		// Hide feet indicator when game is paused (menus are showing)
-		_feetIndicatorLayer.Visible = !Game.Instance.IsPaused;
-		if (Game.Instance.IsPaused) return;
 
 		// Try to get camera if not cached yet
 		if (_camera == null)
@@ -227,12 +219,6 @@ public partial class Player : Character
 
 	internal void PlayShootAnimation()
 	{
-		if (Game.Instance.IsPaused)
-		{
-			IsShooting = false;
-			return;
-		}
-
 		if (IsShooting)
 			return;
 

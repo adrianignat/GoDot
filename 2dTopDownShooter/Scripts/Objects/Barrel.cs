@@ -25,7 +25,6 @@ public partial class Barrel : Area2D
 	private bool _fuseStarted = false;
 	private float _fuseTimer = 0f;
 	private Tween _throwTween;
-	private bool _wasPaused = false;
 
 	public override void _Ready()
 	{
@@ -41,29 +40,7 @@ public partial class Barrel : Area2D
 
 	public override void _Process(double delta)
 	{
-		// Handle pause/unpause for tween and animation
-		bool isPaused = Game.Instance.IsPaused;
-		if (isPaused && !_wasPaused)
-		{
-			// Game just paused - pause tween and animation
-			if (_throwTween != null && _throwTween.IsValid())
-				_throwTween.Pause();
-			_animation.Pause();
-			_wasPaused = true;
-		}
-		else if (!isPaused && _wasPaused)
-		{
-			// Game just unpaused - resume tween and animation
-			if (_throwTween != null && _throwTween.IsValid())
-				_throwTween.Play();
-			_animation.Play();
-			_wasPaused = false;
-		}
-
-		if (isPaused)
-			return;
-
-		// Handle fuse timer (pause-aware)
+		// Handle fuse timer
 		if (_fuseStarted && !_hasExploded)
 		{
 			_fuseTimer -= (float)delta;

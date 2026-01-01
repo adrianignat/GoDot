@@ -24,6 +24,9 @@ namespace dTopDownShooter.Scripts
 
 		public override void _Ready()
 		{
+			// Must process during pause to handle day transitions
+			ProcessMode = ProcessModeEnum.Always;
+
 			_mapGenerator = GetTree().Root.GetNode("main").GetNodeOrNull<MapGenerator>("MapGenerator");
 			CreateFadeOverlay();
 			CreateNightSurvivedUI();
@@ -89,6 +92,8 @@ namespace dTopDownShooter.Scripts
 
 		public override void _Process(double delta)
 		{
+			// Skip normal processing when paused (menu) or transitioning
+			// Note: ProcessMode is Always to allow transitions, but gameplay should respect pause
 			if (!_isStarted || Game.Instance.IsPaused || _isTransitioning)
 				return;
 
@@ -250,8 +255,9 @@ namespace dTopDownShooter.Scripts
 			// Pause the game during transition
 			Game.Instance.IsPaused = true;
 
-			// Fade to black
+			// Fade to black (tween must ignore pause since game is paused)
 			var fadeOutTween = CreateTween();
+			fadeOutTween.SetPauseMode(Tween.TweenPauseMode.Process);
 			fadeOutTween.TweenProperty(_fadeOverlay, "color", new Color(0, 0, 0, 1), GameConstants.FadeDuration);
 			await ToSignal(fadeOutTween, Tween.SignalName.Finished);
 
@@ -274,8 +280,9 @@ namespace dTopDownShooter.Scripts
 			// Start new day (reuses same initialization as StartDay)
 			InitializeDayState(nextDay);
 
-			// Fade back in
+			// Fade back in (tween must ignore pause since game is paused)
 			var fadeInTween = CreateTween();
+			fadeInTween.SetPauseMode(Tween.TweenPauseMode.Process);
 			fadeInTween.TweenProperty(_fadeOverlay, "color", new Color(0, 0, 0, 0), GameConstants.FadeDuration);
 			await ToSignal(fadeInTween, Tween.SignalName.Finished);
 

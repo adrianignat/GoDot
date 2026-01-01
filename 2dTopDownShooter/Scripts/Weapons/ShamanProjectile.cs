@@ -42,17 +42,6 @@ public partial class ShamanProjectile : RigidBody2D
 		if (_hasHit)
 			return;
 
-		if (Game.Instance.IsPaused)
-		{
-			LinearVelocity = Vector2.Zero;
-			_animation.Pause();
-			return;
-		}
-
-		// Resume animation if it was paused
-		if (!_animation.IsPlaying())
-			_animation.Play();
-
 		// Maintain speed and direction
 		LinearVelocity = _direction * Speed;
 		AngularVelocity = 0;

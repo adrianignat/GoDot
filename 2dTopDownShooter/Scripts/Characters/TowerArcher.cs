@@ -41,9 +41,6 @@ public partial class TowerArcher : Node2D
 
 	public override void _Process(double delta)
 	{
-		if (Game.Instance.IsPaused)
-			return;
-
 		if (_isShooting)
 			return;
 
@@ -61,10 +58,6 @@ public partial class TowerArcher : Node2D
 
 	private void OnFireTimerTimeout()
 	{
-		// Don't shoot when paused
-		if (Game.Instance.IsPaused)
-			return;
-
 		// Only shoot when player is in range
 		if (!IsPlayerInRange())
 			return;

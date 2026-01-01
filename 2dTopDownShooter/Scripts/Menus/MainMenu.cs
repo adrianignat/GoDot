@@ -9,6 +9,9 @@ public partial class MainMenu : Control
 
 	public override void _Ready()
 	{
+		// UI must process during pause to handle input
+		ProcessMode = ProcessModeEnum.Always;
+
 		// Show the menu by default
 		Visible = true;
 		Game.Instance.IsPaused = true;

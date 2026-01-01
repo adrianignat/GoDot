@@ -28,6 +28,9 @@ namespace dTopDownShooter.Scripts.Upgrades
 
 		public override void _Ready()
 		{
+			// UI must process during pause to handle button clicks
+			ProcessMode = ProcessModeEnum.Always;
+
 			_currentUpgradeStep = FirstUpgrade;
 			_goldRequiredToUpdate = FirstUpgrade;
 

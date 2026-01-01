@@ -60,9 +60,6 @@ namespace dTopDownShooter.Scripts.Spawners
 
 		public override void _Process(double delta)
 		{
-			if (Game.Instance.IsPaused)
-                return;
-
 			if (timeUntilNextSpawn > spawnRate && CanSpawn())
 			{
 				timeUntilNextSpawn = 0f;

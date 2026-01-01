@@ -82,9 +82,6 @@ public partial class TntGoblin : Enemy
 
 	public override void _Process(double delta)
 	{
-		if (Game.Instance.IsPaused)
-			return;
-
 		// Check distance to player
 		float distanceToPlayer = GlobalPosition.DistanceTo(_player.GlobalPosition);
 		_isWithinThrowRange = distanceToPlayer <= ThrowRange;
@@ -115,9 +112,6 @@ public partial class TntGoblin : Enemy
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (Game.Instance.IsPaused)
-			return;
-
 		// Don't move while throwing
 		if (_isThrowing)
 			return;
