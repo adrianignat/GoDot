@@ -231,7 +231,9 @@ namespace dTopDownShooter.Scripts.Upgrades
 		private void AttachUpgradeScene(Button button, Upgrade upgrade)
 		{
 			var scene = GetSceneForRarity(upgrade.Rarity);
+			var title = scene.GetNode<Label>("Upgrade_Title");
 			var description = scene.GetNode<Label>("Upgrade_Descr");
+			title.Text = upgrade.Title;
 			description.Text = upgrade.Description;
 			button.CallDeferred("add_child", scene);
 		}
