@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://cpvrgvbt475ci"]
 
-[ext_resource type="Script" path="res://Scripts/Objects/HouseRuins.cs" id="1_02cda"]
+[ext_resource type="Script" uid="uid://c5abxo54vlkh6" path="res://Scripts/Objects/HouseRuins.cs" id="1_02cda"]
 [ext_resource type="Texture2D" uid="uid://bcmmltvrer0at" path="res://Sprites/Buildings/House/House_Destroyed.png" id="1_w0n72"]
 [ext_resource type="Texture2D" uid="uid://dgkjijrfwilcp" path="res://Sprites/Buildings/House/House_Construction.png" id="3_te817"]
 [ext_resource type="Texture2D" uid="uid://mcemxciy28cg" path="res://Sprites/Buildings/House/House_Blue.png" id="4_shmtr"]
@@ -33,4 +33,3 @@ position = Vector2(50, 46)
 
 [node name="Timer" type="Timer" parent="."]
 process_mode = 1
-wait_time = 1.0
