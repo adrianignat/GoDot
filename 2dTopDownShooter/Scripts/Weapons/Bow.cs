@@ -38,8 +38,9 @@ public partial class Bow : Spawner<Arrow>
 
 	public override bool CanSpawn()
 	{
-		// Don't shoot if no enemies are visible
-		if (!HasVisibleEnemy())
+		// In auto-aim mode, don't shoot if no enemies are visible
+		// In directional mode, always allow shooting
+		if (GameSettings.ShootingStyle == dTopDownShooter.Scripts.ShootingStyle.AutoAim && !HasVisibleEnemy())
 		{
 			_arrowQueued = false;
 			return false;

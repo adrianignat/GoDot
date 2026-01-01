@@ -5,6 +5,10 @@ public partial class MainMenu : Control
 {
 	private Button _startButton;
 	private Button _wifeModeButton;
+	private Button _optionsButton;
+	private Button _shootingStyleButton;
+	private VBoxContainer _mainMenuContainer;
+	private VBoxContainer _optionsContainer;
 	private bool _gameStarted = false;
 
 	public override void _Ready()
@@ -16,16 +20,29 @@ public partial class MainMenu : Control
 		Visible = true;
 		Game.Instance.IsPaused = true;
 
-		var vbox = GetNode("MarginContainer").GetNode<VBoxContainer>("VBoxContainer");
+		var marginContainer = GetNode("MarginContainer");
+		_mainMenuContainer = marginContainer.GetNode<VBoxContainer>("VBoxContainer");
+		_optionsContainer = marginContainer.GetNode<VBoxContainer>("OptionsContainer");
 
-		var exitButton = vbox.GetNode<Button>("Exit_Game");
+		var exitButton = _mainMenuContainer.GetNode<Button>("Exit_Game");
 		exitButton.Pressed += () => GetTree().Quit();
 
-		_startButton = vbox.GetNode<Button>("Start_Game");
+		_startButton = _mainMenuContainer.GetNode<Button>("Start_Game");
 		_startButton.Pressed += OnStartPressed;
 
-		_wifeModeButton = vbox.GetNode<Button>("Wife_Mode");
+		_wifeModeButton = _mainMenuContainer.GetNode<Button>("Wife_Mode");
 		_wifeModeButton.Pressed += OnWifeModePressed;
+
+		_optionsButton = _mainMenuContainer.GetNode<Button>("Game_Options");
+		_optionsButton.Pressed += OnOptionsPressed;
+
+		// Options panel buttons
+		_shootingStyleButton = _optionsContainer.GetNode<Button>("ShootingStyleButton");
+		_shootingStyleButton.Pressed += OnShootingStylePressed;
+		UpdateShootingStyleButton();
+
+		var backButton = _optionsContainer.GetNode<Button>("BackButton");
+		backButton.Pressed += OnBackPressed;
 	}
 
 	private void OnStartPressed()
@@ -84,6 +101,9 @@ public partial class MainMenu : Control
 		if (Visible)
 		{
 			Game.Instance.IsPaused = true;
+			// Always show main menu when opening, hide options
+			_mainMenuContainer.Visible = true;
+			_optionsContainer.Visible = false;
 			UpdateMenuForContext();
 		}
 		else
@@ -106,5 +126,35 @@ public partial class MainMenu : Control
 			_wifeModeButton.Visible = true;
 			_startButton.Text = "Start";
 		}
+	}
+
+	private void OnOptionsPressed()
+	{
+		_mainMenuContainer.Visible = false;
+		_optionsContainer.Visible = true;
+	}
+
+	private void OnBackPressed()
+	{
+		_optionsContainer.Visible = false;
+		_mainMenuContainer.Visible = true;
+	}
+
+	private void OnShootingStylePressed()
+	{
+		// Toggle between Auto-Aim and Directional
+		GameSettings.ShootingStyle = GameSettings.ShootingStyle == ShootingStyle.AutoAim
+			? ShootingStyle.Directional
+			: ShootingStyle.AutoAim;
+
+		UpdateShootingStyleButton();
+	}
+
+	private void UpdateShootingStyleButton()
+	{
+		string styleName = GameSettings.ShootingStyle == ShootingStyle.AutoAim
+			? "Auto-Aim"
+			: "Directional";
+		_shootingStyleButton.Text = $"Aim: {styleName}";
 	}
 }

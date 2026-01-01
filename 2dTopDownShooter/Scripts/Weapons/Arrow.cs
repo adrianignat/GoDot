@@ -72,19 +72,45 @@ public partial class Arrow : RigidBody2D
 
 	private void UpdateVelocity()
 	{
-		_currentDirection = new Vector2(-1, 0);
-
-		Node2D closestEnemy = GetClosestEnemy();
-
-		if (closestEnemy != null)
+		if (GameSettings.ShootingStyle == dTopDownShooter.Scripts.ShootingStyle.Directional)
 		{
-			// Calculate the direction to the enemy
-			Vector2 enemyPosition = closestEnemy.GlobalPosition;
-			_currentDirection = (enemyPosition - _player.GlobalPosition).Normalized();
+			// Directional mode: shoot in the direction the player is moving/facing
+			_currentDirection = GetPlayerFacingDirection();
+		}
+		else
+		{
+			// Auto-aim mode: target closest enemy
+			_currentDirection = new Vector2(-1, 0);
+
+			Node2D closestEnemy = GetClosestEnemy();
+
+			if (closestEnemy != null)
+			{
+				// Calculate the direction to the enemy
+				Vector2 enemyPosition = closestEnemy.GlobalPosition;
+				_currentDirection = (enemyPosition - _player.GlobalPosition).Normalized();
+			}
 		}
 
 		LinearVelocity = _currentDirection * _currentSpeed;
 		Rotation = _currentDirection.Angle();
+	}
+
+	private Vector2 GetPlayerFacingDirection()
+	{
+		// Use Moving direction (based on input), fallback to Facing (E/W)
+		return _player.Moving switch
+		{
+			Direction.N => new Vector2(0, -1),
+			Direction.S => new Vector2(0, 1),
+			Direction.E => new Vector2(1, 0),
+			Direction.W => new Vector2(-1, 0),
+			Direction.NE => new Vector2(1, -1).Normalized(),
+			Direction.NW => new Vector2(-1, -1).Normalized(),
+			Direction.SE => new Vector2(1, 1).Normalized(),
+			Direction.SW => new Vector2(-1, 1).Normalized(),
+			_ => _player.Facing == Direction.W ? new Vector2(-1, 0) : new Vector2(1, 0)
+		};
 	}
 
 	public override void _PhysicsProcess(double delta)
