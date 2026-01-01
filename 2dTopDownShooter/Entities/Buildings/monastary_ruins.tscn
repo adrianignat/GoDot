@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://5l2ee7oh4g2i"]
+[gd_scene load_steps=7 format=3 uid="uid://5l2ee7oh4g2i"]
 
 [ext_resource type="Script" uid="uid://cxka7pr0kmmqe" path="res://Scripts/Objects/MonastaryRuins.cs" id="1_ib24u"]
 [ext_resource type="Texture2D" uid="uid://bcmmltvrer0at" path="res://Sprites/Buildings/House/House_Destroyed.png" id="1_ypht5"]
@@ -7,6 +7,9 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib24u"]
 size = Vector2(98.5, 79)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 130.0
 
 [node name="MonastaryRuins" type="Node2D"]
 script = ExtResource("1_ib24u")
@@ -30,3 +33,13 @@ position = Vector2(290, 241)
 position = Vector2(61, 43)
 
 [node name="Timer" type="Timer" parent="."]
+
+[node name="PlayerDetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerDetectionArea"]
+shape = SubResource("CircleShape2D_detection")
+
+[connection signal="body_entered" from="PlayerDetectionArea" to="." method="OnPlayerDetectionEntered"]
+[connection signal="body_exited" from="PlayerDetectionArea" to="." method="OnPlayerDetectionExited"]

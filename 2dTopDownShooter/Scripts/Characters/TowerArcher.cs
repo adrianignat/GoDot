@@ -6,11 +6,11 @@ public partial class TowerArcher : Node2D
 	[Export] public PackedScene ArrowScene;
 	[Export] public float FireRate = 1.5f; // arrows per second
 	[Export] public float DetectionRange = 400f;
-	[Export] public float PlayerActivationRange = 500f;
 
 	private AnimatedSprite2D _sprite;
 	private Timer _fireTimer;
 	private bool _isShooting = false;
+	private bool _playerInRange = false;
 	private Vector2? _pendingTargetPosition = null;
 
 	public override void _Ready()
@@ -28,24 +28,21 @@ public partial class TowerArcher : Node2D
 			ArrowScene = GD.Load<PackedScene>("res://Entities/Projectiles/tower_arrow.tscn");
 	}
 
-	private bool IsPlayerInRange()
+	public void OnPlayerActivationEntered(Node2D body)
 	{
-		var player = Game.Instance?.Player;
-		if (player == null)
-			return false;
+		if (body.IsInGroup(GameConstants.PlayerGroup))
+			_playerInRange = true;
+	}
 
-		// Use parent (tower) position for range check
-		Vector2 towerPosition = GetParent<Node2D>()?.GlobalPosition ?? GlobalPosition;
-		return towerPosition.DistanceTo(player.GlobalPosition) <= PlayerActivationRange;
+	public void OnPlayerActivationExited(Node2D body)
+	{
+		if (body.IsInGroup(GameConstants.PlayerGroup))
+			_playerInRange = false;
 	}
 
 	public override void _Process(double delta)
 	{
-		if (_isShooting)
-			return;
-
-		// Only look for targets when player is in range
-		if (!IsPlayerInRange())
+		if (_isShooting || !_playerInRange)
 			return;
 
 		var target = GetClosestEnemy();
@@ -58,8 +55,7 @@ public partial class TowerArcher : Node2D
 
 	private void OnFireTimerTimeout()
 	{
-		// Only shoot when player is in range
-		if (!IsPlayerInRange())
+		if (!_playerInRange)
 			return;
 
 		var target = GetClosestEnemy();

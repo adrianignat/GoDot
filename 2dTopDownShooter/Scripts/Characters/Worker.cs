@@ -10,10 +10,18 @@ public partial class Worker : CharacterBody2D
 	private bool _hasTarget = false;
 	private bool _working = false;
 	private bool _despawnOnArrival = false;
+	private bool? _pendingFlipH = null;
 
 	public override void _Ready()
 	{
 		_sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+
+		// Handle deferred initialization if MoveTo/FaceTowards was called before _Ready
+		if (_hasTarget && !_working)
+			_sprite.Play("run_hammer");
+
+		if (_pendingFlipH.HasValue)
+			_sprite.FlipH = _pendingFlipH.Value;
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -48,7 +56,8 @@ public partial class Worker : CharacterBody2D
 		_working = false;
 		_despawnOnArrival = false;
 
-		_sprite.Play("run_hammer");
+		// _sprite may be null if called before _Ready (deferred add_child)
+		_sprite?.Play("run_hammer");
 	}
 
 	public void MoveToAndDespawn(Vector2 position)
@@ -58,19 +67,28 @@ public partial class Worker : CharacterBody2D
 		_working = false;
 		_despawnOnArrival = true;
 
-		_sprite.Play("run_hammer");
+		// _sprite may be null if called before _Ready (deferred add_child)
+		_sprite?.Play("run_hammer");
 	}
 
 	// face the given world position (flip horizontally if target is left)
 	public void FaceTowards(Vector2 worldPosition)
 	{
-		_sprite.FlipH = worldPosition.X < GlobalPosition.X;
+		bool flipH = worldPosition.X < GlobalPosition.X;
+
+		if (_sprite != null)
+			_sprite.FlipH = flipH;
+		else
+			_pendingFlipH = flipH; // defer until _Ready
 	}
 
 	// convenience: always face left
 	public void FaceLeft()
 	{
-		_sprite.FlipH = true;
+		if (_sprite != null)
+			_sprite.FlipH = true;
+		else
+			_pendingFlipH = true;
 	}
 
 	private void StartWorking()
@@ -80,14 +98,13 @@ public partial class Worker : CharacterBody2D
 		_sprite.Play("interact_hammer");
 	}
 
-	// 🟢 NEW: idle state
 	public void Idle()
 	{
 		Velocity = Vector2.Zero;
 		_hasTarget = false;
 		_working = false;
 
-		_sprite.Play("idle");
+		_sprite?.Play("idle");
 	}
 
 	// 🔴 disappear

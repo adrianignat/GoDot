@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://4oq6xvox7ntc"]
+[gd_scene load_steps=7 format=3 uid="uid://4oq6xvox7ntc"]
 
 [ext_resource type="Script" path="res://Scripts/Objects/TowerRuins.cs" id="1_4n1mu"]
 [ext_resource type="Texture2D" uid="uid://y74abucwpswm" path="res://Sprites/Buildings/Tower/Tower_Destroyed.png" id="2_f7ucc"]
@@ -7,6 +7,9 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_collision"]
 size = Vector2(63, 67)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 130.0
 
 [node name="TowerRuins" type="Node2D"]
 script = ExtResource("1_4n1mu")
@@ -37,3 +40,13 @@ position = Vector2(0, -50)
 
 [node name="Timer" type="Timer" parent="."]
 process_mode = 1
+
+[node name="PlayerDetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerDetectionArea"]
+shape = SubResource("CircleShape2D_detection")
+
+[connection signal="body_entered" from="PlayerDetectionArea" to="." method="OnPlayerDetectionEntered"]
+[connection signal="body_exited" from="PlayerDetectionArea" to="." method="OnPlayerDetectionExited"]

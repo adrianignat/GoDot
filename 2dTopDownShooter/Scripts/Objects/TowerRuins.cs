@@ -52,19 +52,20 @@ public partial class TowerRuins : Node2D
 			ArcherScene = GD.Load<PackedScene>("res://Entities/Characters/archer.tscn");
 	}
 
-	public override void _Process(double delta)
+	public void OnPlayerDetectionEntered(Node2D body)
 	{
-		var player = Game.Instance?.Player;
-		if (player == null || _state == TowerState.Built)
+		if (!body.IsInGroup(GameConstants.PlayerGroup) || _state == TowerState.Built)
 			return;
 
-		float distance = GlobalPosition.DistanceTo(player.GlobalPosition);
-		bool inRange = distance <= GameConstants.BuildDetectionRadius;
+		OnPlayerEntered();
+	}
 
-		if (inRange && !_playerInRange)
-			OnPlayerEntered();
-		else if (!inRange && _playerInRange)
-			OnPlayerExited();
+	public void OnPlayerDetectionExited(Node2D body)
+	{
+		if (!body.IsInGroup(GameConstants.PlayerGroup))
+			return;
+
+		OnPlayerExited();
 	}
 
 	private void OnPlayerEntered()
@@ -101,7 +102,7 @@ public partial class TowerRuins : Node2D
 
 		// Spawn new worker
 		_workerInstance = WorkerScene.Instantiate<Worker>();
-		GetParent().AddChild(_workerInstance);
+		GetParent().CallDeferred("add_child", _workerInstance);
 		_workerInstance.GlobalPosition = _workerSpawnPoint.GlobalPosition;
 		_workerInstance.MoveTo(_workerWorkPoint.GlobalPosition);
 		_workerInstance.FaceTowards(_workerWorkPoint.GlobalPosition);
