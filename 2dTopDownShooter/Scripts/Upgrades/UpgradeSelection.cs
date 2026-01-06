@@ -50,6 +50,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 			{
 				Hide();
 				_isShowingSelection = false;
+				Game.Instance.IsUpgradeSelectionShowing = false;
 				_pendingUpgrades = 0;
 				// Note: Don't unpause - player death pauses the game
 			}
@@ -119,6 +120,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 				// No more upgrades - close and unpause
 				Hide();
 				_isShowingSelection = false;
+				Game.Instance.IsUpgradeSelectionShowing = false;
 				Game.Instance.IsPaused = false;
 			}
 		}
@@ -127,6 +129,7 @@ namespace dTopDownShooter.Scripts.Upgrades
 		{
 			Game.Instance.IsPaused = true;
 			_isShowingSelection = true;
+			Game.Instance.IsUpgradeSelectionShowing = true;
 
 			var usedTypes = new HashSet<UpgradeType>();
 			var lockedArrowType = GetLockedArrowUpgrade();

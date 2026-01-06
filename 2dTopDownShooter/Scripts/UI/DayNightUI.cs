@@ -70,6 +70,7 @@ namespace dTopDownShooter.Scripts.UI
 			// Full screen announcement for day start
 			_dayAnnouncement = new Control();
 			_dayAnnouncement.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+			_dayAnnouncement.MouseFilter = Control.MouseFilterEnum.Ignore;
 			_dayAnnouncement.Visible = false;
 			AddChild(_dayAnnouncement);
 

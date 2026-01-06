@@ -72,12 +72,18 @@ public partial class MainMenuUI : Control
 		{
 			if (Game.Instance.Player.IsDead)
 			{
-				Game.Instance.ShouldRestart = true;
+				// Restart the game directly (MainMenuUI has ProcessMode.Always)
+				Game.Instance.IsPaused = false;
+				Game.Instance.Restart();
 			}
 			else
 			{
+				// Just resume - but don't unpause if upgrade selection is showing
 				Visible = false;
-				Game.Instance.IsPaused = false;
+				if (!Game.Instance.IsUpgradeSelectionShowing)
+				{
+					Game.Instance.IsPaused = false;
+				}
 			}
 		}
 		else
@@ -157,7 +163,11 @@ public partial class MainMenuUI : Control
 		}
 		else
 		{
-			Game.Instance.IsPaused = false;
+			// Don't unpause if upgrade selection is showing or player is dead
+			if (!Game.Instance.IsUpgradeSelectionShowing && !Game.Instance.Player.IsDead)
+			{
+				Game.Instance.IsPaused = false;
+			}
 		}
 	}
 

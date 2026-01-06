@@ -36,6 +36,9 @@ namespace dTopDownShooter.Scripts
 		// Game modes
 		public bool WifeMode { get; set; } = false;
 
+		// UI state tracking
+		public bool IsUpgradeSelectionShowing { get; set; } = false;
+
 		// Day/Night components
 		public DayNightManager DayNightManager { get; private set; }
 		private DayNightUI _dayNightUI;
@@ -149,7 +152,7 @@ namespace dTopDownShooter.Scripts
 			}
 		}
 
-		internal void Restart()
+		public void Restart()
 		{
 			// Clean up all spawned entities before reload
 			CleanupAllEntities();

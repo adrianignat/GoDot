@@ -42,10 +42,7 @@ public partial class Player : Character
 	{
 		_animation = GetNode<AnimatedSprite2D>("PlayerAnimations");
 		_animation.Play("idle");
-		_animation.AnimationFinished += () =>
-		{
-			if (IsShooting) _animation.Play("idle");
-		};
+		_animation.AnimationFinished += OnAnimationFinished;
 		Facing = Direction.E;
 		Moving = Direction.E;
 
@@ -82,8 +79,8 @@ public partial class Player : Character
 
 	internal override void TakeDamage(ushort damage)
 	{
-		// Ignore damage while dashing (invulnerable)
-		if (_isDashing) return;
+		// Ignore damage while dashing (invulnerable) or already dead
+		if (_isDashing || IsDead) return;
 
 		base.TakeDamage(damage);
 	}
@@ -132,6 +129,9 @@ public partial class Player : Character
 
 	public override void _Process(double delta)
 	{
+		// Don't process input while dead
+		if (IsDead) return;
+
 		var move_input = Input.GetVector("left", "right", "up", "down");
 		if (move_input != Vector2.Zero)
 		{
@@ -157,6 +157,9 @@ public partial class Player : Character
 	public override void _PhysicsProcess(double delta)
 	{
 		UpdateFeetIndicator();
+
+		// Don't process movement while dead
+		if (IsDead) return;
 
 		// Update dash cooldown
 		if (_dashCooldownTimer > 0)
@@ -219,7 +222,7 @@ public partial class Player : Character
 
 	internal void PlayShootAnimation()
 	{
-		if (IsShooting)
+		if (IsShooting || IsDead)
 			return;
 
 		switch (Moving)
@@ -244,9 +247,24 @@ public partial class Player : Character
 		}
 	}
 
+	private void OnAnimationFinished()
+	{
+		// Check death first - IsShooting may be stale since _Process stops updating it
+		if (IsDead)
+		{
+			// Death animation finished - now pause the game
+			Game.Instance.IsPaused = true;
+		}
+		else if (IsShooting)
+		{
+			_animation.Play("idle");
+		}
+	}
+
 	internal override void OnKilled()
 	{
-		Game.Instance.IsPaused = true;
+		// Clear shooting state and play death animation
+		IsShooting = false;
 		_animation.Play("dead");
 	}
 
