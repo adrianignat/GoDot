@@ -125,14 +125,14 @@ texture = ExtResource("8_prgm8")
 texture_region_size = Vector2i(32, 32)
 0:0/size_in_atlas = Vector2i(2, 4)
 0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, 32)
+0:0/0/texture_origin = Vector2i(0, 20)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yodui"]
 texture = ExtResource("9_ilbnq")
 texture_region_size = Vector2i(32, 32)
 0:0/size_in_atlas = Vector2i(2, 4)
 0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, 32)
+0:0/0/texture_origin = Vector2i(0, 20)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gjafi"]
 texture = ExtResource("10_vv7ig")
@@ -158,7 +158,7 @@ texture = ExtResource("13_vmd0r")
 texture_region_size = Vector2i(32, 32)
 0:0/size_in_atlas = Vector2i(2, 2)
 0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, 10)
+0:0/0/y_sort_origin = -10
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2am47"]
 texture = ExtResource("14_4twvd")
@@ -247,8 +247,7 @@ texture_region_size = Vector2i(32, 32)
 0:0/animation_frame_10/duration = 1.0
 0:0/animation_frame_11/duration = 1.0
 0:0/0 = 0
-0:0/0/y_sort_origin = 5
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-5.333333, -5.333333, 5.333334, -5.333333, 5.333334, 5.333334, -5.333333, 5.333334)
+0:0/0/y_sort_origin = 4
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7f8x5"]
 texture = ExtResource("9_34ec5")
@@ -262,6 +261,7 @@ texture_region_size = Vector2i(32, 32)
 0:0/animation_frame_4/duration = 1.0
 0:0/animation_frame_5/duration = 1.0
 0:0/0 = 0
+0:0/0/y_sort_origin = 4
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tiir4"]
 texture = ExtResource("10_57gr7")
