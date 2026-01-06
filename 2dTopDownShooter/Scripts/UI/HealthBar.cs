@@ -1,98 +1,122 @@
+using dTopDownShooter.Scripts;
 using Godot;
 
 public partial class HealthBar : Control
 {
-    [Export] public int MaxHealth = 100;
-    [Export] public bool EnableTestButtons = true;
+	[Export] public int MaxHealth = 100;
+	[Export] public bool EnableTestButtons = false;
+	[Export] public bool ConnectToGameSignals = true;
 
-    private int _currentHealth;
+	private int _currentHealth;
 
-    private NinePatchRect _base;
-    private TextureRect _fill;
-    private Label _valueLabel;
+	private NinePatchRect _base;
+	private TextureRect _fill;
+	private Label _valueLabel;
 
-    private float _leftPadding;
-    private float _rightPadding;
-    private float _maxFillWidth;
+	private float _leftPadding;
+	private float _rightPadding;
+	private float _maxFillWidth;
 
-    public override void _Ready()
-    {
-        _base = GetNode<NinePatchRect>("Base");
-        _fill = GetNode<TextureRect>("Base/Fill");
-        _valueLabel = GetNode<Label>("Base/ValueLabel");
+	public override void _Ready()
+	{
+		_base = GetNode<NinePatchRect>("Base");
+		_fill = GetNode<TextureRect>("Base/Fill");
+		_valueLabel = GetNode<Label>("Base/ValueLabel");
 
-        _leftPadding = _base.PatchMarginLeft;
-        _rightPadding = _base.PatchMarginRight;
+		_leftPadding = _base.PatchMarginLeft;
+		_rightPadding = _base.PatchMarginRight;
 
-        CallDeferred(nameof(InitializeBar));
-    }
+		CallDeferred(nameof(InitializeBar));
+	}
 
-    private void InitializeBar()
-    {
-        RecalculateFill();
-        SetHealth(MaxHealth);
+	private void InitializeBar()
+	{
+		RecalculateFill();
+		SetHealth(MaxHealth);
 
-        _base.Resized += OnBaseResized;
+		_base.Resized += OnBaseResized;
 
-        if (EnableTestButtons)
-            SetupTestButtons();
-    }
+		if (ConnectToGameSignals)
+			Game.Instance.PlayerHealthChanged += OnPlayerHealthChanged;
 
-    private void OnBaseResized()
-    {
-        RecalculateFill();
-        UpdateBar();
-    }
+		if (EnableTestButtons)
+			SetupTestButtons();
+		else
+			HideTestButtons();
+	}
 
-    private void RecalculateFill()
-    {
-        float baseWidth = _base.Size.X;
-        float baseHeight = _base.Size.Y;
+	private void OnPlayerHealthChanged(ushort health)
+	{
+		if (health > MaxHealth)
+		{
+			MaxHealth = health;
+			RecalculateFill();
+		}
+		SetHealth(health);
+	}
 
-        _maxFillWidth = baseWidth - _leftPadding - _rightPadding;
+	private void HideTestButtons()
+	{
+		var testControls = GetNodeOrNull<Control>("TestControls");
+		if (testControls != null)
+			testControls.Visible = false;
+	}
 
-        _fill.Position = new Vector2(_leftPadding, 0);
-        _fill.Size = new Vector2(_maxFillWidth, baseHeight);
-    }
+	private void OnBaseResized()
+	{
+		RecalculateFill();
+		UpdateBar();
+	}
 
-    // =====================
-    // Health Logic
-    // =====================
+	private void RecalculateFill()
+	{
+		float baseWidth = _base.Size.X;
+		float baseHeight = _base.Size.Y;
 
-    public void SetHealth(int value)
-    {
-        _currentHealth = Mathf.Clamp(value, 0, MaxHealth);
-        UpdateBar();
-    }
+		_maxFillWidth = baseWidth - _leftPadding - _rightPadding;
 
-    public void ModifyHealth(int amount)
-    {
-        SetHealth(_currentHealth + amount);
-    }
+		_fill.Position = new Vector2(_leftPadding, 0);
+		_fill.Size = new Vector2(_maxFillWidth, baseHeight);
+	}
 
-    private void UpdateBar()
-    {
-        float percent = (float)_currentHealth / MaxHealth;
+	// =====================
+	// Health Logic
+	// =====================
 
-        _fill.Size = new Vector2(
-            _maxFillWidth * percent,
-            _fill.Size.Y
-        );
+	public void SetHealth(int value)
+	{
+		_currentHealth = Mathf.Clamp(value, 0, MaxHealth);
+		UpdateBar();
+	}
 
-        // 🔢 Update numeric display
-        _valueLabel.Text = $"{_currentHealth} / {MaxHealth}";
-    }
+	public void ModifyHealth(int amount)
+	{
+		SetHealth(_currentHealth + amount);
+	}
 
-    // =====================
-    // Test Buttons
-    // =====================
+	private void UpdateBar()
+	{
+		float percent = (float)_currentHealth / MaxHealth;
 
-    private void SetupTestButtons()
-    {
-        var minusButton = GetNode<Button>("TestControls/MinusButton");
-        var plusButton  = GetNode<Button>("TestControls/PlusButton");
+		_fill.Size = new Vector2(
+			_maxFillWidth * percent,
+			_fill.Size.Y
+		);
 
-        minusButton.Pressed += () => ModifyHealth(-10);
-        plusButton.Pressed  += () => ModifyHealth(+10);
-    }
+		// 🔢 Update numeric display
+		_valueLabel.Text = $"{_currentHealth} / {MaxHealth}";
+	}
+
+	// =====================
+	// Test Buttons
+	// =====================
+
+	private void SetupTestButtons()
+	{
+		var minusButton = GetNode<Button>("TestControls/MinusButton");
+		var plusButton  = GetNode<Button>("TestControls/PlusButton");
+
+		minusButton.Pressed += () => ModifyHealth(-10);
+		plusButton.Pressed  += () => ModifyHealth(+10);
+	}
 }
