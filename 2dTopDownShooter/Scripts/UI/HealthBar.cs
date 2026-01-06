@@ -9,6 +9,7 @@ public partial class HealthBar : Control
 
     private NinePatchRect _base;
     private TextureRect _fill;
+    private Label _valueLabel;
 
     private float _leftPadding;
     private float _rightPadding;
@@ -18,11 +19,11 @@ public partial class HealthBar : Control
     {
         _base = GetNode<NinePatchRect>("Base");
         _fill = GetNode<TextureRect>("Base/Fill");
+        _valueLabel = GetNode<Label>("Base/ValueLabel");
 
         _leftPadding = _base.PatchMarginLeft;
         _rightPadding = _base.PatchMarginRight;
 
-        // Wait for layout to be valid
         CallDeferred(nameof(InitializeBar));
     }
 
@@ -77,6 +78,9 @@ public partial class HealthBar : Control
             _maxFillWidth * percent,
             _fill.Size.Y
         );
+
+        // 🔢 Update numeric display
+        _valueLabel.Text = $"{_currentHealth} / {MaxHealth}";
     }
 
     // =====================
