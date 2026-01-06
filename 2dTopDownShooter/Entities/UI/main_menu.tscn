@@ -1,0 +1,112 @@
+[gd_scene load_steps=6 format=3 uid="uid://dvk8p4nv1mxn4"]
+
+[ext_resource type="Script" uid="uid://5ex60l0v0gek" path="res://Scripts/UI/MainMenu.cs" id="1_24yqg"]
+[ext_resource type="Texture2D" uid="uid://y73fnua6b2ki" path="res://Sprites/UI/Buttons/Button_Blue_3Slides.png" id="1_l3rlk"]
+[ext_resource type="Texture2D" uid="uid://cwsh2lf7ibc6k" path="res://Sprites/UI/Buttons/Button_Blue_3Slides_Pressed.png" id="2_24yqg"]
+[ext_resource type="Texture2D" uid="uid://6dytamrsevj3" path="res://Sprites/UI/Buttons/Button_Hover_3Slides.png" id="3_xgka1"]
+[ext_resource type="FontFile" uid="uid://bn5q2n7epas52" path="res://PirataOne-Regular.ttf" id="4_ch1mc"]
+
+[node name="MainMenu_2" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_24yqg")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -134.0
+offset_right = 96.0
+offset_bottom = 134.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="StartButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_l3rlk")
+texture_pressed = ExtResource("2_24yqg")
+texture_hover = ExtResource("3_xgka1")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/StartButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_ch1mc")
+theme_override_font_sizes/font_size = 38
+text = "Start"
+horizontal_alignment = 1
+
+[node name="EasyButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_l3rlk")
+texture_pressed = ExtResource("2_24yqg")
+texture_hover = ExtResource("3_xgka1")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/EasyButton"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -71.5
+offset_right = 71.5
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("4_ch1mc")
+theme_override_font_sizes/font_size = 38
+text = "Easy Mode"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OptionsButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_l3rlk")
+texture_pressed = ExtResource("2_24yqg")
+texture_hover = ExtResource("3_xgka1")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/OptionsButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_ch1mc")
+theme_override_font_sizes/font_size = 38
+text = "Options"
+horizontal_alignment = 1
+
+[node name="ExitButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_l3rlk")
+texture_pressed = ExtResource("2_24yqg")
+texture_hover = ExtResource("3_xgka1")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/ExitButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_ch1mc")
+theme_override_font_sizes/font_size = 38
+text = "Exit"
+horizontal_alignment = 1
