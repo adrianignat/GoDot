@@ -1,0 +1,55 @@
+[gd_scene load_steps=4 format=3 uid="uid://cus81t5j55iks"]
+
+[ext_resource type="Script" uid="uid://cervv1c5dtkd2" path="res://Scripts/UI/HealthBar.cs" id="1_u0an5"]
+[ext_resource type="Texture2D" uid="uid://rdog20dnbadi" path="res://Sprites/UI/Bars/BigBar_Base_Full.png" id="1_w60vr"]
+[ext_resource type="Texture2D" uid="uid://smuyyyg8tomc" path="res://Sprites/UI/Bars/BigBar_Fill.png" id="2_u0an5"]
+
+[node name="HealthBar" type="Control"]
+custom_minimum_size = Vector2(320, 64)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 19.0
+offset_top = 3.0
+offset_right = 339.0
+offset_bottom = 67.0
+script = ExtResource("1_u0an5")
+
+[node name="Base" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_w60vr")
+region_rect = Rect2(106, 0, 108, 64)
+patch_margin_left = 8
+patch_margin_right = 8
+
+[node name="Fill" type="TextureRect" parent="Base"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("2_u0an5")
+expand_mode = 1
+
+[node name="TestControls" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 20.0
+offset_right = 76.0
+offset_bottom = 60.0
+grow_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="PlusButton" type="Button" parent="TestControls"]
+layout_mode = 2
+text = "+10"
+
+[node name="MinusButton" type="Button" parent="TestControls"]
+layout_mode = 2
+text = "-10"
