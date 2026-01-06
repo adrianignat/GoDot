@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cnynym1ufcfib" path="res://Sprites/Dead.png" id="4_agnll"]
 [ext_resource type="PackedScene" uid="uid://barrel001" path="res://Entities/Projectiles/barrel.tscn" id="4_dynamite"]
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/Projectiles/arrow.tscn" id="4_lyi1c"]
-[ext_resource type="PackedScene" uid="uid://flyd8u2is6nn" path="res://Entities/Characters/player_health_bar.tscn" id="6_a3846"]
+[ext_resource type="PackedScene" uid="uid://cus81t5j55iks" path="res://Entities/UI/health_bar.tscn" id="6_a3846"]
 [ext_resource type="PackedScene" uid="uid://xpbar001" path="res://Entities/Characters/player_xp_bar.tscn" id="6_xpbar"]
 [ext_resource type="PackedScene" uid="uid://btocigi4olhw0" path="res://Entities/Upgrades/upgrade_normal.tscn" id="7_1nfqo"]
 [ext_resource type="Script" uid="uid://ch4v2h6pcgavv" path="res://Scripts/Upgrades/UpgradeSelection.cs" id="7_pklm1"]
@@ -503,12 +503,11 @@ text = "Score: 0"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="PlayerHealthBar" parent="CanvasLayer" instance=ExtResource("6_a3846")]
+[node name="HealthBar" parent="CanvasLayer" instance=ExtResource("6_a3846")]
 offset_left = 35.0
 offset_top = 52.0
-offset_right = 1035.0
-offset_bottom = 80.0
-size_flags_horizontal = 0
+offset_right = 355.0
+offset_bottom = 116.0
 
 [node name="PlayerXPBar" parent="CanvasLayer" instance=ExtResource("6_xpbar")]
 offset_left = 35.0
