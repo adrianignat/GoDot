@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cus81t5j55iks"]
 
-[ext_resource type="Script" uid="uid://cervv1c5dtkd2" path="res://Scripts/UI/HealthBar.cs" id="1_u0an5"]
+[ext_resource type="Script" uid="uid://d354vcy4ify1w" path="res://Scripts/UI/HealthBar.cs" id="1_u0an5"]
 [ext_resource type="Texture2D" uid="uid://rdog20dnbadi" path="res://Sprites/UI/Bars/BigBar_Base_Full.png" id="1_w60vr"]
 [ext_resource type="Texture2D" uid="uid://smuyyyg8tomc" path="res://Sprites/UI/Bars/BigBar_Fill.png" id="2_u0an5"]
 [ext_resource type="FontFile" uid="uid://bn5q2n7epas52" path="res://PirataOne-Regular.ttf" id="4_g74xg"]

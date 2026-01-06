@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dufa42y6ppjcy"]
 
-[ext_resource type="Script" uid="uid://d1vishgiks3kc" path="res://Scripts/Objects/CastleRuins.cs" id="1_pr68y"]
+[ext_resource type="Script" uid="uid://dw70d38ijj260" path="res://Scripts/Objects/CastleRuins.cs" id="1_pr68y"]
 [ext_resource type="Texture2D" uid="uid://bhtg13315fc4y" path="res://Sprites/Buildings/Castle/Castle_Destroyed.png" id="2_iopvb"]
 [ext_resource type="Texture2D" uid="uid://bibgldhxsgy0j" path="res://Sprites/Buildings/Castle/Castle_Construction.png" id="3_2vian"]
 [ext_resource type="Texture2D" uid="uid://cvpufqw2184du" path="res://Sprites/Buildings/Castle/Castle_Blue.png" id="4_1swxe"]

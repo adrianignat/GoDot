@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://5l2ee7oh4g2i"]
 
-[ext_resource type="Script" uid="uid://cxka7pr0kmmqe" path="res://Scripts/Objects/MonastaryRuins.cs" id="1_ib24u"]
+[ext_resource type="Script" uid="uid://wn0nvi23ru31" path="res://Scripts/Objects/MonastaryRuins.cs" id="1_ib24u"]
 [ext_resource type="Texture2D" uid="uid://bcmmltvrer0at" path="res://Sprites/Buildings/House/House_Destroyed.png" id="1_ypht5"]
 [ext_resource type="Texture2D" uid="uid://dgkjijrfwilcp" path="res://Sprites/Buildings/House/House_Construction.png" id="3_ipti0"]
 [ext_resource type="Texture2D" uid="uid://ddjtwu8fkip4c" path="res://Sprites/Buildings/Blue Buildings/Monastery.png" id="4_424yh"]

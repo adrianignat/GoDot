@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dkb0ngx8tvryr"]
 
-[ext_resource type="Script" uid="uid://bw3i76wmutn1h" path="res://Scripts/Objects/BarracksRuins.cs" id="1_i47ai"]
+[ext_resource type="Script" uid="uid://bkqtbhqwvpn7n" path="res://Scripts/Objects/BarracksRuins.cs" id="1_i47ai"]
 [ext_resource type="Texture2D" uid="uid://bcmmltvrer0at" path="res://Sprites/Buildings/House/House_Destroyed.png" id="1_v4ork"]
 [ext_resource type="Texture2D" uid="uid://dgkjijrfwilcp" path="res://Sprites/Buildings/House/House_Construction.png" id="3_2l5kj"]
 [ext_resource type="Texture2D" uid="uid://bao628fhm5m5l" path="res://Sprites/Buildings/Blue Buildings/Barracks.png" id="4_lg0o3"]

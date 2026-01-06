@@ -1,12 +1,12 @@
 [gd_scene load_steps=8 format=3 uid="uid://44flofr4xo8"]
 
 [ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/Characters/player.tscn" id="1_n17b8"]
-[ext_resource type="Script" uid="uid://dcyr7tnbjerik" path="res://Scripts/Game.cs" id="1_owta4"]
-[ext_resource type="Script" uid="uid://bvhco31qijo4n" path="res://Scripts/Characters/Enemies/EnemySpawner.cs" id="2_nc1g4"]
+[ext_resource type="Script" uid="uid://3071e0f4ws1s" path="res://Scripts/Game.cs" id="1_owta4"]
+[ext_resource type="Script" uid="uid://c3sl52gykya0t" path="res://Scripts/Characters/Enemies/EnemySpawner.cs" id="2_nc1g4"]
 [ext_resource type="PackedScene" uid="uid://bi30yxqh33cfp" path="res://Entities/Characters/Enemies/enemy.tscn" id="2_tddb0"]
-[ext_resource type="Script" uid="uid://bkdtnnatdsius" path="res://Scripts/Spawners/LootSpawner.cs" id="5_5ncms"]
+[ext_resource type="Script" uid="uid://khp7lyg4wpb6" path="res://Scripts/Spawners/LootSpawner.cs" id="5_5ncms"]
 [ext_resource type="PackedScene" uid="uid://ckuxpfbfqhsks" path="res://Entities/Objects/gold.tscn" id="6_b3xnh"]
-[ext_resource type="Script" uid="uid://bgkw5l2ed2v87" path="res://Scripts/MapGenerator.cs" id="7_mapgen"]
+[ext_resource type="Script" uid="uid://btto7fsnsc8im" path="res://Scripts/MapGenerator.cs" id="7_mapgen"]
 
 [node name="main" type="Node2D"]
 y_sort_enabled = true
