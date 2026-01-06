@@ -7,16 +7,16 @@ namespace dTopDownShooter.Scripts
 	public partial class MapGenerator : Node2D
 	{
 		private const int TileSize = 64;
-		private const int PieceSize = 640;    // Each map piece is 640x640 pixels
+		private const int PieceSize = 1344;    // Each map piece is 1344x1344 pixels
 		private const int GridSize = 4;       // 4x4 grid of pieces
 
 		// Map dimensions based on pieces
-		private const int MapWidthPixels = PieceSize * GridSize;   // 2560px
-		private const int MapHeightPixels = PieceSize * GridSize;  // 2560px
+		private const int MapWidthPixels = PieceSize * GridSize;   // 5376px
+		private const int MapHeightPixels = PieceSize * GridSize;  // 5376px
 
 		// For compatibility with existing code
-		private const int PlayableWidth = MapWidthPixels / TileSize;  // 40 tiles
-		private const int PlayableHeight = MapHeightPixels / TileSize; // 40 tiles
+		private const int PlayableWidth = MapWidthPixels / TileSize;  // 84 tiles
+		private const int PlayableHeight = MapHeightPixels / TileSize; // 84 tiles
 		private const int SpawnMargin = 5;     // tiles on each side for enemy spawning
 		private const int MapWidth = PlayableWidth + SpawnMargin * 2;
 		private const int MapHeight = PlayableHeight + SpawnMargin * 2;

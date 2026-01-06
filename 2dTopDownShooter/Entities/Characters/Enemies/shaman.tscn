@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://b4tvyxkjpecm0"]
 
-[ext_resource type="Script" path="res://Scripts/Characters/Enemies/Shaman.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://ce2snb7lf4bva" path="res://Scripts/Characters/Enemies/Shaman.cs" id="1_script"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_placeholder"]
 animations = [{
@@ -16,7 +16,6 @@ height = 68.0
 
 [node name="Shaman" type="CharacterBody2D" groups=["enemies"]]
 y_sort_enabled = true
-scale = Vector2(0.5, 0.5)
 collision_layer = 4
 collision_mask = 11
 motion_mode = 1
