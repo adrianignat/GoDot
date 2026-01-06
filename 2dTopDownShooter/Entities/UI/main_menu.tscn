@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://dvk8p4nv1mxn4"]
 
-[ext_resource type="Script" uid="uid://5ex60l0v0gek" path="res://Scripts/UI/MainMenu.cs" id="1_24yqg"]
+[ext_resource type="Script" uid="uid://5ex60l0v0gek" path="res://Scripts/UI/MainMenuUI.cs" id="1_24yqg"]
 [ext_resource type="Texture2D" uid="uid://y73fnua6b2ki" path="res://Sprites/UI/Buttons/Button_Blue_3Slides.png" id="1_l3rlk"]
 [ext_resource type="Texture2D" uid="uid://cwsh2lf7ibc6k" path="res://Sprites/UI/Buttons/Button_Blue_3Slides_Pressed.png" id="2_24yqg"]
 [ext_resource type="Texture2D" uid="uid://6dytamrsevj3" path="res://Sprites/UI/Buttons/Button_Hover_3Slides.png" id="3_xgka1"]
@@ -109,4 +109,46 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("4_ch1mc")
 theme_override_font_sizes/font_size = 38
 text = "Exit"
+horizontal_alignment = 1
+
+[node name="OptionsContainer" type="VBoxContainer" parent="CenterContainer"]
+visible = false
+layout_mode = 2
+
+[node name="ShootingStyleButton" type="TextureButton" parent="CenterContainer/OptionsContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_l3rlk")
+texture_pressed = ExtResource("2_24yqg")
+texture_hover = ExtResource("3_xgka1")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="CenterContainer/OptionsContainer/ShootingStyleButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_ch1mc")
+theme_override_font_sizes/font_size = 30
+text = "Aim: Auto-Aim"
+horizontal_alignment = 1
+
+[node name="BackButton" type="TextureButton" parent="CenterContainer/OptionsContainer"]
+layout_mode = 2
+texture_normal = ExtResource("1_l3rlk")
+texture_pressed = ExtResource("2_24yqg")
+texture_hover = ExtResource("3_xgka1")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="CenterContainer/OptionsContainer/BackButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_ch1mc")
+theme_override_font_sizes/font_size = 38
+text = "Back"
 horizontal_alignment = 1

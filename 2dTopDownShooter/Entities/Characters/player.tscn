@@ -13,7 +13,7 @@
 [ext_resource type="Script" uid="uid://dwkdh8vtru5nd" path="res://Scripts/Upgrades/UpgradeSelection.cs" id="7_pklm1"]
 [ext_resource type="PackedScene" uid="uid://bciekyyuwur6t" path="res://Entities/Upgrades/upgrade_legendary.tscn" id="9_cn7lq"]
 [ext_resource type="PackedScene" uid="uid://bnsn5m1gs237v" path="res://Entities/Upgrades/upgrade_epic.tscn" id="10_fbkkw"]
-[ext_resource type="PackedScene" uid="uid://ctvkqee5jvjd2" path="res://Entities/UI/menu.tscn" id="11_qf5yn"]
+[ext_resource type="PackedScene" uid="uid://dvk8p4nv1mxn4" path="res://Entities/UI/main_menu.tscn" id="11_qf5yn"]
 [ext_resource type="Material" path="res://Shaders/feet_indicator_material.tres" id="15_feet"]
 [ext_resource type="Script" uid="uid://dta0nr611cmkn" path="res://Scripts/UI/DashIndicator.cs" id="16_dash"]
 
@@ -582,5 +582,5 @@ text = "Option 3"
 
 [node name="Upgrade_Normal" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer/Option3" instance=ExtResource("9_cn7lq")]
 
-[node name="Menu" parent="UpgradeMenuLayer" instance=ExtResource("11_qf5yn")]
+[node name="MainMenu" parent="UpgradeMenuLayer" instance=ExtResource("11_qf5yn")]
 visible = false
