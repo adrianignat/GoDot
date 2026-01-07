@@ -7,16 +7,16 @@ using Godot;
 public partial class EnemyDynamite : Area2D
 {
 	[Export]
-	public ushort Damage { get; set; } = 10; // Same as goblin melee damage
+	public ushort Damage { get; set; } = GameConstants.EnemyDynamiteDamage;
 
 	[Export]
-	public float ThrowDuration { get; set; } = 0.5f;
+	public float ThrowDuration { get; set; } = GameConstants.EnemyDynamiteThrowDuration;
 
 	[Export]
-	public float BlastRadius { get; set; } = 60f;
+	public float BlastRadius { get; set; } = GameConstants.EnemyDynamiteBlastRadius;
 
 	[Export]
-	public float FuseTime { get; set; } = 1.0f;
+	public float FuseTime { get; set; } = GameConstants.EnemyDynamiteFuseTime;
 
 	public Vector2 StartPosition { get; set; }
 	public Vector2 TargetPosition { get; set; }

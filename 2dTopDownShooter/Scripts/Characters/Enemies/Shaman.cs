@@ -14,12 +14,12 @@ public partial class Shaman : Enemy
 	private static SpriteFrames _cachedSpriteFrames;
 
 	[Export]
-	private float AttackCooldown = 2.0f;
+	private float AttackCooldown = GameConstants.ShamanAttackCooldown;
 
 	[Export]
-	private float PreferredDistance = 200f;
+	private float PreferredDistance = GameConstants.ShamanPreferredDistance;
 
-	private const int ProjectileSpawnFrame = 7; // 0-indexed, so frame 8
+	private const int ProjectileSpawnFrame = GameConstants.ShamanProjectileSpawnFrame;
 
 	private PackedScene _projectileScene;
 	private bool _isAttacking = false;

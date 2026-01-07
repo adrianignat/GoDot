@@ -1,13 +1,14 @@
+using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Spawners;
 using Godot;
 
 public partial class DynamiteThrower : Spawner<Barrel>
 {
     [Export]
-    public float ThrowRadius = 200f;
+    public float ThrowRadius = GameConstants.PlayerDynamiteThrowRadius;
 
     [Export]
-    public float MaxThrowDistance = 150f;
+    public float MaxThrowDistance = GameConstants.PlayerDynamiteMaxThrowDistance;
 
     /// <summary>
     /// Additional blast radius added per upgrade level.

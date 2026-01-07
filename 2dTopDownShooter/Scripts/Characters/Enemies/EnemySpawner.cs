@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public partial class EnemySpawner : Spawner<Enemy>
 {
 	[Export]
-	public float SpawnIncreaseRate = 1.1f;
+	public float SpawnIncreaseRate = GameConstants.SpawnIncreaseRate;
 
 	/// <summary>
 	/// Time in seconds before each new enemy tier is introduced.
@@ -14,32 +14,32 @@ public partial class EnemySpawner : Spawner<Enemy>
 	/// Blue enemies spawn from the start.
 	/// </summary>
 	[Export]
-	public float TierIntroductionInterval = 60f;
+	public float TierIntroductionInterval = GameConstants.TierIntroductionInterval;
 
 	/// <summary>
 	/// How much to reduce spawn rate on day transition (percentage kept, e.g., 0.7 = 70%)
 	/// </summary>
 	[Export]
-	public float DayTransitionSpawnRetention = 0.7f;
+	public float DayTransitionSpawnRetention = GameConstants.DayTransitionSpawnRetention;
 
 	/// <summary>
 	/// Chance (0.0 to 1.0) that a spawned enemy will be a TNT goblin instead of a regular goblin.
 	/// </summary>
 	[Export]
-	public float TntGoblinSpawnChance = 0.15f;
+	public float TntGoblinSpawnChance = GameConstants.TntGoblinSpawnChance;
 
 	/// <summary>
 	/// Chance (0.0 to 1.0) that a spawned enemy will be a Shaman instead of a regular goblin.
 	/// </summary>
 	[Export]
-	public float ShamanSpawnChance = 0.10f;
+	public float ShamanSpawnChance = GameConstants.ShamanSpawnChance;
 
 	private List<EnemyTier> _availableTiers = new() { EnemyTier.Blue };
 	private int _nextTierIndex = 1; // Start at Red (index 1 in enum)
 	private float _initialSpawnRate;
 	private float _tierTimer;
 	private float _spawnRateIncreaseTimer;
-	private const float SpawnRateIncreaseInterval = 30f;
+	private float SpawnRateIncreaseInterval => GameConstants.SpawnRateIncreaseInterval;
 	private PackedScene _tntGoblinScene;
 	private PackedScene _shamanScene;
 

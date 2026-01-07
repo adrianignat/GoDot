@@ -25,10 +25,10 @@ public partial class Player : Character
 	private Vector2 _dashDirection;
 	private uint _originalCollisionMask;
 
-	// Dash constants
-	private const float DashDistance = 150f;
-	private const float DashDuration = 0.15f;
-	private const float DashCooldown = 15f;
+	// Dash constants - reference GameConstants for values
+	private float DashDistance => GameConstants.DashDistance;
+	private float DashDuration => GameConstants.DashDuration;
+	private float DashCooldown => GameConstants.DashCooldown;
 
 	public bool IsDashing => _isDashing;
 	public bool CanDash => _dashCooldownTimer <= 0f && !_isDashing;
@@ -119,8 +119,8 @@ public partial class Player : Character
 			var thrower = GetNode<DynamiteThrower>("DynamiteThrower");
 			if (thrower.ObjectsPerSecond == 0)
 			{
-				// First upgrade: enable dynamite throwing (1 every 3 seconds)
-				thrower.ObjectsPerSecond = 0.33f;
+				// First upgrade: enable dynamite throwing
+				thrower.ObjectsPerSecond = GameConstants.InitialDynamiteThrowRate;
 			}
 			// Increase blast radius with each upgrade
 			thrower.BonusBlastRadius += upgdade.Amount;

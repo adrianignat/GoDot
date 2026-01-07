@@ -5,16 +5,16 @@ using Godot;
 public partial class Barrel : Area2D
 {
 	[Export]
-	public ushort Damage { get; set; } = 100;
+	public ushort Damage { get; set; } = GameConstants.PlayerDynamiteDamage;
 
 	[Export]
-	public float ThrowDuration { get; set; } = 0.4f;
+	public float ThrowDuration { get; set; } = GameConstants.PlayerDynamiteThrowDuration;
 
 	[Export]
-	public float BlastRadius { get; set; } = 100f;
+	public float BlastRadius { get; set; } = GameConstants.PlayerDynamiteBlastRadius;
 
 	[Export]
-	public float FuseTime { get; set; } = 1.0f;
+	public float FuseTime { get; set; } = GameConstants.PlayerDynamiteFuseTime;
 
 	public Vector2 StartPosition { get; set; }
 	public Vector2 TargetPosition { get; set; }
