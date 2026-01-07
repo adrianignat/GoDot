@@ -1,0 +1,76 @@
+[gd_scene load_steps=5 format=3 uid="uid://bmig6hypwv5kh"]
+
+[ext_resource type="Script" uid="uid://bl7peunmwtwdw" path="res://Scripts/UI/XpBar.cs" id="1_nlw56"]
+[ext_resource type="Texture2D" uid="uid://cpmhcwplc13ku" path="res://Sprites/UI/Bars/SmallBar_Base_Full.png" id="1_uqc1w"]
+[ext_resource type="Texture2D" uid="uid://bb1gj40ldcijb" path="res://Sprites/UI/Bars/SmallBar_Fill.png" id="2_nlw56"]
+[ext_resource type="FontFile" uid="uid://bn5q2n7epas52" path="res://PirataOne-Regular.ttf" id="3_60na8"]
+
+[node name="XPBar" type="Control"]
+custom_minimum_size = Vector2(320, 16)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_nlw56")
+
+[node name="Base" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_uqc1w")
+region_rect = Rect2(106, 0, 108, 64)
+patch_margin_left = 16
+patch_margin_right = 16
+
+[node name="Fill" type="TextureRect" parent="Base"]
+z_index = 1
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 64.0
+mouse_filter = 2
+texture = ExtResource("2_nlw56")
+expand_mode = 1
+
+[node name="ValueLabel" type="Label" parent="Base"]
+visible = false
+z_index = 2
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -16.0
+offset_bottom = 16.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_60na8")
+theme_override_font_sizes/font_size = 18
+text = "100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TestControls" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 20.0
+offset_right = 76.0
+offset_bottom = 60.0
+grow_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="PlusButton" type="Button" parent="TestControls"]
+layout_mode = 2
+text = "+10"
+
+[node name="MinusButton" type="Button" parent="TestControls"]
+layout_mode = 2
+text = "-10"
