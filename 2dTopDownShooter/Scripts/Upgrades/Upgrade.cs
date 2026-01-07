@@ -74,21 +74,14 @@ namespace dTopDownShooter.Scripts.Upgrades
 			Type = type;
 			Rarity = rarity;
 
-			switch (rarity)
+			Amount = rarity switch
 			{
-				case RarityType.Common:
-					Amount = 10;
-					break;
-				case RarityType.Rare:
-					Amount = 20;
-					break;
-				case RarityType.Epic:
-					Amount = 30;
-					break;
-				case RarityType.Legendary:
-					Amount = 40;
-					break;
-			}
+				RarityType.Common => GameConstants.UpgradeAmountCommon,
+				RarityType.Rare => GameConstants.UpgradeAmountRare,
+				RarityType.Epic => GameConstants.UpgradeAmountEpic,
+				RarityType.Legendary => GameConstants.UpgradeAmountLegendary,
+				_ => GameConstants.UpgradeAmountCommon
+			};
 		}
 	}
 

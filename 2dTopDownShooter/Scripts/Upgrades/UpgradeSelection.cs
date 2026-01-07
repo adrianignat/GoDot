@@ -5,12 +5,12 @@ namespace dTopDownShooter.Scripts.Upgrades
 {
 	public partial class UpgradeSelection : Control
 	{
-		[Export] public ushort FirstUpgrade = 5;
-		[Export] public ushort UpgradeStep = 1;
-		[Export] private ushort LegendaryUpgradeChance = 5;
-		[Export] private ushort EpicUpgradeChance = 15;
+		[Export] public ushort FirstUpgrade = GameConstants.FirstUpgradeThreshold;
+		[Export] public ushort UpgradeStep = GameConstants.UpgradeStepIncrement;
+		[Export] private ushort LegendaryUpgradeChance = GameConstants.LegendaryUpgradeChance;
+		[Export] private ushort EpicUpgradeChance = GameConstants.EpicUpgradeChance;
 
-		private const int UpgradeOptionCount = 3;
+		private const int UpgradeOptionCount = GameConstants.UpgradeOptionCount;
 
 		private readonly PackedScene _normalScene = GD.Load<PackedScene>("res://Entities/Upgrades/upgrade_normal.tscn");
 		private readonly PackedScene _epicScene = GD.Load<PackedScene>("res://Entities/Upgrades/upgrade_epic.tscn");

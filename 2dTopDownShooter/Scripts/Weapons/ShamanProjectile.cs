@@ -8,10 +8,10 @@ using Godot;
 public partial class ShamanProjectile : RigidBody2D
 {
 	[Export]
-	public ushort Damage { get; set; } = 10;
+	public ushort Damage { get; set; } = GameConstants.ShamanProjectileDamage;
 
 	[Export]
-	public float Speed { get; set; } = 300f;
+	public float Speed { get; set; } = GameConstants.ShamanProjectileSpeed;
 
 	private Player _player;
 	private Vector2 _direction;

@@ -16,10 +16,10 @@ public partial class Arrow : RigidBody2D
 	public float Speed { get; set; }
 
 	[Export]
-	public float BounceSpeedReduction = 0.3f;
+	public float BounceSpeedReduction = GameConstants.ArrowBounceSpeedReduction;
 
 	[Export]
-	public float PierceSpeedReduction = 0.7f;
+	public float PierceSpeedReduction = GameConstants.ArrowPierceSpeedReduction;
 
 	/// <summary>
 	/// Number of additional enemies this arrow can bounce through.

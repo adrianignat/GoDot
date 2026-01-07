@@ -7,7 +7,7 @@ public partial class Gold : Area2D
 	public ushort Amount { get; set; }
 
 	[Export]
-	public float MagnetSpeed { get; set; } = 300f;
+	public float MagnetSpeed { get; set; } = GameConstants.GoldMagnetSpeed;
 
 	private bool _isInMagnetZone = false;
 	private Player _player;

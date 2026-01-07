@@ -20,13 +20,13 @@ public partial class TntGoblin : Enemy
 	private static bool _cacheCleared = false;
 
 	[Export]
-	public float ThrowRange = 150f;
+	public float ThrowRange = GameConstants.TntGoblinThrowRange;
 
 	[Export]
-	public float ThrowCooldown = 1.5f;
+	public float ThrowCooldown = GameConstants.TntGoblinThrowCooldown;
 
 	[Export]
-	public float ThrowAnimationDelay = 0.25f;
+	public float ThrowAnimationDelay = GameConstants.TntGoblinThrowAnimationDelay;
 
 	private bool _isWithinThrowRange = false;
 	private bool _isThrowing = false;

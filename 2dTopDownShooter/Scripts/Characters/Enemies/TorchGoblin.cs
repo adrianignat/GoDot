@@ -20,11 +20,11 @@ public partial class TorchGoblin : Enemy
 	private static readonly Dictionary<EnemyTier, SpriteFrames> TierSpriteFramesCache = new();
 
 	[Export]
-	private ushort Damage = 10;
+	private ushort Damage = GameConstants.TorchGoblinDamage;
 
 	private bool _withinRange = false;
 	private bool _isAttacking = false;
-	private float _attackSpeed = 1f;
+	private float _attackSpeed = GameConstants.TorchGoblinAttackSpeed;
 	private float _timeUntilNextAttack;
 
 	protected override void OnReady()
