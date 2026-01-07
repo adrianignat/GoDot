@@ -77,6 +77,8 @@ namespace dTopDownShooter.Scripts
 		#region Weapons - Bow/Arrow
 
 		public const float InitialArrowsPerSecond = 1.5f;         // arrows/sec
+		public const float BaseShootAnimationFps = 10f;           // frames/sec - default animation speed
+		public const float MaxShootAnimationSpeedScale = 3f;      // max animation speed multiplier
 		public const ushort ArrowDamage = 100;                    // HP per hit
 		public const float ArrowSpeed = 500f;                     // pixels/sec
 		public const float ArrowLifespan = 3f;                    // seconds before despawn
@@ -129,12 +131,23 @@ namespace dTopDownShooter.Scripts
 
 		#endregion
 
-		#region Upgrades - Amounts by Rarity
+		#region Upgrades - Percentage Ranges by Rarity
 
-		public const ushort UpgradeAmountCommon = 10;             // percent boost
-		public const ushort UpgradeAmountRare = 20;               // percent boost
-		public const ushort UpgradeAmountEpic = 30;               // percent boost
-		public const ushort UpgradeAmountLegendary = 40;          // percent boost
+		// Common: 1-5% boost
+		public const ushort UpgradeAmountCommonMin = 1;           // percent
+		public const ushort UpgradeAmountCommonMax = 5;           // percent
+
+		// Rare: 5-10% boost
+		public const ushort UpgradeAmountRareMin = 5;             // percent
+		public const ushort UpgradeAmountRareMax = 10;            // percent
+
+		// Epic: 10-20% boost
+		public const ushort UpgradeAmountEpicMin = 10;            // percent
+		public const ushort UpgradeAmountEpicMax = 20;            // percent
+
+		// Legendary: 20-35% boost
+		public const ushort UpgradeAmountLegendaryMin = 20;       // percent
+		public const ushort UpgradeAmountLegendaryMax = 35;       // percent
 
 		#endregion
 

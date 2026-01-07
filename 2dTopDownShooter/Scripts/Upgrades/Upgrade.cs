@@ -74,14 +74,17 @@ namespace dTopDownShooter.Scripts.Upgrades
 			Type = type;
 			Rarity = rarity;
 
-			Amount = rarity switch
+			// Randomly pick a value within the rarity's percentage range
+			var (min, max) = rarity switch
 			{
-				RarityType.Common => GameConstants.UpgradeAmountCommon,
-				RarityType.Rare => GameConstants.UpgradeAmountRare,
-				RarityType.Epic => GameConstants.UpgradeAmountEpic,
-				RarityType.Legendary => GameConstants.UpgradeAmountLegendary,
-				_ => GameConstants.UpgradeAmountCommon
+				RarityType.Common => (GameConstants.UpgradeAmountCommonMin, GameConstants.UpgradeAmountCommonMax),
+				RarityType.Rare => (GameConstants.UpgradeAmountRareMin, GameConstants.UpgradeAmountRareMax),
+				RarityType.Epic => (GameConstants.UpgradeAmountEpicMin, GameConstants.UpgradeAmountEpicMax),
+				RarityType.Legendary => (GameConstants.UpgradeAmountLegendaryMin, GameConstants.UpgradeAmountLegendaryMax),
+				_ => (GameConstants.UpgradeAmountCommonMin, GameConstants.UpgradeAmountCommonMax)
 			};
+
+			Amount = (ushort)GD.RandRange(min, max);
 		}
 	}
 

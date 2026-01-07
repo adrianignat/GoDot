@@ -13,6 +13,10 @@ public partial class Bow : Spawner<Arrow>
 	private Player _player;
 	private Camera2D _camera;
 
+	// Animation speed scaling
+	private float _initialFireRate;
+	private float _baseAnimationDuration;
+
 	/// <summary>
 	/// Number of additional enemies arrows can bounce through.
 	/// </summary>
@@ -34,6 +38,42 @@ public partial class Bow : Spawner<Arrow>
 		_playerAnimation = GetParent().GetNode<AnimatedSprite2D>("PlayerAnimations");
 		_player = GetParent<Player>();
 		_camera = _player.GetNode<Camera2D>("Camera2D");
+
+		// Store initial fire rate to calculate animation speed scaling
+		_initialFireRate = ObjectsPerSecond;
+
+		// Calculate base animation duration (frames / fps)
+		// shoot_forward has ~5 frames at 10fps = 0.5 seconds
+		var spriteFrames = _playerAnimation.SpriteFrames;
+		if (spriteFrames != null && spriteFrames.HasAnimation("shoot_forward"))
+		{
+			int frameCount = spriteFrames.GetFrameCount("shoot_forward");
+			double fps = spriteFrames.GetAnimationSpeed("shoot_forward");
+			_baseAnimationDuration = (float)(frameCount / fps);
+		}
+		else
+		{
+			_baseAnimationDuration = 0.5f; // fallback estimate
+		}
+	}
+
+	/// <summary>
+	/// Returns the animation speed scale needed to match the current fire rate.
+	/// </summary>
+	public float GetAnimationSpeedScale()
+	{
+		// Time between shots at current fire rate
+		float targetFireInterval = 1f / ObjectsPerSecond;
+
+		// If animation is already faster than fire rate, no scaling needed
+		if (_baseAnimationDuration <= targetFireInterval)
+			return 1f;
+
+		// Scale animation to fit within fire interval
+		float requiredScale = _baseAnimationDuration / targetFireInterval;
+
+		// Clamp to max scale
+		return Mathf.Min(requiredScale, GameConstants.MaxShootAnimationSpeedScale);
 	}
 
 	public override bool CanSpawn()
@@ -49,11 +89,20 @@ public partial class Bow : Spawner<Arrow>
 		if (!_player.IsShooting && !_arrowQueued)
 		{
 			_arrowQueued = true;
+
+			// Apply animation speed scale to match fire rate
+			_playerAnimation.SpeedScale = GetAnimationSpeedScale();
+
 			_player.PlayShootAnimation();
 			return false;
-		} else if (!_player.IsShooting && _arrowQueued)
+		}
+		else if (!_player.IsShooting && _arrowQueued)
 		{
 			_arrowQueued = false;
+
+			// Reset animation speed after shooting
+			_playerAnimation.SpeedScale = 1f;
+
 			return true;
 		}
 		return false;
