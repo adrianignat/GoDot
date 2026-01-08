@@ -1,4 +1,4 @@
-[gd_scene load_steps=75 format=3 uid="uid://bwo3muim8kicq"]
+[gd_scene load_steps=63 format=3 uid="uid://bwo3muim8kicq"]
 
 [ext_resource type="Script" uid="uid://cy2wb3acr4s51" path="res://Scripts/Characters/Player.cs" id="1_3jw8b"]
 [ext_resource type="Texture2D" uid="uid://uu46gkne00he" path="res://Sprites/Archer_Blue.png" id="1_sbj2l"]
@@ -7,15 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cnynym1ufcfib" path="res://Sprites/Dead.png" id="4_agnll"]
 [ext_resource type="PackedScene" uid="uid://barrel001" path="res://Entities/Projectiles/barrel.tscn" id="4_dynamite"]
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/Projectiles/arrow.tscn" id="4_lyi1c"]
-[ext_resource type="PackedScene" uid="uid://cus81t5j55iks" path="res://Entities/UI/health_bar.tscn" id="6_a3846"]
-[ext_resource type="PackedScene" uid="uid://xpbar001" path="res://Entities/Characters/player_xp_bar.tscn" id="6_xpbar"]
-[ext_resource type="PackedScene" uid="uid://btocigi4olhw0" path="res://Entities/Upgrades/upgrade_normal.tscn" id="7_1nfqo"]
-[ext_resource type="Script" uid="uid://dwkdh8vtru5nd" path="res://Scripts/Upgrades/UpgradeSelection.cs" id="7_pklm1"]
-[ext_resource type="PackedScene" uid="uid://bciekyyuwur6t" path="res://Entities/Upgrades/upgrade_legendary.tscn" id="9_cn7lq"]
-[ext_resource type="PackedScene" uid="uid://bnsn5m1gs237v" path="res://Entities/Upgrades/upgrade_epic.tscn" id="10_fbkkw"]
-[ext_resource type="PackedScene" uid="uid://dvk8p4nv1mxn4" path="res://Entities/UI/main_menu.tscn" id="11_qf5yn"]
 [ext_resource type="Material" path="res://Shaders/feet_indicator_material.tres" id="15_feet"]
-[ext_resource type="Script" uid="uid://dta0nr611cmkn" path="res://Scripts/UI/DashIndicator.cs" id="16_dash"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c601n"]
 radius = 20.0
@@ -494,93 +486,3 @@ material = ExtResource("15_feet")
 offset_right = 80.0
 offset_bottom = 40.0
 color = Color(1, 0.85, 0.4, 1)
-
-[node name="ScoreLabel" type="Label" parent="."]
-offset_top = -64.0
-offset_right = 61.0
-offset_bottom = -41.0
-text = "Score: 0"
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="HealthBar" parent="CanvasLayer" instance=ExtResource("6_a3846")]
-offset_left = 35.0
-offset_top = 52.0
-offset_right = 355.0
-offset_bottom = 116.0
-
-[node name="PlayerXPBar" parent="CanvasLayer" instance=ExtResource("6_xpbar")]
-offset_left = 35.0
-offset_top = 82.0
-offset_right = 335.0
-offset_bottom = 98.0
-
-[node name="DashIndicator" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -100.0
-offset_top = -110.0
-offset_right = -30.0
-offset_bottom = -30.0
-grow_horizontal = 0
-grow_vertical = 0
-script = ExtResource("16_dash")
-
-[node name="UpgradeMenuLayer" type="CanvasLayer" parent="."]
-
-[node name="UpgradeMenu" type="Control" parent="UpgradeMenuLayer"]
-layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -911.0
-offset_top = -421.0
-offset_right = 700.0
-offset_bottom = 250.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("7_pklm1")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UpgradeMenuLayer/UpgradeMenu"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -450.0
-offset_top = -200.0
-offset_right = -150.59998
-offset_bottom = -44.600006
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(3.5, 3.5)
-theme_override_constants/separation = 40
-alignment = 1
-
-[node name="Option1" type="Button" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer"]
-layout_mode = 2
-text = "Option1"
-
-[node name="Upgrade_Normal" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer/Option1" instance=ExtResource("7_1nfqo")]
-
-[node name="Option2" type="Button" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer"]
-layout_mode = 2
-text = "Option2"
-
-[node name="Upgrade_Epic" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer/Option2" instance=ExtResource("10_fbkkw")]
-
-[node name="Option3" type="Button" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer"]
-layout_mode = 2
-text = "Option 3"
-
-[node name="Upgrade_Normal" parent="UpgradeMenuLayer/UpgradeMenu/HBoxContainer/Option3" instance=ExtResource("9_cn7lq")]
-
-[node name="MainMenu" parent="UpgradeMenuLayer" instance=ExtResource("11_qf5yn")]
-visible = false

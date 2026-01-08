@@ -1,11 +1,17 @@
+using dTopDownShooter.Scripts;
+using dTopDownShooter.Scripts.Upgrades;
 using Godot;
 
 public partial class XPBar : Control
 {
-    [Export] public int XPToNextLevel = 100;
-    [Export] public bool EnableTestButtons = true;
+    [Export] public ushort FirstUpgrade = GameConstants.FirstUpgradeThreshold;
+    [Export] public ushort UpgradeStep = GameConstants.UpgradeStepIncrement;
+    [Export] public bool EnableTestButtons = false;
 
-    private int _currentXP;
+    private ushort _gold;
+    private ushort _goldRequiredForNextUpgrade;
+    private ushort _goldAtLastUpgrade;
+    private ushort _currentUpgradeStep;
 
     private NinePatchRect _base;
     private TextureRect _fill;
@@ -24,13 +30,38 @@ public partial class XPBar : Control
         _leftPadding = _base.PatchMarginLeft;
         _rightPadding = _base.PatchMarginRight;
 
+        // Initialize upgrade thresholds
+        _currentUpgradeStep = FirstUpgrade;
+        _goldRequiredForNextUpgrade = FirstUpgrade;
+        _goldAtLastUpgrade = 0;
+
+        // Connect to game signals
+        Game.Instance.GoldAcquired += OnGoldAcquired;
+        Game.Instance.UpgradeSelected += OnUpgradeSelected;
+
         CallDeferred(nameof(InitializeBar));
+    }
+
+    private void OnGoldAcquired(ushort amount)
+    {
+        _gold += amount;
+        UpdateBar();
+    }
+
+    private void OnUpgradeSelected(Upgrade upgrade)
+    {
+        // After upgrade is selected, update thresholds
+        _goldAtLastUpgrade = _goldRequiredForNextUpgrade;
+        _currentUpgradeStep += UpgradeStep;
+        _goldRequiredForNextUpgrade = (ushort)(_goldAtLastUpgrade + _currentUpgradeStep);
+
+        UpdateBar();
     }
 
     private void InitializeBar()
     {
         RecalculateFill();
-        SetXP(0);
+        UpdateBar();
 
         _base.Resized += OnBaseResized;
 
@@ -55,32 +86,21 @@ public partial class XPBar : Control
         _fill.Size = new Vector2(_maxFillWidth, baseHeight);
     }
 
-    // =====================
-    // XP Logic
-    // =====================
-
-    public void SetXP(int value)
-    {
-        _currentXP = Mathf.Clamp(value, 0, XPToNextLevel);
-        UpdateBar();
-    }
-
-    public void AddXP(int amount)
-    {
-        SetXP(_currentXP + amount);
-    }
-
     private void UpdateBar()
     {
-        float percent = (float)_currentXP / XPToNextLevel;
+        // Calculate progress within current upgrade tier
+        ushort goldInCurrentTier = (ushort)(_gold - _goldAtLastUpgrade);
+        ushort goldNeededForTier = (ushort)(_goldRequiredForNextUpgrade - _goldAtLastUpgrade);
+
+        float percent = goldNeededForTier > 0 ? (float)goldInCurrentTier / goldNeededForTier : 0f;
+        percent = Mathf.Clamp(percent, 0f, 1f);
 
         _fill.Size = new Vector2(
             _maxFillWidth * percent,
             _fill.Size.Y
         );
 
-        int percentageInt = Mathf.RoundToInt(percent * 100f);
-        _valueLabel.Text = $"{percentageInt}%";
+        _valueLabel.Text = $"{goldInCurrentTier}/{goldNeededForTier}";
     }
 
     // =====================
@@ -92,7 +112,7 @@ public partial class XPBar : Control
         var minusButton = GetNode<Button>("TestControls/MinusButton");
         var plusButton  = GetNode<Button>("TestControls/PlusButton");
 
-        minusButton.Pressed += () => AddXP(-10);
-        plusButton.Pressed  += () => AddXP(+10);
+        minusButton.Pressed += () => { _gold = (ushort)Mathf.Max(0, _gold - 10); UpdateBar(); };
+        plusButton.Pressed  += () => { _gold += 10; UpdateBar(); };
     }
 }

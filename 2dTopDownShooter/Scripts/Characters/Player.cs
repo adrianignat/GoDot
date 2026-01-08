@@ -7,8 +7,6 @@ using Godot;
 public partial class Player : Character
 {
 	private ushort _gold = 0;
-	private ushort _score = 0;
-	private Label _scoreLabel;
 	private ColorRect _feetIndicator;
 	private CanvasLayer _feetIndicatorLayer;
 	private Camera2D _camera;
@@ -46,7 +44,6 @@ public partial class Player : Character
 		Facing = Direction.E;
 		Moving = Direction.E;
 
-		_scoreLabel = GetNode<Label>("ScoreLabel");
 		_feetIndicatorLayer = GetNode<CanvasLayer>("FeetIndicatorLayer");
 		_feetIndicator = _feetIndicatorLayer.GetNode<ColorRect>("FeetIndicator");
 		_camera = GetNodeOrNull<Camera2D>("Camera2D");
@@ -208,16 +205,9 @@ public partial class Player : Character
 		_feetIndicator.Position = screenPos - _feetIndicator.Size / 2;
 	}
 
-	public void UpdateScore()
-	{
-		_score += 1;
-		_scoreLabel.Text = "Score: " + _score;
-	}
-
 	public void AcquireGold(ushort amount)
 	{
 		_gold += amount;
-		_scoreLabel.Text = "Gold: " + _gold;
 	}
 
 	internal void PlayShootAnimation()
