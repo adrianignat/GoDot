@@ -1,17 +1,8 @@
-[gd_scene load_steps=6 format=4 uid="uid://o8bjtgfquubf"]
+[gd_scene load_steps=4 format=4 uid="uid://o8bjtgfquubf"]
 
-[ext_resource type="Texture2D" uid="uid://qthyj17wkioa" path="res://Sprites/Water.png" id="1_gtjao"]
-[ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Entities/MapPieces/WorldTileset_Day.tres" id="2_5lxjm"]
+[ext_resource type="TileSet" uid="uid://dskgqq52rkuhh" path="res://Resources/noSpawn.tres" id="1_gtjao"]
+[ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Resources/WorldTileset_Day.tres" id="2_5lxjm"]
 [ext_resource type="TileSet" uid="uid://b46eohqiriohf" path="res://Resources/Decor.tres" id="3_fd5q0"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pwuwj"]
-texture = ExtResource("1_gtjao")
-texture_region_size = Vector2i(64, 64)
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_nolcu"]
-tile_size = Vector2i(64, 64)
-sources/1 = SubResource("TileSetAtlasSource_pwuwj")
 
 [node name="map" type="Node2D"]
 y_sort_enabled = true
@@ -19,7 +10,7 @@ y_sort_enabled = true
 [node name="NoSpawn" type="TileMapLayer" parent="."]
 z_index = -100
 tile_map_data = PackedByteArray("AAAMAAIAAQAAAAAAAAAMAAMAAQAAAAAAAAAMAAQAAQAAAAAAAAAMAAUAAQAAAAAAAAALAAQAAQAAAAAAAAALAAUAAQAAAAAAAAALAAYAAQAAAAAAAAAKAAYAAQAAAAAAAAAKAAUAAQAAAAAAAAAKAAQAAQAAAAAAAAANAAIAAQAAAAAAAAANAAMAAQAAAAAAAAANAAQAAQAAAAAAAAANAAUAAQAAAAAAAAAOAAIAAQAAAAAAAAAOAAMAAQAAAAAAAAAOAAQAAQAAAAAAAAAOAAUAAQAAAAAAAAAPAAUAAQAAAAAAAAAPAAQAAQAAAAAAAAAPAAMAAQAAAAAAAAAPAAIAAQAAAAAAAAAQAAIAAQAAAAAAAAAQAAMAAQAAAAAAAAAQAAQAAQAAAAAAAAAQAAUAAQAAAAAAAAARAAUAAQAAAAAAAAARAAYAAQAAAAAAAAARAAQAAQAAAAAAAAARAAMAAQAAAAAAAAARAAIAAQAAAAAAAAASAAcAAQAAAAAAAAASAAYAAQAAAAAAAAASAAUAAQAAAAAAAAASAAQAAQAAAAAAAAASAAMAAQAAAAAAAAATAAgAAQAAAAAAAAATAAcAAQAAAAAAAAATAAYAAQAAAAAAAAATAAUAAQAAAAAAAAATAAQAAQAAAAAAAAAUAAUAAQAAAAAAAAAUAAYAAQAAAAAAAAAUAAcAAQAAAAAAAAAUAAgAAQAAAAAAAAACAAoAAQAAAAAAAAACAAkAAQAAAAAAAAANABMAAQAAAAAAAAANABIAAQAAAAAAAAADABIAAQAAAAAAAAADABEAAQAAAAAAAAA=")
-tile_set = SubResource("TileSet_nolcu")
+tile_set = ExtResource("1_gtjao")
 
 [node name="Layer_1_Water" type="TileMapLayer" parent="."]
 z_index = -99

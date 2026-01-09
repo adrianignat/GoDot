@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=4 uid="uid://blajm32tdwp1b"]
 
 [ext_resource type="Texture2D" uid="uid://qthyj17wkioa" path="res://Sprites/Water.png" id="1_maiyj"]
-[ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Entities/MapPieces/WorldTileset_Day.tres" id="2_uoalo"]
+[ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Resources/WorldTileset_Day.tres" id="2_uoalo"]
 [ext_resource type="PackedScene" uid="uid://dkb0ngx8tvryr" path="res://Entities/Buildings/barracks_ruins.tscn" id="3_yn4ca"]
 [ext_resource type="PackedScene" uid="uid://dufa42y6ppjcy" path="res://Entities/Buildings/castle_ruins.tscn" id="4_wfl6m"]
 [ext_resource type="PackedScene" uid="uid://5l2ee7oh4g2i" path="res://Entities/Buildings/monastary_ruins.tscn" id="5_yeqt1"]

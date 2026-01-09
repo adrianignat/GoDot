@@ -77,8 +77,15 @@ public partial class TorchGoblin : Enemy
 		if (_isAttacking)
 			return;
 
-		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
-		Vector2 moveDirection = distanceFromPlayer.Normalized();
+		//var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
+		//Vector2 moveDirection = distanceFromPlayer.Normalized();
+
+		//Mishu - AStarGrid//
+		if (_path.Count == 0 || Engine.GetPhysicsFrames() % 20 == 0)
+    		RecalculatePath();
+		Vector2 moveDirection = GetMovementDirection();
+		//Mishu - AStarGrid//
+
 		Velocity = moveDirection * Speed;
 		_animation.FlipH = moveDirection.X < 0;
 

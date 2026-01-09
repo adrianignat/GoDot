@@ -22,8 +22,22 @@ public abstract partial class Enemy : Character
 	protected Player _player;
 	protected string _animationNodeName = "EnemyAnimations";
 
+	//MISHU - ASTARGRID//
+	protected AStarGrid2D _astar;
+	protected TileMapLayer _mapLayer;
+
+	protected Queue<Vector2> _path = new();
+	protected Vector2 _currentTarget;
+	//MISHU - ASTARGRID//
+
+
+
+
+
 	public override void _Ready()
 	{
+		
+		
 		_player = Game.Instance.Player;
 
 		// Let subclass configure settings before we use them
@@ -48,6 +62,43 @@ public abstract partial class Enemy : Character
 
 		// Let subclass do additional initialization
 		OnReady();
+
+
+
+		
+		//MISHU - ASTARGRID//
+		var mapNode = GetTree().GetFirstNodeInGroup("map");
+
+		if (mapNode is BaseMap baseMap)
+		{
+			_astar = baseMap.GetAStar();
+
+			// Find a TileMapLayer to use for map <-> world conversion
+			foreach (Node child in baseMap.GetChildren())
+			{
+				if (child is TileMapLayer layer && layer.TileSet != null)
+				{
+					_mapLayer = layer;
+					break;
+				}
+			}
+
+			if (_mapLayer == null)
+			{
+				GD.PushError("[Enemy] No TileMapLayer found on BaseMap for coordinate conversion.");
+			}
+		}
+
+		
+		//MISHU - ASTARGRID//
+
+
+
+
+
+
+
+
 	}
 
 	/// <summary>
@@ -69,6 +120,60 @@ public abstract partial class Enemy : Character
 	/// Handle animation finished events. Override in subclass for specific behavior.
 	/// </summary>
 	protected virtual void OnAnimationFinished() { }
+
+	
+	
+	
+	//MISHU - ASTARGRID//
+	protected void RecalculatePath()
+	{
+		GD.Print($"[Enemy] Path length: {_path.Count}");
+		if (_astar == null || _mapLayer == null || _player == null)
+			return;
+
+		Vector2I startCell = _mapLayer.LocalToMap(GlobalPosition);
+		Vector2I endCell = _mapLayer.LocalToMap(_player.GlobalPosition);
+
+		if (!_astar.IsInBoundsv(startCell) || !_astar.IsInBoundsv(endCell))
+			return;
+
+		if (_astar.IsPointSolid(startCell) || _astar.IsPointSolid(endCell))
+			return;
+
+		_path.Clear();
+
+		var cellPath = _astar.GetIdPath(startCell, endCell);
+
+		if (cellPath.Count == 0)
+			return;
+
+		foreach (Vector2I cell in cellPath)
+		{
+			Vector2 worldPos = _mapLayer.MapToLocal(cell);
+			_path.Enqueue(worldPos);
+		}
+
+		
+	}
+
+	protected Vector2 GetMovementDirection()
+	{
+		if (_path.Count == 0)
+			return Vector2.Zero;
+
+		_currentTarget = _path.Peek();
+
+		if (GlobalPosition.DistanceTo(_currentTarget) < 8f)
+			_path.Dequeue();
+
+		return ( _currentTarget - GlobalPosition ).Normalized();
+	}
+	//MISHU - ASTARGRID//
+
+
+
+
+
 
 	internal override void OnKilled()
 	{

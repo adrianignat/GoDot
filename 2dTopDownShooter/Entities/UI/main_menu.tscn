@@ -22,7 +22,6 @@ mouse_filter = 2
 script = ExtResource("1_24yqg")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-layer = 1
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
 material = SubResource("ShaderMaterial_ch1mc")
@@ -50,25 +49,31 @@ grow_vertical = 2
 layout_mode = 2
 
 [node name="StartButton" type="TextureButton" parent="CanvasLayer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 120)
 layout_mode = 2
+size_flags_horizontal = 4
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
 texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/StartButton"]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_bottom = 48.0
 grow_horizontal = 2
-grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_ch1mc")
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 60
 text = "Start"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="EasyButton" type="TextureButton" parent="CanvasLayer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 120)
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
@@ -76,21 +81,22 @@ texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/EasyButton"]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -71.5
-offset_right = 71.5
-offset_bottom = 50.0
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 48.0
 grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_ch1mc")
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 60
 text = "Easy Mode"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="OptionsButton" type="TextureButton" parent="CanvasLayer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 120)
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
@@ -98,18 +104,22 @@ texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/OptionsButton"]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_bottom = 48.0
 grow_horizontal = 2
-grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_ch1mc")
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 60
 text = "Options"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ExitButton" type="TextureButton" parent="CanvasLayer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 120)
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
@@ -117,22 +127,26 @@ texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/ExitButton"]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_bottom = 48.0
 grow_horizontal = 2
-grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_ch1mc")
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 60
 text = "Exit"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="OptionsContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer"]
 visible = false
 layout_mode = 2
 
 [node name="ShootingStyleButton" type="TextureButton" parent="CanvasLayer/CenterContainer/OptionsContainer"]
+custom_minimum_size = Vector2(300, 120)
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
@@ -140,18 +154,22 @@ texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="CanvasLayer/CenterContainer/OptionsContainer/ShootingStyleButton"]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_bottom = 40.0
 grow_horizontal = 2
-grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_ch1mc")
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 46
 text = "Aim: Auto-Aim"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BackButton" type="TextureButton" parent="CanvasLayer/CenterContainer/OptionsContainer"]
+custom_minimum_size = Vector2(300, 120)
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
@@ -159,13 +177,16 @@ texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="CanvasLayer/CenterContainer/OptionsContainer/BackButton"]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_bottom = 48.0
 grow_horizontal = 2
-grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_ch1mc")
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 60
 text = "Back"
 horizontal_alignment = 1
+vertical_alignment = 1
