@@ -110,38 +110,33 @@ public partial class TntGoblin : Enemy
 		}
 	}
 
-	public override void _PhysicsProcess(double delta)
+	protected override bool CanMove() => !_isThrowing;
+
+	protected override Vector2 GetIntendedDirection()
 	{
-		// Don't move while throwing
-		if (_isThrowing)
-			return;
+		// If within throw range, stop
+		if (_isWithinThrowRange)
+			return Vector2.Zero;
 
-		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
-		float distance = distanceFromPlayer.Length();
+		// Otherwise, move toward player
+		return (_player.GlobalPosition - GlobalPosition).Normalized();
+	}
 
-		// If within throw range, stop and idle
-		if (distance <= ThrowRange)
+	protected override void UpdateMovementAnimation(Vector2 direction)
+	{
+		if (direction == Vector2.Zero)
 		{
-			Velocity = Vector2.Zero;
+			// Standing still - play idle if not attacking
 			if (_animation.Animation != "idle" && _animation.Animation != "attack")
-			{
 				_animation.Play("idle");
-			}
 		}
 		else
 		{
-			// Move toward player
-			Vector2 moveDirection = distanceFromPlayer.Normalized();
-			Velocity = moveDirection * Speed;
-			_animation.FlipH = moveDirection.X < 0;
-
+			// Moving - flip sprite and play walk
+			_animation.FlipH = direction.X < 0;
 			if (_animation.Animation != "walk")
-			{
 				_animation.Play("walk");
-			}
 		}
-
-		MoveAndSlide();
 	}
 
 	private void ThrowDynamite()
