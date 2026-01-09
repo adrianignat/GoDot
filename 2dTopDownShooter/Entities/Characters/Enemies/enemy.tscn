@@ -1,7 +1,7 @@
 [gd_scene load_steps=37 format=3 uid="uid://bi30yxqh33cfp"]
 
 [ext_resource type="Texture2D" uid="uid://cvhfa8bhig7dh" path="res://Sprites/Goblin_Torch_Red.png" id="1_jfter"]
-[ext_resource type="Script" uid="uid://ckk4ynh1l7767" path="res://Scripts/Characters/Enemies/TorchGoblin.cs" id="1_kv5dc"]
+[ext_resource type="Script" uid="uid://mocsp176ygkh" path="res://Scripts/Characters/Enemies/TorchGoblin.cs" id="1_kv5dc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2b63j"]
 atlas = ExtResource("1_jfter")
@@ -257,6 +257,7 @@ size = Vector2(154, 126)
 
 [node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
 y_sort_enabled = true
+scale = Vector2(0.8, 0.8)
 collision_layer = 4
 collision_mask = 11
 motion_mode = 1

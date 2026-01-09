@@ -1,4 +1,4 @@
-[gd_scene load_steps=63 format=3 uid="uid://bwo3muim8kicq"]
+[gd_scene load_steps=67 format=3 uid="uid://bwo3muim8kicq"]
 
 [ext_resource type="Script" uid="uid://cy2wb3acr4s51" path="res://Scripts/Characters/Player.cs" id="1_3jw8b"]
 [ext_resource type="Texture2D" uid="uid://uu46gkne00he" path="res://Sprites/Archer_Blue.png" id="1_sbj2l"]
@@ -446,6 +446,7 @@ animations = [{
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 y_sort_enabled = true
+scale = Vector2(0.8, 0.8)
 collision_layer = 2
 collision_mask = 77
 motion_mode = 1
