@@ -12,6 +12,7 @@ public partial class MainMenuUI : Control
 	private TextureButton _exitButton;
 	private TextureButton _shootingStyleButton;
 	private TextureButton _backButton;
+	private CanvasLayer _menuCanvasLayer; //mishu's blurr effect
 
 	private VBoxContainer _mainMenuContainer;
 	private VBoxContainer _optionsContainer;
@@ -27,15 +28,17 @@ public partial class MainMenuUI : Control
 		Visible = true;
 		Game.Instance.IsPaused = true;
 
-		_mainMenuContainer = GetNode<VBoxContainer>("CenterContainer/VBoxContainer");
-		_optionsContainer = GetNode<VBoxContainer>("CenterContainer/OptionsContainer");
+		_menuCanvasLayer = GetNode<CanvasLayer>("CanvasLayer");
 
-		_startButton = GetNode<TextureButton>("CenterContainer/VBoxContainer/StartButton");
-		_easyButton = GetNode<TextureButton>("CenterContainer/VBoxContainer/EasyButton");
-		_optionsButton = GetNode<TextureButton>("CenterContainer/VBoxContainer/OptionsButton");
-		_exitButton = GetNode<TextureButton>("CenterContainer/VBoxContainer/ExitButton");
-		_shootingStyleButton = GetNode<TextureButton>("CenterContainer/OptionsContainer/ShootingStyleButton");
-		_backButton = GetNode<TextureButton>("CenterContainer/OptionsContainer/BackButton");
+		_mainMenuContainer = GetNode<VBoxContainer>("CanvasLayer/CenterContainer/VBoxContainer");
+		_optionsContainer = GetNode<VBoxContainer>("CanvasLayer/CenterContainer/OptionsContainer");
+
+		_startButton = GetNode<TextureButton>("CanvasLayer/CenterContainer/VBoxContainer/StartButton");
+		_easyButton = GetNode<TextureButton>("CanvasLayer/CenterContainer/VBoxContainer/EasyButton");
+		_optionsButton = GetNode<TextureButton>("CanvasLayer/CenterContainer/VBoxContainer/OptionsButton");
+		_exitButton = GetNode<TextureButton>("CanvasLayer/CenterContainer/VBoxContainer/ExitButton");
+		_shootingStyleButton = GetNode<TextureButton>("CanvasLayer/CenterContainer/OptionsContainer/ShootingStyleButton");
+		_backButton = GetNode<TextureButton>("CanvasLayer/CenterContainer/OptionsContainer/BackButton");
 
 		_startLabel = _startButton.GetNode<Label>("Label");
 		_shootingStyleLabel = _shootingStyleButton.GetNode<Label>("Label");
@@ -79,7 +82,7 @@ public partial class MainMenuUI : Control
 			else
 			{
 				// Just resume - but don't unpause if upgrade selection is showing
-				Visible = false;
+				_menuCanvasLayer.Visible = false;
 				if (!Game.Instance.IsUpgradeSelectionShowing)
 				{
 					Game.Instance.IsPaused = false;
@@ -101,7 +104,7 @@ public partial class MainMenuUI : Control
 
 	private void StartNewGame()
 	{
-		Visible = false;
+		_menuCanvasLayer.Visible = false;
 		Game.Instance.IsPaused = false;
 		Game.Instance.ApplyGameMode();
 		Game.Instance.StartFirstDay();
@@ -152,9 +155,10 @@ public partial class MainMenuUI : Control
 
 	private void ToggleMenu()
 	{
-		Visible = !Visible;
+		bool showMenu = !_menuCanvasLayer.Visible;
+		_menuCanvasLayer.Visible = showMenu;
 
-		if (Visible)
+		if (showMenu)
 		{
 			Game.Instance.IsPaused = true;
 			_mainMenuContainer.Visible = true;

@@ -1,10 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://dvk8p4nv1mxn4"]
+[gd_scene load_steps=8 format=3 uid="uid://dvk8p4nv1mxn4"]
 
-[ext_resource type="Script" uid="uid://c4myyo6ybeday" path="res://Scripts/UI/MainMenuUI.cs" id="1_24yqg"]
+[ext_resource type="Script" uid="uid://cbh6p54t00hil" path="res://Scripts/UI/MainMenuUI.cs" id="1_24yqg"]
 [ext_resource type="Texture2D" uid="uid://y73fnua6b2ki" path="res://Sprites/UI/Buttons/Button_Blue_3Slides.png" id="1_l3rlk"]
 [ext_resource type="Texture2D" uid="uid://cwsh2lf7ibc6k" path="res://Sprites/UI/Buttons/Button_Blue_3Slides_Pressed.png" id="2_24yqg"]
+[ext_resource type="Shader" uid="uid://ybte85h68uxj" path="res://Entities/UI/blur.gdshader" id="2_xgka1"]
 [ext_resource type="Texture2D" uid="uid://6dytamrsevj3" path="res://Sprites/UI/Buttons/Button_Hover_3Slides.png" id="3_xgka1"]
 [ext_resource type="FontFile" uid="uid://bn5q2n7epas52" path="res://PirataOne-Regular.ttf" id="4_ch1mc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ch1mc"]
+shader = ExtResource("2_xgka1")
+shader_parameter/blur_amount = 2.000000095
 
 [node name="MainMenu_2" type="Control"]
 layout_mode = 3
@@ -15,8 +20,17 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_24yqg")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
-layout_mode = 1
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+material = SubResource("ShaderMaterial_ch1mc")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -29,17 +43,17 @@ offset_bottom = 134.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer"]
 layout_mode = 2
 
-[node name="StartButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+[node name="StartButton" type="TextureButton" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
 texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/StartButton"]
+[node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/StartButton"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -51,14 +65,14 @@ theme_override_font_sizes/font_size = 38
 text = "Start"
 horizontal_alignment = 1
 
-[node name="EasyButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+[node name="EasyButton" type="TextureButton" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
 texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/EasyButton"]
+[node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/EasyButton"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -73,14 +87,14 @@ text = "Easy Mode"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OptionsButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+[node name="OptionsButton" type="TextureButton" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
 texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/OptionsButton"]
+[node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/OptionsButton"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -92,14 +106,14 @@ theme_override_font_sizes/font_size = 38
 text = "Options"
 horizontal_alignment = 1
 
-[node name="ExitButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+[node name="ExitButton" type="TextureButton" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
 texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/ExitButton"]
+[node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/ExitButton"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -111,18 +125,18 @@ theme_override_font_sizes/font_size = 38
 text = "Exit"
 horizontal_alignment = 1
 
-[node name="OptionsContainer" type="VBoxContainer" parent="CenterContainer"]
+[node name="OptionsContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer"]
 visible = false
 layout_mode = 2
 
-[node name="ShootingStyleButton" type="TextureButton" parent="CenterContainer/OptionsContainer"]
+[node name="ShootingStyleButton" type="TextureButton" parent="CanvasLayer/CenterContainer/OptionsContainer"]
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
 texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="CenterContainer/OptionsContainer/ShootingStyleButton"]
+[node name="Label" type="Label" parent="CanvasLayer/CenterContainer/OptionsContainer/ShootingStyleButton"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -134,14 +148,14 @@ theme_override_font_sizes/font_size = 30
 text = "Aim: Auto-Aim"
 horizontal_alignment = 1
 
-[node name="BackButton" type="TextureButton" parent="CenterContainer/OptionsContainer"]
+[node name="BackButton" type="TextureButton" parent="CanvasLayer/CenterContainer/OptionsContainer"]
 layout_mode = 2
 texture_normal = ExtResource("1_l3rlk")
 texture_pressed = ExtResource("2_24yqg")
 texture_hover = ExtResource("3_xgka1")
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="CenterContainer/OptionsContainer/BackButton"]
+[node name="Label" type="Label" parent="CanvasLayer/CenterContainer/OptionsContainer/BackButton"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
