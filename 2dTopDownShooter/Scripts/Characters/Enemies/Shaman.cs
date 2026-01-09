@@ -108,36 +108,26 @@ public partial class Shaman : Enemy
 		}
 	}
 
-	public override void _PhysicsProcess(double delta)
-	{
-		// Don't move while attacking
-		if (_isAttacking)
-			return;
+	protected override bool CanMove() => !_isAttacking;
 
+	protected override Vector2 GetIntendedDirection()
+	{
 		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
 		float distance = distanceFromPlayer.Length();
-		Vector2 moveDirection;
 
 		if (distance > PreferredDistance + 50)
-		{
-			// Move toward player if too far
-			moveDirection = distanceFromPlayer.Normalized();
-		}
+			return distanceFromPlayer.Normalized();
 		else if (distance < PreferredDistance - 50)
-		{
-			// Move away from player if too close
-			moveDirection = -distanceFromPlayer.Normalized();
-		}
+			return -distanceFromPlayer.Normalized();
 		else
-		{
-			// At preferred distance, stop moving
-			moveDirection = Vector2.Zero;
-		}
+			return Vector2.Zero;
+	}
 
-		Velocity = moveDirection * Speed;
+	protected override void UpdateMovementAnimation(Vector2 direction)
+	{
+		// Shaman always faces the player
+		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
 		_animation.FlipH = distanceFromPlayer.X < 0;
-
-		MoveAndSlide();
 	}
 
 	private bool CanSeePlayer()

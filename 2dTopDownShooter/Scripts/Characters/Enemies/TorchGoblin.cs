@@ -71,26 +71,7 @@ public partial class TorchGoblin : Enemy
 		_timeUntilNextAttack -= (float)delta;
 	}
 
-	public override void _PhysicsProcess(double delta)
-	{
-		// Don't move while attacking
-		if (_isAttacking)
-			return;
-
-		//var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
-		//Vector2 moveDirection = distanceFromPlayer.Normalized();
-
-		//Mishu - AStarGrid//
-		if (_path.Count == 0 || Engine.GetPhysicsFrames() % 20 == 0)
-    		RecalculatePath();
-		Vector2 moveDirection = GetMovementDirection();
-		//Mishu - AStarGrid//
-
-		Velocity = moveDirection * Speed;
-		_animation.FlipH = moveDirection.X < 0;
-
-		MoveAndSlide();
-	}
+	protected override bool CanMove() => !_isAttacking;
 
 	private void Attack()
 	{
