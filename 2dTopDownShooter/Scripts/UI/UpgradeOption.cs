@@ -20,21 +20,13 @@ public partial class UpgradeOption : Control
     [Export] public Texture2D EpicHeader;
 
     // -------------------------------------------------
-    // Quality enum (kept inline as requested)
+    // Stored upgrade data (GENERIC)
     // -------------------------------------------------
-    public enum UpgradeQuality
-    {
-        Common,
-        Rare,
-        Epic
-    }
-
-    public UpgradeQuality Quality { get; private set; }
+    private BaseUpgradeResource _upgrade;
 
     // -------------------------------------------------
     // Hover animation state
     // -------------------------------------------------
-    private Vector2 _basePosition;
     private Vector2 _baseScale;
     private Tween _hoverTween;
 
@@ -52,37 +44,35 @@ public partial class UpgradeOption : Control
     }
 
     // -------------------------------------------------
-    // Public setup API
+    // Public setup API (GENERIC)
     // -------------------------------------------------
-    public void Setup(
-        UpgradeQuality quality,
-        string headerText,
-        string descriptionText
-    )
+    public void Setup(BaseUpgradeResource upgrade)
     {
-        Quality = quality;
-        HeaderLabel.Text = headerText;
-        DescriptionLabel.Text = descriptionText;
+        _upgrade = upgrade;
 
-        ApplyHeaderTexture(quality);
+        HeaderLabel.Text = upgrade.UpgradeName;
+        DescriptionLabel.Text =
+            $"{upgrade.PercentageIncrease:F1}% increase {upgrade.UpgradeName}";
+
+        ApplyHeaderTexture(upgrade.Quality);
     }
 
     // -------------------------------------------------
     // Header texture selection
     // -------------------------------------------------
-    private void ApplyHeaderTexture(UpgradeQuality quality)
+    private void ApplyHeaderTexture(BaseUpgradeResource.UpgradeQuality quality)
     {
         HeaderBG.Texture = quality switch
         {
-            UpgradeQuality.Common => CommonHeader,
-            UpgradeQuality.Rare => RareHeader,
-            UpgradeQuality.Epic => EpicHeader,
+            BaseUpgradeResource.UpgradeQuality.Common => CommonHeader,
+            BaseUpgradeResource.UpgradeQuality.Rare => RareHeader,
+            BaseUpgradeResource.UpgradeQuality.Epic => EpicHeader,
             _ => CommonHeader
         };
     }
 
     // -------------------------------------------------
-    // Tween-based hover lift / highlight
+    // Tween-based hover scale
     // -------------------------------------------------
     private void OnMouseEntered()
     {
@@ -95,7 +85,7 @@ public partial class UpgradeOption : Control
             _baseScale * 1.06f,
             0.15f
         ).SetEase(Tween.EaseType.Out)
-        .SetTrans(Tween.TransitionType.Back);
+         .SetTrans(Tween.TransitionType.Back);
 
         Modulate = new Color(1.1f, 1.1f, 1.1f);
     }
@@ -114,7 +104,6 @@ public partial class UpgradeOption : Control
 
         Modulate = Colors.White;
     }
-
 
     // -------------------------------------------------
     // Click handling
