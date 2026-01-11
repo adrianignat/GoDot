@@ -1,0 +1,95 @@
+[gd_scene load_steps=7 format=3 uid="uid://deca7ylwyk2e4"]
+
+[ext_resource type="Script" uid="uid://b0spuc08ixajg" path="res://Scripts/UI/UpgradeOption.cs" id="1_x1pbh"]
+[ext_resource type="Texture2D" uid="uid://nfoj7n8wlwoj" path="res://Sprites/Ribbons/Ribbon_Blue_3Slides.png" id="2_ovyuw"]
+[ext_resource type="Texture2D" uid="uid://8w1hxh513ig7" path="res://Sprites/Ribbons/Ribbon_Red_3Slides.png" id="3_wxby5"]
+[ext_resource type="Texture2D" uid="uid://bo5ovsc08ejwf" path="res://Sprites/Ribbons/Ribbon_Yellow_3Slides.png" id="4_fobc7"]
+[ext_resource type="FontFile" uid="uid://bn5q2n7epas52" path="res://PirataOne-Regular.ttf" id="5_fobc7"]
+[ext_resource type="Texture2D" uid="uid://bj5ivkfilav7m" path="res://Sprites/UI/Banners/Banner_Connection_Down.png" id="6_og8yn"]
+
+[node name="UpgradeOption" type="Control" node_paths=PackedStringArray("HeaderBG", "HeaderLabel", "DescriptionBG", "DescriptionLabel")]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 350.0
+focus_mode = 2
+script = ExtResource("1_x1pbh")
+HeaderBG = NodePath("CardRoot/Header/HeaderSprite")
+HeaderLabel = NodePath("CardRoot/Header/HeaderLabel")
+DescriptionBG = NodePath("CardRoot/Description/DescriptionSprite")
+DescriptionLabel = NodePath("CardRoot/Description/DescriptionLabel")
+CommonHeader = ExtResource("2_ovyuw")
+RareHeader = ExtResource("3_wxby5")
+EpicHeader = ExtResource("4_fobc7")
+
+[node name="CardRoot" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Header" type="Control" parent="CardRoot"]
+custom_minimum_size = Vector2(192, 64)
+layout_mode = 1
+anchors_preset = 0
+offset_right = 192.0
+offset_bottom = 64.0
+mouse_filter = 2
+
+[node name="HeaderSprite" type="TextureRect" parent="CardRoot/Header"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 0
+mouse_filter = 2
+
+[node name="HeaderLabel" type="Label" parent="CardRoot/Header"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_right = 8.0
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_fobc7")
+theme_override_font_sizes/font_size = 36
+text = "Atk Speed"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Description" type="Control" parent="CardRoot"]
+custom_minimum_size = Vector2(120, 120)
+anchors_preset = 0
+offset_right = 100.0
+offset_bottom = 120.0
+mouse_filter = 2
+
+[node name="DescriptionSprite" type="TextureRect" parent="CardRoot/Description"]
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 192.0
+mouse_filter = 2
+texture = ExtResource("6_og8yn")
+
+[node name="DescriptionLabel" type="Label" parent="CardRoot/Description"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 49.0
+offset_top = 49.0
+offset_right = 30.0
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9019608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_fobc7")
+theme_override_font_sizes/font_size = 20
+text = "+30% max health"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
