@@ -41,9 +41,11 @@ offset_bottom = 64.0
 mouse_filter = 2
 
 [node name="HeaderSprite" type="TextureRect" parent="CardRoot/Header"]
+texture_filter = 1
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 0
 mouse_filter = 2
+texture = ExtResource("2_ovyuw")
 
 [node name="HeaderLabel" type="Label" parent="CardRoot/Header"]
 layout_mode = 1
@@ -68,6 +70,7 @@ offset_bottom = 120.0
 mouse_filter = 2
 
 [node name="DescriptionSprite" type="TextureRect" parent="CardRoot/Description"]
+texture_filter = 1
 layout_mode = 0
 offset_right = 200.0
 offset_bottom = 192.0
