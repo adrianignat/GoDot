@@ -31,3 +31,5 @@ animation = &"walk"
 [node name="EnemyCollision" type="CollisionShape2D" parent="."]
 position = Vector2(0, -4)
 shape = SubResource("CapsuleShape2D_body")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]

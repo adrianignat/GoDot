@@ -36,21 +36,14 @@ namespace dTopDownShooter.Scripts
 		private TowerRuins _towerRuinsInstance;
 
 
-		//Mishu - AStarGrid//
-		private AStarGrid2D _astar;
-		//Mishu - AStarGrid//
-
+	
 		public override void _Ready()
 		{
 			_random = new Random();
 			_housePositions = new List<Vector2>();
 			_houseBodies = new List<StaticBody2D>();
 
-			//Mishu - AStarGrid//
-			AddToGroup("map");
-			//Mishu - AStarGrid//
-
-			GenerateMap();
+				GenerateMap();
 		}
 
 		public void Regenerate()
@@ -81,9 +74,6 @@ namespace dTopDownShooter.Scripts
 		private void GenerateMap()
 		{
 			PlaceMapPieces();
-			//Mishu - AStarGrid//
-			BuildAStarGrid();
-			//Mishu - AStarGrid//
 			SpawnHouseRuins();
 			SpawnTowerRuins();
 		}
@@ -179,82 +169,6 @@ namespace dTopDownShooter.Scripts
 			// Track house positions for shelter system
 			CollectHousesFromPiece(piece);
 		}
-		
-		
-		
-		
-		//Mishu - AStarGrid//
-		private void BuildAStarGrid()
-		{
-			_astar = new AStarGrid2D();
-
-			// A* grid uses WORLD TILE SIZE (64x64)
-			_astar.CellSize = new Vector2(TileSize, TileSize);
-
-			// FULL MAP SIZE (in tiles)
-			_astar.Region = new Rect2I(
-				0,
-				0,
-				MapWidth,
-				MapHeight
-			);
-
-			_astar.DiagonalMode = AStarGrid2D.DiagonalModeEnum.Never;
-			_astar.DefaultComputeHeuristic = AStarGrid2D.Heuristic.Manhattan;
-			_astar.DefaultEstimateHeuristic = AStarGrid2D.Heuristic.Manhattan;
-
-			_astar.Update();
-
-			// Collect obstacles from all map pieces
-			foreach (Node child in GetChildren())
-			{
-				if (child is not Node2D piece)
-					continue;
-
-				foreach (Node pieceChild in piece.GetChildren())
-				{
-					if (pieceChild is not TileMapLayer layer)
-						continue;
-
-					foreach (Vector2I cell in layer.GetUsedCells())
-					{
-						TileData data = layer.GetCellTileData(cell);
-						if (data == null)
-							continue;
-
-						// Safe custom data access (works across different TileSets)
-						Variant obstacleVar = data.GetCustomData("obstacle");
-
-						if (obstacleVar.VariantType != Variant.Type.Bool || !obstacleVar.AsBool())
-							continue;
-
-						// Convert tile cell -> world position
-						Vector2 worldPos = layer.MapToLocal(cell) + piece.Position;
-
-						// Promote to WORLD grid (64x64)
-						Vector2I mapCell = new Vector2I(
-							Mathf.FloorToInt(worldPos.X / TileSize),
-							Mathf.FloorToInt(worldPos.Y / TileSize)
-						);
-
-						if (_astar.IsInBoundsv(mapCell))
-						{
-							_astar.SetPointSolid(mapCell, true);
-						}
-					}
-				}
-			}
-		}
-
-
-		public AStarGrid2D GetAStar()
-		{
-			return _astar;
-		}
-		//Mishu - AStarGrid//
-
-
-
 
 
 
