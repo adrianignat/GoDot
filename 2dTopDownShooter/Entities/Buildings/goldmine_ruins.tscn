@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://5l2ee7oh4g2i"]
+[gd_scene load_steps=8 format=3 uid="uid://qv6b4o7jp1fb"]
 
-[ext_resource type="Script" uid="uid://ccu333fxnt317" path="res://Scripts/Objects/MonastaryRuins.cs" id="1_ib24u"]
-[ext_resource type="Texture2D" uid="uid://bcmmltvrer0at" path="res://Sprites/Buildings/House/House_Destroyed.png" id="1_ypht5"]
-[ext_resource type="Texture2D" uid="uid://dgkjijrfwilcp" path="res://Sprites/Buildings/House/House_Construction.png" id="3_ipti0"]
-[ext_resource type="Texture2D" uid="uid://ddjtwu8fkip4c" path="res://Sprites/Buildings/Blue Buildings/Monastery.png" id="4_424yh"]
+[ext_resource type="Script" uid="uid://dcxxhh6q04g5s" path="res://Scripts/Objects/GoldmineRuins.cs" id="1_vgd42"]
+[ext_resource type="Texture2D" uid="uid://b3xvb1sun6yeq" path="res://Sprites/Decor/Gold Mine/GoldMine_Destroyed.png" id="2_3l8r6"]
+[ext_resource type="Texture2D" uid="uid://bcmmltvrer0at" path="res://Sprites/Buildings/House/House_Destroyed.png" id="2_74oj4"]
+[ext_resource type="Texture2D" uid="uid://dhsljy416ex5a" path="res://Sprites/Decor/Gold Mine/GoldMine_Inactive.png" id="3_rdgpw"]
+[ext_resource type="Texture2D" uid="uid://wr63rwtabrmx" path="res://Sprites/Decor/Gold Mine/GoldMine_Active.png" id="4_a237l"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ib24u"]
 size = Vector2(98.5, 79)
@@ -11,14 +12,14 @@ size = Vector2(98.5, 79)
 [sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
 radius = 130.0
 
-[node name="MonastaryRuins" type="Node2D"]
-script = ExtResource("1_ib24u")
-DestroyedTexture = ExtResource("1_ypht5")
-ConstructionTexture = ExtResource("3_ipti0")
-BuiltTexture = ExtResource("4_424yh")
+[node name="GoldmineRuins" type="Node2D"]
+script = ExtResource("1_vgd42")
+DestroyedTexture = ExtResource("2_3l8r6")
+ConstructionTexture = ExtResource("3_rdgpw")
+BuiltTexture = ExtResource("4_a237l")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_ypht5")
+texture = ExtResource("2_74oj4")
 
 [node name="CollisionBody" type="StaticBody2D" parent="."]
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://ckuxpfbfqhsks"]
 
-[ext_resource type="Script" path="res://Scripts/Objects/Gold.cs" id="1_nn6wr"]
+[ext_resource type="Script" uid="uid://beyyamglys4ed" path="res://Scripts/Objects/Gold.cs" id="1_nn6wr"]
 [ext_resource type="Texture2D" uid="uid://bi6nje4l831tt" path="res://Sprites/G_Spawn.png" id="2_cwknx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tb3an"]
