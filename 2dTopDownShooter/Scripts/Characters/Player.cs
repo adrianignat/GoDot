@@ -1,6 +1,5 @@
 using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Characters;
-using dTopDownShooter.Scripts.Upgrades;
 using Godot;
 
 
@@ -15,6 +14,7 @@ public partial class Player : Character
 	public Direction Facing { get; private set; }
 	public Direction Moving { get; private set; }
 	public int LuckLevel { get; private set; } = 0;
+	public float DodgeChance { get; set; } = 0f;
 
 	// Dash state
 	private bool _isDashing = false;
@@ -50,7 +50,7 @@ public partial class Player : Character
 
 		Game.Instance.PlayerTakeDamage += TakeDamage;
 		Game.Instance.GoldAcquired += AcquireGold;
-		Game.Instance.UpgradeSelected += UpgradeSelected;
+		Game.Instance.UpgradeSelected += OnUpgradeSelected;
 		Game.Instance.NightDamageTick += OnNightDamageTick;
 	}
 
@@ -82,45 +82,46 @@ public partial class Player : Character
 		base.TakeDamage(damage);
 	}
 
-	private void UpgradeSelected(Upgrade upgdade)
+	private void OnUpgradeSelected(BaseUpgradeResource upgrade)
 	{
 		var bow = GetNode<Bow>("Bow");
+		float percentMultiplier = 1 + (upgrade.PercentageIncrease / 100f);
 
-		if (upgdade.Type == UpgradeType.Speed)
-			Speed += upgdade.Amount;
-		else if (upgdade.Type == UpgradeType.Health)
-			Health += upgdade.Amount;
-		else if (upgdade.Type == UpgradeType.WeaponSpeed)
-			bow.ObjectsPerSecond += (upgdade.Amount / 100f);
-		else if (upgdade.Type == UpgradeType.Bouncing)
+		switch (upgrade)
 		{
-			bow.BouncingLevel += 1;
-			bow.SelectedArrowUpgrade = UpgradeType.Bouncing;
-		}
-		else if (upgdade.Type == UpgradeType.Piercing)
-		{
-			bow.PiercingLevel += 1;
-			bow.SelectedArrowUpgrade = UpgradeType.Piercing;
-		}
-		else if (upgdade.Type == UpgradeType.Luck)
-		{
-			LuckLevel += upgdade.Amount;
-		}
-		else if (upgdade.Type == UpgradeType.Magnet)
-		{
-			var circle = GetMagnetShape();
-			circle.Radius += upgdade.Amount * 5;
-		}
-		else if (upgdade.Type == UpgradeType.Dynamite)
-		{
-			var thrower = GetNode<DynamiteThrower>("DynamiteThrower");
-			if (thrower.ObjectsPerSecond == 0)
-			{
-				// First upgrade: enable dynamite throwing
-				thrower.ObjectsPerSecond = GameConstants.InitialDynamiteThrowRate;
-			}
-			// Increase blast radius with each upgrade
-			thrower.BonusBlastRadius += upgdade.Amount;
+			case HealthUpgradeResource:
+				Health = (ushort)(Health * percentMultiplier);
+				break;
+			case AtkSpeedUpgradeResource:
+				bow.ObjectsPerSecond *= percentMultiplier;
+				break;
+			case MoveSpeedUpgradeResource:
+				Speed = (ushort)(Speed * percentMultiplier);
+				break;
+			case LuckUpgradeResource:
+				LuckLevel += (int)upgrade.PercentageIncrease;
+				break;
+			case DamageUpgradeResource:
+				bow.BonusDamagePercent += upgrade.PercentageIncrease;
+				break;
+			case CritChanceUpgradeResource:
+				bow.CritChance += upgrade.PercentageIncrease;
+				break;
+			case CritDmgUpgradeResource:
+				bow.CritDamageMultiplier += upgrade.PercentageIncrease / 100f;
+				break;
+			case DodgeUpgradeResource:
+				DodgeChance += upgrade.PercentageIncrease;
+				break;
+			case FreezeChanceUpgradeResource:
+				bow.FreezeChance += upgrade.PercentageIncrease;
+				break;
+			case BurnChanceUpgradeResource:
+				bow.BurnChance += upgrade.PercentageIncrease;
+				break;
+			case ArrowSplitUpgradeOption:
+				bow.ArrowSplitLevel += 1;
+				break;
 		}
 	}
 

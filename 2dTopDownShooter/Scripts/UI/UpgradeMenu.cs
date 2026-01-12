@@ -1,76 +1,179 @@
+using System.Collections.Generic;
+using dTopDownShooter.Scripts;
 using Godot;
 
-public partial class UpgradeMenu : CanvasLayer
+public partial class UpgradeMenu : Control
 {
-    // -------------------------------------------------
-    // Exported scenes
-    // -------------------------------------------------
-    [Export]
-    private PackedScene UpgradeOptionScene;
+	// -------------------------------------------------
+	// Exported scenes and settings
+	// -------------------------------------------------
+	[Export]
+	private PackedScene UpgradeOptionScene;
 
-    // -------------------------------------------------
-    // Node references
-    // -------------------------------------------------
-    private Button _showUpgradesButton;
-    private HBoxContainer _optionsContainer;
+	[Export]
+	public ushort FirstUpgrade = GameConstants.FirstUpgradeThreshold;
 
-    // -------------------------------------------------
-    // Godot lifecycle
-    // -------------------------------------------------
-    public override void _Ready()
-    {
-        Input.MouseMode = Input.MouseModeEnum.Visible;
+	[Export]
+	public ushort UpgradeStep = GameConstants.UpgradeStepIncrement;
 
-        _showUpgradesButton = GetNode<Button>(
-            "Root/MenuContainer/VBox/ShowUpgradesButton"
-        );
+	private const int UpgradeOptionCount = GameConstants.UpgradeOptionCount;
 
-        _optionsContainer = GetNode<HBoxContainer>(
-            "Root/MenuContainer/VBox/OptionsContainer"
-        );
+	// -------------------------------------------------
+	// Node references
+	// -------------------------------------------------
+	private HBoxContainer _optionsContainer;
 
-        _showUpgradesButton.Pressed += OnShowUpgradesPressed;
-    }
+	// -------------------------------------------------
+	// State tracking
+	// -------------------------------------------------
+	private ushort _gold;
+	private ushort _goldRequiredToUpdate;
+	private ushort _currentUpgradeStep;
+	private int _pendingUpgrades = 0;
+	private bool _isShowingSelection = false;
 
-    // -------------------------------------------------
-    // Button handler
-    // -------------------------------------------------
-    private void OnShowUpgradesPressed()
-    {
-        if (UpgradeOptionScene == null)
-        {
-            GD.PushError("UpgradeOptionScene not assigned!");
-            return;
-        }
+	// -------------------------------------------------
+	// Godot lifecycle
+	// -------------------------------------------------
+	public override void _Ready()
+	{
+		ProcessMode = ProcessModeEnum.Always;
 
-        ClearOptions();
+		_currentUpgradeStep = FirstUpgrade;
+		_goldRequiredToUpdate = FirstUpgrade;
 
-        var upgrades = UpgradeFactory.CreateUpgradeRoll(3);
+		_optionsContainer = GetNode<HBoxContainer>("VBoxContainer/OptionsContainer");
 
-        for (int i = 0; i < upgrades.Count; i++)
-        {
-            UpgradeOption option =
-                UpgradeOptionScene.Instantiate<UpgradeOption>();
+		// Connect to game signals
+		Game.Instance.UpgradeReady += OnUpgradeReady;
+		Game.Instance.GoldAcquired += OnGoldAcquired;
+		Game.Instance.PlayerHealthChanged += OnPlayerHealthChanged;
 
-            _optionsContainer.AddChild(option);
-            option.CustomMinimumSize = new Vector2(220, 300);
+		// Hide menu initially
+		Visible = false;
+	}
 
-            option.Setup(upgrades[i]);
+	// -------------------------------------------------
+	// Signal handlers
+	// -------------------------------------------------
+	private void OnGoldAcquired(ushort amount)
+	{
+		if (Game.Instance.Player.IsDead)
+			return;
 
-            if (i == 0)
-                option.GrabFocus();
-        }
+		_gold += amount;
 
-    }
+		if (_gold >= _goldRequiredToUpdate)
+		{
+			Game.Instance.EmitSignal(Game.SignalName.UpgradeReady);
+			_currentUpgradeStep += UpgradeStep;
+			_goldRequiredToUpdate += _currentUpgradeStep;
+		}
+	}
 
-    // -------------------------------------------------
-    // Cleanup
-    // -------------------------------------------------
-    private void ClearOptions()
-    {
-        foreach (Node child in _optionsContainer.GetChildren())
-        {
-            child.QueueFree();
-        }
-    }
+	private void OnUpgradeReady()
+	{
+		if (Game.Instance.Player.IsDead)
+			return;
+
+		if (_isShowingSelection)
+		{
+			_pendingUpgrades++;
+			GD.Print($"Upgrade queued. Pending upgrades: {_pendingUpgrades}");
+		}
+		else
+		{
+			ShowSelectionScreen();
+		}
+	}
+
+	private void OnPlayerHealthChanged(ushort health)
+	{
+		if (health == 0 && _isShowingSelection)
+		{
+			Visible = false;
+			_isShowingSelection = false;
+			Game.Instance.IsUpgradeSelectionShowing = false;
+			_pendingUpgrades = 0;
+		}
+	}
+
+	// -------------------------------------------------
+	// Selection screen logic
+	// -------------------------------------------------
+	private void ShowSelectionScreen()
+	{
+		if (UpgradeOptionScene == null)
+		{
+			GD.PushError("UpgradeOptionScene not assigned!");
+			return;
+		}
+
+		Game.Instance.IsPaused = true;
+		_isShowingSelection = true;
+		Game.Instance.IsUpgradeSelectionShowing = true;
+		Input.MouseMode = Input.MouseModeEnum.Visible;
+
+		ClearOptions();
+
+		var upgrades = UpgradeFactory.CreateUpgradeRoll(UpgradeOptionCount);
+		var options = new List<UpgradeOption>();
+
+		for (int i = 0; i < upgrades.Count; i++)
+		{
+			UpgradeOption option = UpgradeOptionScene.Instantiate<UpgradeOption>();
+
+			_optionsContainer.AddChild(option);
+			option.Setup(upgrades[i]);
+			option.Pressed += () => OnUpgradeSelected(option.GetUpgrade());
+			options.Add(option);
+		}
+
+		// Set up focus neighbors for keyboard navigation
+		for (int i = 0; i < options.Count; i++)
+		{
+			var option = options[i];
+			var leftNeighbor = options[(i - 1 + options.Count) % options.Count];
+			var rightNeighbor = options[(i + 1) % options.Count];
+
+			option.FocusNeighborLeft = leftNeighbor.GetPath();
+			option.FocusNeighborRight = rightNeighbor.GetPath();
+			// Also set up/down to wrap horizontally
+			option.FocusNeighborTop = leftNeighbor.GetPath();
+			option.FocusNeighborBottom = rightNeighbor.GetPath();
+		}
+
+		options[0].GrabFocus();
+		Visible = true;
+	}
+
+	private void OnUpgradeSelected(BaseUpgradeResource upgrade)
+	{
+		Game.Instance.EmitSignal(Game.SignalName.UpgradeSelected, upgrade);
+
+		if (_pendingUpgrades > 0)
+		{
+			_pendingUpgrades--;
+			GD.Print($"Showing next upgrade. Remaining: {_pendingUpgrades}");
+			ShowSelectionScreen();
+		}
+		else
+		{
+			Visible = false;
+			_isShowingSelection = false;
+			Game.Instance.IsUpgradeSelectionShowing = false;
+			Game.Instance.IsPaused = false;
+		}
+	}
+
+	// -------------------------------------------------
+	// Cleanup
+	// -------------------------------------------------
+	private void ClearOptions()
+	{
+		foreach (Node child in _optionsContainer.GetChildren())
+		{
+			child.QueueFree();
+		}
+	}
 }

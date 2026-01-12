@@ -30,7 +30,7 @@ namespace dTopDownShooter.Scripts.Characters
 			UpdateBar();
 		}
 
-		private void OnUpgradeSelected(Upgrades.Upgrade upgrade)
+		private void OnUpgradeSelected(BaseUpgradeResource upgrade)
 		{
 			// After upgrade is selected, update thresholds
 			_goldAtLastUpgrade = _goldRequiredForNextUpgrade;

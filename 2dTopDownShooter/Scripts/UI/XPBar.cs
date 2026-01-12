@@ -1,5 +1,4 @@
 using dTopDownShooter.Scripts;
-using dTopDownShooter.Scripts.Upgrades;
 using Godot;
 
 public partial class XPBar : Control
@@ -48,7 +47,12 @@ public partial class XPBar : Control
         UpdateBar();
     }
 
-    private void OnUpgradeSelected(Upgrade upgrade)
+    private void OnUpgradeSelected(BaseUpgradeResource upgrade)
+    {
+        ResetBarAfterUpgrade();
+    }
+
+    private void ResetBarAfterUpgrade()
     {
         // After upgrade is selected, update thresholds
         _goldAtLastUpgrade = _goldRequiredForNextUpgrade;

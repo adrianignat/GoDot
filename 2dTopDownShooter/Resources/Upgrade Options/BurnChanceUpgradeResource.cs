@@ -3,23 +3,23 @@ using System;
 
 public partial class BurnChanceUpgradeResource : BaseUpgradeResource
 {
-    private static RandomNumberGenerator _rng = new();
+	private static RandomNumberGenerator _rng = new();
 
-    public override string UpgradeName => "Arrow Burn";
+	public override string UpgradeName => "Arrow Burn";
 
-    // -------------------------------------------------
-    // Factory method
-    // -------------------------------------------------
-    public static BurnChanceUpgradeResource Create(UpgradeQuality quality)
-    {
-        _rng.Randomize();
+	// -------------------------------------------------
+	// Factory method
+	// -------------------------------------------------
+	public static BurnChanceUpgradeResource Create(UpgradeQuality quality)
+	{
+		_rng.Randomize();
 
-        BurnChanceUpgradeResource resource = new BurnChanceUpgradeResource
-        {
-            Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng)
-        };
+		BurnChanceUpgradeResource resource = new BurnChanceUpgradeResource
+		{
+			Quality = quality,
+			PercentageIncrease = RollValue(quality, _rng)
+		};
 
-        return resource;
-    }
+		return resource;
+	}
 }

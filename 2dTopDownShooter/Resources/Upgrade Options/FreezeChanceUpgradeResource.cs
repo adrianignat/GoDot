@@ -3,23 +3,23 @@ using System;
 
 public partial class FreezeChanceUpgradeResource : BaseUpgradeResource
 {
-    private static RandomNumberGenerator _rng = new();
+	private static RandomNumberGenerator _rng = new();
 
-    public override string UpgradeName => "Arrow Freeze";
+	public override string UpgradeName => "Arrow Freeze";
 
-    // -------------------------------------------------
-    // Factory method
-    // -------------------------------------------------
-    public static FreezeChanceUpgradeResource Create(UpgradeQuality quality)
-    {
-        _rng.Randomize();
+	// -------------------------------------------------
+	// Factory method
+	// -------------------------------------------------
+	public static FreezeChanceUpgradeResource Create(UpgradeQuality quality)
+	{
+		_rng.Randomize();
 
-        FreezeChanceUpgradeResource resource = new FreezeChanceUpgradeResource
-        {
-            Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng)
-        };
+		FreezeChanceUpgradeResource resource = new FreezeChanceUpgradeResource
+		{
+			Quality = quality,
+			PercentageIncrease = RollValue(quality, _rng)
+		};
 
-        return resource;
-    }
+		return resource;
+	}
 }

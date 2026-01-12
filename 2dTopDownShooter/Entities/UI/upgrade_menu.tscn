@@ -1,59 +1,47 @@
 [gd_scene load_steps=3 format=3 uid="uid://dibrxf1irq2nd"]
 
-[ext_resource type="Script" uid="uid://d3uaaicqm71wl" path="res://Scripts/UI/UpgradeMenu.cs" id="1_3agg4"]
+[ext_resource type="Script" uid="uid://dkb440nynwfh" path="res://Scripts/UI/UpgradeMenu.cs" id="1_3agg4"]
 [ext_resource type="PackedScene" uid="uid://deca7ylwyk2e4" path="res://Entities/UI/upgrade_option.tscn" id="2_p31kh"]
 
-[node name="UpgradeMenu" type="CanvasLayer"]
+[node name="UpgradeMenu" type="Control"]
 process_mode = 3
-layer = 10
-follow_viewport_enabled = true
-script = ExtResource("1_3agg4")
-UpgradeOptionScene = ExtResource("2_p31kh")
-
-[node name="Root" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_3agg4")
+UpgradeOptionScene = ExtResource("2_p31kh")
 
-[node name="Dimmer" type="ColorRect" parent="Root"]
+[node name="Dimmer" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.19607843)
+color = Color(0, 0, 0, 0.39215687)
 
-[node name="MenuContainer" type="Control" parent="Root"]
-custom_minimum_size = Vector2(800, 350)
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
 
-[node name="VBox" type="VBoxContainer" parent="Root/MenuContainer"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="TopSpacer" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 350)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OptionsContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 10
 alignment = 1
 
-[node name="ShowUpgradesButton" type="Button" parent="Root/MenuContainer/VBox"]
+[node name="BottomSpacer" type="Control" parent="VBoxContainer"]
 layout_mode = 2
-text = "Show Upgrades"
-
-[node name="OptionsContainer" type="HBoxContainer" parent="Root/MenuContainer/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 24
-alignment = 1
+size_flags_vertical = 3

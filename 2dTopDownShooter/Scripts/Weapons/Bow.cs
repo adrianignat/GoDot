@@ -1,6 +1,5 @@
 using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Spawners;
-using dTopDownShooter.Scripts.Upgrades;
 using Godot;
 
 public partial class Bow : Spawner<Arrow>
@@ -28,10 +27,34 @@ public partial class Bow : Spawner<Arrow>
 	public int PiercingLevel { get; set; } = 0;
 
 	/// <summary>
-	/// Tracks which arrow upgrade type was selected (Bouncing or Piercing).
-	/// Used to make them mutually exclusive.
+	/// Bonus damage percentage added to arrows.
 	/// </summary>
-	public UpgradeType? SelectedArrowUpgrade { get; set; } = null;
+	public float BonusDamagePercent { get; set; } = 0f;
+
+	/// <summary>
+	/// Critical hit chance percentage (0-100).
+	/// </summary>
+	public float CritChance { get; set; } = 0f;
+
+	/// <summary>
+	/// Critical hit damage multiplier (e.g., 1.5 = 150% damage).
+	/// </summary>
+	public float CritDamageMultiplier { get; set; } = 1.5f;
+
+	/// <summary>
+	/// Chance to freeze enemies on hit (0-100).
+	/// </summary>
+	public float FreezeChance { get; set; } = 0f;
+
+	/// <summary>
+	/// Chance to burn enemies on hit (0-100).
+	/// </summary>
+	public float BurnChance { get; set; } = 0f;
+
+	/// <summary>
+	/// Level of arrow split (number of extra arrows spawned).
+	/// </summary>
+	public int ArrowSplitLevel { get; set; } = 0;
 
 	public override void _Ready()
 	{

@@ -1,5 +1,4 @@
 using dTopDownShooter.Scripts.UI;
-using dTopDownShooter.Scripts.Upgrades;
 using Godot;
 
 
@@ -228,7 +227,7 @@ namespace dTopDownShooter.Scripts
 		public delegate void UpgradeReadyEventHandler();
 
 		[Signal]
-		public delegate void UpgradeSelectedEventHandler(Upgrade upgdade);
+		public delegate void UpgradeSelectedEventHandler(BaseUpgradeResource upgrade);
 
 		// Day/Night cycle signals
 		[Signal]
