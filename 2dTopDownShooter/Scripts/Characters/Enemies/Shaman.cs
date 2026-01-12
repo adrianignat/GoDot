@@ -110,24 +110,37 @@ public partial class Shaman : Enemy
 
 	protected override bool CanMove() => !_isAttacking;
 
-	protected override Vector2 GetIntendedDirection()
+	/// <summary>
+	/// Shaman uses custom movement to maintain preferred distance from player.
+	/// Moves toward player when far, away when too close, stays still at preferred distance.
+	/// </summary>
+	public override void _PhysicsProcess(double delta)
 	{
-		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
-		float distance = distanceFromPlayer.Length();
+		if (!CanMove() || _player == null)
+			return;
 
-		if (distance > PreferredDistance + 50)
-			return distanceFromPlayer.Normalized();
-		else if (distance < PreferredDistance - 50)
-			return -distanceFromPlayer.Normalized();
-		else
-			return Vector2.Zero;
-	}
-
-	protected override void UpdateMovementAnimation(Vector2 direction)
-	{
 		// Shaman always faces the player
 		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
 		_animation.FlipH = distanceFromPlayer.X < 0;
+
+		float distance = distanceFromPlayer.Length();
+		Vector2 direction;
+
+		if (distance > PreferredDistance + 50)
+			direction = distanceFromPlayer.Normalized();
+		else if (distance < PreferredDistance - 50)
+			direction = -distanceFromPlayer.Normalized();
+		else
+			direction = Vector2.Zero;
+
+		if (direction == Vector2.Zero)
+		{
+			Velocity = Vector2.Zero;
+			return;
+		}
+
+		Velocity = direction * Speed;
+		MoveAndSlide();
 	}
 
 	private bool CanSeePlayer()

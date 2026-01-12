@@ -13,19 +13,11 @@ public enum EnemyTier
 /// <summary>
 /// Base class for all enemy types. Handles common functionality like
 /// tier-based health, sprite loading, movement toward player, and death.
-/// Uses NavigationAgent2D for pathfinding when stuck on obstacles.
+/// Uses NavigationAgent2D for pathfinding.
 /// </summary>
 public abstract partial class Enemy : Character
 {
 	private const float ClickRadius = 50f; // How close a click needs to be to select this enemy
-
-	// Stuck detection settings
-	private const float StuckCheckInterval = 0.5f;    // How often to check if stuck
-	private const float StuckDistanceThreshold = 10f; // Min distance to travel to not be stuck
-	private const float UnstuckDistance = 100f;       // Distance to travel before switching back to direct
-	private const float PathfindingCooldown = 3f;     // Seconds to wait before trying pathfinding again
-	private const float NavTargetUpdateInterval = 0.5f; // How often to update navigation target (performance)
-	private const float MaxNavigationTime = 3f;       // Max time in navigation mode before giving up
 
 	// Debug: Static ID counter
 	private static int _nextId = 1;
@@ -33,10 +25,6 @@ public abstract partial class Enemy : Character
 	// Debug: Instance properties
 	public int EnemyId { get; private set; }
 	public Vector2 SpawnPosition { get; private set; }
-	private float _lastStuckCheckDistance;
-	private bool _lastStuckCheckWasStuck;
-	private int _stuckCount = 0;
-	private int _pathfindingActivations = 0;
 
 	public EnemyTier Tier { get; set; } = EnemyTier.Blue;
 
@@ -45,17 +33,6 @@ public abstract partial class Enemy : Character
 
 	// Navigation
 	private NavigationAgent2D _navigationAgent;
-
-	// Hybrid movement state
-	private bool _usePathfinding = false;
-	private Vector2 _lastStuckCheckPosition;
-	private Vector2 _stuckPosition;
-	private float _stuckCheckTimer = 0f;
-	private float _pathfindingCooldownTimer = 0f;
-	private float _navTargetUpdateTimer = 0f;      // Timer for periodic target updates (performance)
-	private float _navigationTimer = 0f;           // Time spent in navigation mode
-	private Vector2 _lastNavCheckPosition;         // For detecting stuck while navigating
-	private int _navGiveUpCount = 0;               // Debug counter
 
 	public override void _Ready()
 	{
@@ -90,9 +67,6 @@ public abstract partial class Enemy : Character
 
 		// Let subclass do additional initialization
 		OnReady();
-
-		// Initialize stuck detection
-		_lastStuckCheckPosition = GlobalPosition;
 	}
 
 	/// <summary>
@@ -116,20 +90,9 @@ public abstract partial class Enemy : Character
 	protected virtual void OnAnimationFinished() { }
 
 	/// <summary>
-	/// Override to prevent movement (e.g., while attacking).
+	/// Override to prevent movement (e.g., while attacking or when in attack range).
 	/// </summary>
 	protected virtual bool CanMove() => true;
-
-	/// <summary>
-	/// Override to provide the direction the enemy wants to move.
-	/// Default: chase directly toward player.
-	/// </summary>
-	protected virtual Vector2 GetIntendedDirection()
-	{
-		if (_player == null)
-			return Vector2.Zero;
-		return (_player.GlobalPosition - GlobalPosition).Normalized();
-	}
 
 	/// <summary>
 	/// Override to customize animation updates based on movement direction.
@@ -141,133 +104,26 @@ public abstract partial class Enemy : Character
 	}
 
 	/// <summary>
-	/// Centralized movement handling with stuck detection.
-	/// Subclasses should NOT override this - override GetIntendedDirection() and CanMove() instead.
+	/// Movement using NavigationAgent2D.
+	/// Subclasses control movement via CanMove() override.
 	/// </summary>
 	public override void _PhysicsProcess(double delta)
 	{
-		if (!CanMove())
+		if (!CanMove() || _player == null || _navigationAgent == null)
 			return;
 
-		Vector2 intendedDirection = GetIntendedDirection();
-		Vector2 moveDirection = ApplyStuckDetection((float)delta, intendedDirection);
+		_navigationAgent.TargetPosition = _player.GlobalPosition;
 
-		Velocity = moveDirection * Speed;
-		UpdateMovementAnimation(moveDirection);
-
-		MoveAndSlide();
-	}
-
-	/// <summary>
-	/// Applies stuck detection to any movement direction.
-	/// If stuck, switches to NavigationAgent2D pathfinding to get around obstacles.
-	/// </summary>
-	protected Vector2 ApplyStuckDetection(float delta, Vector2 intendedDirection)
-	{
-		if (_player == null || _navigationAgent == null)
-			return intendedDirection;
-
-		// Update timers
-		_stuckCheckTimer += delta;
-		if (_pathfindingCooldownTimer > 0)
-			_pathfindingCooldownTimer -= delta;
-
-		if (_usePathfinding)
-		{
-			_navigationTimer += delta;
-
-			// Check if we've traveled far enough to switch back
-			float distanceFromStuckPoint = GlobalPosition.DistanceTo(_stuckPosition);
-
-			if (distanceFromStuckPoint >= UnstuckDistance || _navigationAgent.IsNavigationFinished())
-			{
-				// We've made progress or navigation is done - switch back to normal movement
-				ExitNavigationMode();
-			}
-			else if (_navigationTimer >= MaxNavigationTime)
-			{
-				// Check if we made any progress while navigating
-				float navProgress = GlobalPosition.DistanceTo(_lastNavCheckPosition);
-				if (navProgress < StuckDistanceThreshold)
-				{
-					// Navigation also failed - give up and try direct chase with cooldown
-					_navGiveUpCount++;
-					ExitNavigationMode();
-					_pathfindingCooldownTimer = PathfindingCooldown;
-				}
-				else
-				{
-					// Made some progress, reset timer and keep navigating
-					_navigationTimer = 0f;
-					_lastNavCheckPosition = GlobalPosition;
-				}
-			}
-
-			if (_usePathfinding)
-			{
-				// Continue following the navigation path
-				return GetNavigationDirection(delta);
-			}
-		}
-
-		// Normal movement mode - check if we're stuck
-		if (_stuckCheckTimer >= StuckCheckInterval)
-		{
-			float distanceMoved = GlobalPosition.DistanceTo(_lastStuckCheckPosition);
-
-			// Track debug info
-			_lastStuckCheckDistance = distanceMoved;
-			_lastStuckCheckWasStuck = distanceMoved < StuckDistanceThreshold;
-
-			// Only try pathfinding if not on cooldown
-			if (_lastStuckCheckWasStuck && intendedDirection != Vector2.Zero && _pathfindingCooldownTimer <= 0)
-			{
-				_stuckCount++;
-				_pathfindingActivations++;
-
-				// We're stuck - switch to pathfinding
-				_usePathfinding = true;
-				_stuckPosition = GlobalPosition;
-				_navigationTimer = 0f;
-				_lastNavCheckPosition = GlobalPosition;
-				_navigationAgent.TargetPosition = _player.GlobalPosition;
-			}
-
-			// Reset for next check
-			_lastStuckCheckPosition = GlobalPosition;
-			_stuckCheckTimer = 0f;
-		}
-
-		return intendedDirection;
-	}
-
-	private void ExitNavigationMode()
-	{
-		_usePathfinding = false;
-		_lastStuckCheckPosition = GlobalPosition;
-		_stuckCheckTimer = 0f;
-		_navigationTimer = 0f;
-	}
-
-	/// <summary>
-	/// Gets the movement direction from NavigationAgent2D.
-	/// Only updates target position periodically to improve performance.
-	/// </summary>
-	private Vector2 GetNavigationDirection(float delta)
-	{
 		if (_navigationAgent.IsNavigationFinished())
-			return Vector2.Zero;
-
-		// Update target position periodically (not every frame) for performance
-		_navTargetUpdateTimer += delta;
-		if (_navTargetUpdateTimer >= NavTargetUpdateInterval)
-		{
-			_navigationAgent.TargetPosition = _player.GlobalPosition;
-			_navTargetUpdateTimer = 0f;
-		}
+			return;
 
 		Vector2 nextPosition = _navigationAgent.GetNextPathPosition();
-		return (nextPosition - GlobalPosition).Normalized();
+		Vector2 direction = (nextPosition - GlobalPosition).Normalized();
+
+		Velocity = direction * Speed;
+		UpdateMovementAnimation(direction);
+
+		MoveAndSlide();
 	}
 
 	#region Debug
@@ -292,16 +148,9 @@ public abstract partial class Enemy : Character
 
 	private void PrintDebugInfo()
 	{
-		string movementMode = _usePathfinding ? "NAVIGATION" : "DIRECT_CHASE";
-		string stuckResult = _lastStuckCheckWasStuck ? "STUCK" : "OK";
-
 		float distanceToPlayer = _player != null
 			? GlobalPosition.DistanceTo(_player.GlobalPosition)
 			: -1f;
-
-		float distanceFromStuck = _usePathfinding
-			? GlobalPosition.DistanceTo(_stuckPosition)
-			: 0f;
 
 		string timestamp = System.DateTime.Now.ToString("HH:mm:ss.fff");
 
@@ -315,25 +164,16 @@ public abstract partial class Enemy : Character
 		GD.Print($"  Current Position:  ({GlobalPosition.X:F1}, {GlobalPosition.Y:F1})");
 		GD.Print($"  Distance to Player: {distanceToPlayer:F1}px");
 		GD.Print("───────────────────────────────────────────────────────────");
-		string cooldownStatus = _pathfindingCooldownTimer > 0 ? $" (cooldown: {_pathfindingCooldownTimer:F1}s)" : "";
-		GD.Print($"  Movement Mode:     {movementMode}{cooldownStatus}");
-		if (_usePathfinding)
+		GD.Print($"  CanMove:           {CanMove()}");
+		if (_navigationAgent != null)
 		{
 			Vector2 nextPos = _navigationAgent.GetNextPathPosition();
 			bool navFinished = _navigationAgent.IsNavigationFinished();
 			GD.Print($"  Nav Finished:      {navFinished}");
-			GD.Print($"  Nav Time:          {_navigationTimer:F1}s / {MaxNavigationTime}s");
 			GD.Print($"  Next Nav Position: ({nextPos.X:F1}, {nextPos.Y:F1})");
-			GD.Print($"  Stuck Position:    ({_stuckPosition.X:F1}, {_stuckPosition.Y:F1})");
-			GD.Print($"  Progress from Stuck: {distanceFromStuck:F1}px / {UnstuckDistance}px");
 		}
 		GD.Print("───────────────────────────────────────────────────────────");
 		GD.Print($"  Velocity:          ({Velocity.X:F1}, {Velocity.Y:F1})");
-		GD.Print($"  Last Stuck Check:  {stuckResult}");
-		GD.Print($"  Distance Moved:    {_lastStuckCheckDistance:F1}px (threshold: {StuckDistanceThreshold}px)");
-		GD.Print($"  Total Stuck Count: {_stuckCount}");
-		GD.Print($"  Navigation Uses:   {_pathfindingActivations}");
-		GD.Print($"  Nav Give-ups:      {_navGiveUpCount}");
 		GD.Print("═══════════════════════════════════════════════════════════");
 	}
 

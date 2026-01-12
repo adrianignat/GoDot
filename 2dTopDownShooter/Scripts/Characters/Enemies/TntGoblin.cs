@@ -108,35 +108,22 @@ public partial class TntGoblin : Enemy
 		{
 			ThrowDynamite();
 		}
+
+		// Handle idle animation when in range but not throwing
+		if (_isWithinThrowRange && !_isThrowing && _animation.Animation != "idle")
+		{
+			_animation.Play("idle");
+		}
 	}
 
-	protected override bool CanMove() => !_isThrowing;
-
-	protected override Vector2 GetIntendedDirection()
-	{
-		// If within throw range, stop
-		if (_isWithinThrowRange)
-			return Vector2.Zero;
-
-		// Otherwise, move toward player
-		return (_player.GlobalPosition - GlobalPosition).Normalized();
-	}
+	protected override bool CanMove() => !_isThrowing && !_isWithinThrowRange;
 
 	protected override void UpdateMovementAnimation(Vector2 direction)
 	{
-		if (direction == Vector2.Zero)
-		{
-			// Standing still - play idle if not attacking
-			if (_animation.Animation != "idle" && _animation.Animation != "attack")
-				_animation.Play("idle");
-		}
-		else
-		{
-			// Moving - flip sprite and play walk
-			_animation.FlipH = direction.X < 0;
-			if (_animation.Animation != "walk")
-				_animation.Play("walk");
-		}
+		// Only called when actually moving (CanMove is true)
+		_animation.FlipH = direction.X < 0;
+		if (_animation.Animation != "walk")
+			_animation.Play("walk");
 	}
 
 	private void ThrowDynamite()
