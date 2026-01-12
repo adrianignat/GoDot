@@ -23,6 +23,9 @@ public static class UpgradeFactory
             quality => CritChanceUpgradeResource.Create(quality),
             quality => CritDmgUpgradeResource.Create(quality),
             quality => DodgeUpgradeResource.Create(quality),
+            quality => FreezeChanceUpgradeResource.Create(quality),
+            quality => BurnChanceUpgradeResource.Create(quality),
+            quality => ArrowSplitUpgradeOption.Create(quality),
         };
 
     // -------------------------------------------------
