@@ -1,6 +1,12 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://dskgqq52rkuhh"]
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://dskgqq52rkuhh"]
 
 [ext_resource type="Texture2D" uid="uid://qthyj17wkioa" path="res://Sprites/Water.png" id="1_fisol"]
+[ext_resource type="Texture2D" uid="uid://bt782n2ngvohh" path="res://Sprites/Terrain/Tilemap_color1.png" id="1_x04mc"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gnlch"]
+texture = ExtResource("1_x04mc")
+texture_region_size = Vector2i(64, 64)
+1:1/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pwuwj"]
 texture = ExtResource("1_fisol")
@@ -12,3 +18,4 @@ tile_size = Vector2i(64, 64)
 custom_data_layer_0/name = "obstacle"
 custom_data_layer_0/type = 1
 sources/1 = SubResource("TileSetAtlasSource_pwuwj")
+sources/0 = SubResource("TileSetAtlasSource_gnlch")

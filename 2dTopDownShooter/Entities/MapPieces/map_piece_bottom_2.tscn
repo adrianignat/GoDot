@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=4 uid="uid://dkxs2xnthaeqa"]
+[gd_scene load_steps=7 format=4 uid="uid://dkxs2xnthaeqa"]
 
 [ext_resource type="Script" uid="uid://b2guuwfek6lvi" path="res://Scripts/Objects/BaseMap.cs" id="1_mmi5n"]
 [ext_resource type="PackedScene" uid="uid://mb1euaenbdro" path="res://Entities/Buildings/House.tscn" id="2_lt2q4"]
 [ext_resource type="TileSet" uid="uid://dskgqq52rkuhh" path="res://Resources/noSpawn.tres" id="2_mmi5n"]
 [ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Resources/WorldTileset_Day.tres" id="3_snm45"]
 [ext_resource type="TileSet" uid="uid://b46eohqiriohf" path="res://Resources/Decor.tres" id="4_6fr0e"]
+[ext_resource type="TileSet" uid="uid://c1r6k2hedexxb" path="res://Resources/Hills.tres" id="5_w05lp"]
 
 [node name="map" type="Node2D"]
 y_sort_enabled = true
@@ -39,7 +40,7 @@ tile_set = ExtResource("4_6fr0e")
 
 [node name="Layer_5_Hills" type="TileMapLayer" parent="."]
 y_sort_enabled = true
-tile_set = ExtResource("3_snm45")
+tile_set = ExtResource("5_w05lp")
 
 [node name="Decor_Hills" type="TileMapLayer" parent="."]
 z_index = 1
