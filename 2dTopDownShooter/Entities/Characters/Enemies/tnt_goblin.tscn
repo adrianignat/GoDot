@@ -176,3 +176,5 @@ sprite_frames = SubResource("SpriteFrames_dx086")
 animation = &"walk"
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+radius = 30.0
+path_desired_distance = 25.0

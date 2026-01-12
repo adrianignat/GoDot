@@ -18,6 +18,7 @@ public enum EnemyTier
 public abstract partial class Enemy : Character
 {
 	private const float ClickRadius = 50f; // How close a click needs to be to select this enemy
+	private const float PathUpdateInterval = 0.25f; // Seconds between path recalculations (performance optimization)
 
 	// Debug: Static ID counter
 	private static int _nextId = 1;
@@ -33,6 +34,7 @@ public abstract partial class Enemy : Character
 
 	// Navigation
 	private NavigationAgent2D _navigationAgent;
+	private double _pathUpdateTimer;
 
 	public override void _Ready()
 	{
@@ -49,6 +51,9 @@ public abstract partial class Enemy : Character
 
 		// Get NavigationAgent2D
 		_navigationAgent = GetNode<NavigationAgent2D>("NavigationAgent2D");
+
+		// Randomize initial path update timer so all enemies don't recalculate on the same frame
+		_pathUpdateTimer = GD.RandRange(0.0, PathUpdateInterval);
 
 		// Add to enemies group for cleanup on day transition
 		AddToGroup(GameConstants.EnemiesGroup);
@@ -104,15 +109,28 @@ public abstract partial class Enemy : Character
 	}
 
 	/// <summary>
+	/// Override to customize the navigation target. Default is player position.
+	/// Useful for enemies that need to maintain distance or retreat.
+	/// </summary>
+	protected virtual Vector2 GetNavigationTarget() => _player?.GlobalPosition ?? GlobalPosition;
+
+	/// <summary>
 	/// Movement using NavigationAgent2D.
 	/// Subclasses control movement via CanMove() override.
+	/// Path recalculation is throttled for performance (PathUpdateInterval).
 	/// </summary>
 	public override void _PhysicsProcess(double delta)
 	{
 		if (!CanMove() || _player == null || _navigationAgent == null)
 			return;
 
-		_navigationAgent.TargetPosition = _player.GlobalPosition;
+		// Only recalculate path periodically (not every frame) for performance
+		_pathUpdateTimer -= delta;
+		if (_pathUpdateTimer <= 0)
+		{
+			_pathUpdateTimer = PathUpdateInterval;
+			_navigationAgent.TargetPosition = GetNavigationTarget();
+		}
 
 		if (_navigationAgent.IsNavigationFinished())
 			return;

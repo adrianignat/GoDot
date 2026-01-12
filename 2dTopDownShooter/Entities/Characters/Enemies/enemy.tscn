@@ -284,6 +284,8 @@ position = Vector2(1, 7)
 shape = SubResource("RectangleShape2D_xmrs5")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+radius = 30.0
+path_desired_distance = 25.0
 
 [connection signal="body_entered" from="AttackRange" to="." method="OnAttackRangeEntered"]
 [connection signal="body_exited" from="AttackRange" to="." method="OnAttackRangeExit"]

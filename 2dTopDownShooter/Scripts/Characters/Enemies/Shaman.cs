@@ -1,10 +1,10 @@
 using dTopDownShooter.Scripts;
 using Godot;
-using System.Collections.Generic;
 
 /// <summary>
 /// Ranged enemy that shoots homing projectiles at the player.
 /// Maintains distance and casts spells from range.
+/// Uses NavigationAgent2D for pathfinding (via base class).
 /// </summary>
 public partial class Shaman : Enemy
 {
@@ -20,6 +20,7 @@ public partial class Shaman : Enemy
 	private float PreferredDistance = GameConstants.ShamanPreferredDistance;
 
 	private const int ProjectileSpawnFrame = GameConstants.ShamanProjectileSpawnFrame;
+	private const float DistanceTolerance = 50f; // Stay still within this range of preferred distance
 
 	private PackedScene _projectileScene;
 	private bool _isAttacking = false;
@@ -108,39 +109,54 @@ public partial class Shaman : Enemy
 		}
 	}
 
-	protected override bool CanMove() => !_isAttacking;
+	protected override bool CanMove() => !_isAttacking && !IsAtPreferredDistance();
 
 	/// <summary>
-	/// Shaman uses custom movement to maintain preferred distance from player.
-	/// Moves toward player when far, away when too close, stays still at preferred distance.
+	/// Check if shaman is within the comfortable distance range from player.
 	/// </summary>
-	public override void _PhysicsProcess(double delta)
+	private bool IsAtPreferredDistance()
 	{
-		if (!CanMove() || _player == null)
-			return;
+		if (_player == null) return false;
+		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
+		return distance >= PreferredDistance - DistanceTolerance &&
+			   distance <= PreferredDistance + DistanceTolerance;
+	}
 
-		// Shaman always faces the player
-		var distanceFromPlayer = _player.GlobalPosition - GlobalPosition;
-		_animation.FlipH = distanceFromPlayer.X < 0;
+	/// <summary>
+	/// Shaman uses NavigationAgent2D but calculates target based on preferred distance.
+	/// When too close, retreats to a point away from player.
+	/// When too far, approaches normally.
+	/// When at preferred distance, stays still (handled by CanMove).
+	/// </summary>
+	protected override Vector2 GetNavigationTarget()
+	{
+		if (_player == null) return GlobalPosition;
 
-		float distance = distanceFromPlayer.Length();
-		Vector2 direction;
+		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
+		Vector2 directionToPlayer = (_player.GlobalPosition - GlobalPosition).Normalized();
 
-		if (distance > PreferredDistance + 50)
-			direction = distanceFromPlayer.Normalized();
-		else if (distance < PreferredDistance - 50)
-			direction = -distanceFromPlayer.Normalized();
-		else
-			direction = Vector2.Zero;
-
-		if (direction == Vector2.Zero)
+		if (distance < PreferredDistance - DistanceTolerance)
 		{
-			Velocity = Vector2.Zero;
-			return;
+			// Too close - retreat to a point behind us (away from player)
+			return GlobalPosition - directionToPlayer * 100f;
 		}
+		else
+		{
+			// Too far - move toward player
+			return _player.GlobalPosition;
+		}
+	}
 
-		Velocity = direction * Speed;
-		MoveAndSlide();
+	/// <summary>
+	/// Override to always face the player regardless of movement direction.
+	/// </summary>
+	protected override void UpdateMovementAnimation(Vector2 direction)
+	{
+		if (_player != null)
+		{
+			// Shaman always faces the player, not the movement direction
+			_animation.FlipH = _player.GlobalPosition.X < GlobalPosition.X;
+		}
 	}
 
 	private bool CanSeePlayer()
