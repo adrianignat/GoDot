@@ -9,14 +9,14 @@ public partial class MagnetUpgradeResource : BaseUpgradeResource
 	// -------------------------------------------------
 	// Factory method
 	// -------------------------------------------------
-	public static MagnetUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
+	public static MagnetUpgradeResource Create(UpgradeQuality quality)
 	{
 		_rng.Randomize();
 
 		MagnetUpgradeResource resource = new MagnetUpgradeResource
 		{
 			Quality = quality,
-			PercentageIncrease = RollValue(quality, _rng, luckBonus)
+			PercentageIncrease = RollValue(quality, _rng)
 		};
 
 		return resource;

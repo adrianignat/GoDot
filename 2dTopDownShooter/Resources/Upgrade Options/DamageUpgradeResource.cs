@@ -10,14 +10,14 @@ public partial class DamageUpgradeResource : BaseUpgradeResource
     // -------------------------------------------------
     // Factory method
     // -------------------------------------------------
-    public static DamageUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
+    public static DamageUpgradeResource Create(UpgradeQuality quality)
     {
         _rng.Randomize();
 
         DamageUpgradeResource resource = new DamageUpgradeResource
         {
             Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng, luckBonus)
+            PercentageIncrease = RollValue(quality, _rng)
         };
 
         return resource;

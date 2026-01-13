@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Homing arrow projectile that targets the closest enemy at spawn time.
 /// The target direction is calculated once in _Ready and maintained throughout flight.
-/// Supports bouncing (ricochet) and piercing (pass-through) abilities.
+/// Supports piercing (pass-through) ability.
 /// </summary>
 public partial class Arrow : RigidBody2D
 {
@@ -14,18 +14,6 @@ public partial class Arrow : RigidBody2D
 
 	[Export]
 	public float Speed { get; set; }
-
-	[Export]
-	public float BounceSpeedReduction = GameConstants.ArrowBounceSpeedReduction;
-
-	[Export]
-	public float PierceSpeedReduction = GameConstants.ArrowPierceSpeedReduction;
-
-	/// <summary>
-	/// Number of additional enemies this arrow can bounce through.
-	/// Set by the Bow before the arrow is added to the scene.
-	/// </summary>
-	public int BouncingLevel { get; set; } = 0;
 
 	/// <summary>
 	/// Number of additional enemies this arrow can pierce through.
@@ -73,7 +61,6 @@ public partial class Arrow : RigidBody2D
 	private float _currentSpeed;
 
 	private bool IsPiercing => PiercingLevel > 0;
-	private bool IsBouncing => BouncingLevel > 0;
 
 	public override void _Ready()
 	{
@@ -87,8 +74,7 @@ public partial class Arrow : RigidBody2D
 		AddToGroup(GameConstants.ArrowsGroup);
 
 		_player = Game.Instance.Player;
-		// Use whichever level is set (they're mutually exclusive)
-		_maxEnemiesCanHit = 1 + BouncingLevel + PiercingLevel;
+		_maxEnemiesCanHit = 1 + PiercingLevel;
 		_currentSpeed = Speed;
 
 		UpdateVelocity();
@@ -198,22 +184,6 @@ public partial class Arrow : RigidBody2D
 				return;
 			}
 
-			if (IsPiercing)
-			{
-				// Piercing: maintain direction, slight speed reduction
-				_currentSpeed *= PierceSpeedReduction;
-			}
-			else if (IsBouncing)
-			{
-				// Bouncing: reduce speed and change direction away from enemy
-				_currentSpeed *= BounceSpeedReduction;
-
-				// Calculate bounce direction (away from enemy + some randomness)
-				Vector2 awayFromEnemy = (GlobalPosition - enemy.GlobalPosition).Normalized();
-				float randomAngle = (float)GD.RandRange(-0.5f, 0.5f);
-				_currentDirection = awayFromEnemy.Rotated(randomAngle);
-				Rotation = _currentDirection.Angle();
-			}
 		}
 		else
 		{

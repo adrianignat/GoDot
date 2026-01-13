@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class LuckUpgradeResource : BaseUpgradeResource
 {
@@ -8,16 +7,25 @@ public partial class LuckUpgradeResource : BaseUpgradeResource
     public override string UpgradeName => "Luck";
 
     // -------------------------------------------------
-    // Factory method
+    // Factory method - Luck uses lower values than other upgrades
     // -------------------------------------------------
-    public static LuckUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
+    public static LuckUpgradeResource Create(UpgradeQuality quality)
     {
         _rng.Randomize();
+
+        // Luck uses lower percentage ranges to prevent being overpowered
+        float value = quality switch
+        {
+            UpgradeQuality.Common => _rng.RandfRange(1f, 2f),
+            UpgradeQuality.Rare   => _rng.RandfRange(2f, 4f),
+            UpgradeQuality.Epic   => _rng.RandfRange(4f, 6f),
+            _ => 1f
+        };
 
         LuckUpgradeResource resource = new LuckUpgradeResource
         {
             Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng, luckBonus)
+            PercentageIncrease = value
         };
 
         return resource;

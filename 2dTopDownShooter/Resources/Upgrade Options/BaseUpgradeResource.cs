@@ -24,23 +24,25 @@ public abstract partial class BaseUpgradeResource : Resource
 	public abstract string UpgradeName { get; }
 
 	// -------------------------------------------------
-	// Roll values by quality with luck bonus
+	// Display description (can be overridden)
+	// -------------------------------------------------
+	public virtual string DisplayDescription =>
+		$"+{PercentageIncrease:F1}% {UpgradeName}";
+
+	// -------------------------------------------------
+	// Roll values by quality
 	// -------------------------------------------------
 	protected static float RollValue(
 		UpgradeQuality quality,
-		RandomNumberGenerator rng,
-		float luckBonus = 0f
+		RandomNumberGenerator rng
 	)
 	{
-		float baseValue = quality switch
+		return quality switch
 		{
-			UpgradeQuality.Common => rng.RandfRange(1f, 3f),
-			UpgradeQuality.Rare   => rng.RandfRange(3f, 6f),
-			UpgradeQuality.Epic   => rng.RandfRange(6f, 10f),
-			_ => 1f
+			UpgradeQuality.Common => rng.RandfRange(5f, 10f),
+			UpgradeQuality.Rare   => rng.RandfRange(10f, 20f),
+			UpgradeQuality.Epic   => rng.RandfRange(20f, 35f),
+			_ => 5f
 		};
-
-		// Apply luck bonus to the rolled value
-		return baseValue + luckBonus;
 	}
 }

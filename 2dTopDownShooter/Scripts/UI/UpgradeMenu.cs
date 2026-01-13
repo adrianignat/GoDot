@@ -31,6 +31,7 @@ public partial class UpgradeMenu : Control
 	private ushort _currentUpgradeStep;
 	private int _pendingUpgrades = 0;
 	private bool _isShowingSelection = false;
+	private List<UpgradeOption> _currentOptions = new();
 
 	// -------------------------------------------------
 	// Godot lifecycle
@@ -51,6 +52,35 @@ public partial class UpgradeMenu : Control
 
 		// Hide menu initially
 		Visible = false;
+	}
+
+	public override void _Input(InputEvent @event)
+	{
+		if (!_isShowingSelection || _currentOptions.Count == 0)
+			return;
+
+		// Check if any option already has focus
+		bool anyHasFocus = false;
+		foreach (var option in _currentOptions)
+		{
+			if (option.HasFocus())
+			{
+				anyHasFocus = true;
+				break;
+			}
+		}
+
+		// If no option has focus and user presses navigation keys, give focus to first option
+		if (!anyHasFocus)
+		{
+			if (@event.IsActionPressed("ui_left") || @event.IsActionPressed("ui_right") ||
+				@event.IsActionPressed("ui_up") || @event.IsActionPressed("ui_down") ||
+				@event.IsActionPressed("ui_accept"))
+			{
+				_currentOptions[0].GrabFocus();
+				GetViewport().SetInputAsHandled();
+			}
+		}
 	}
 
 	// -------------------------------------------------
@@ -117,7 +147,7 @@ public partial class UpgradeMenu : Control
 		ClearOptions();
 
 		var upgrades = UpgradeFactory.CreateUpgradeRoll(UpgradeOptionCount, Game.Instance.Player.LuckLevel);
-		var options = new List<UpgradeOption>();
+		_currentOptions.Clear();
 
 		for (int i = 0; i < upgrades.Count; i++)
 		{
@@ -126,15 +156,15 @@ public partial class UpgradeMenu : Control
 			_optionsContainer.AddChild(option);
 			option.Setup(upgrades[i]);
 			option.Pressed += () => OnUpgradeSelected(option.GetUpgrade());
-			options.Add(option);
+			_currentOptions.Add(option);
 		}
 
 		// Set up focus neighbors for keyboard navigation
-		for (int i = 0; i < options.Count; i++)
+		for (int i = 0; i < _currentOptions.Count; i++)
 		{
-			var option = options[i];
-			var leftNeighbor = options[(i - 1 + options.Count) % options.Count];
-			var rightNeighbor = options[(i + 1) % options.Count];
+			var option = _currentOptions[i];
+			var leftNeighbor = _currentOptions[(i - 1 + _currentOptions.Count) % _currentOptions.Count];
+			var rightNeighbor = _currentOptions[(i + 1) % _currentOptions.Count];
 
 			option.FocusNeighborLeft = leftNeighbor.GetPath();
 			option.FocusNeighborRight = rightNeighbor.GetPath();
@@ -143,7 +173,6 @@ public partial class UpgradeMenu : Control
 			option.FocusNeighborBottom = rightNeighbor.GetPath();
 		}
 
-		options[0].GrabFocus();
 		Visible = true;
 	}
 

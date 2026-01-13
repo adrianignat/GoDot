@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=4 uid="uid://k7pplukodq3p"]
 
-[ext_resource type="Script" uid="uid://b2guuwfek6lvi" path="res://Scripts/Objects/BaseMap.cs" id="1_v844t"]
+[ext_resource type="Script" uid="uid://cnxrpi288ul6x" path="res://Scripts/Objects/BaseMap.cs" id="1_v844t"]
 [ext_resource type="TileSet" uid="uid://dskgqq52rkuhh" path="res://Resources/noSpawn.tres" id="2_v844t"]
 [ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Resources/WorldTileset_Day.tres" id="3_0jjsf"]
 [ext_resource type="PackedScene" uid="uid://mb1euaenbdro" path="res://Entities/Buildings/House.tscn" id="3_v844t"]

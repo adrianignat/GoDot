@@ -15,6 +15,7 @@ public partial class Player : Character
 	public Direction Moving { get; private set; }
 	public int LuckLevel { get; private set; } = 0;
 	public float DodgeChance { get; set; } = 0f;
+	public ushort MaxHealth { get; private set; }
 
 	// Dash state
 	private bool _isDashing = false;
@@ -43,6 +44,9 @@ public partial class Player : Character
 		_animation.AnimationFinished += OnAnimationFinished;
 		Facing = Direction.E;
 		Moving = Direction.E;
+
+		// Initialize max health from starting health
+		MaxHealth = Health;
 
 		_feetIndicatorLayer = GetNode<CanvasLayer>("FeetIndicatorLayer");
 		_feetIndicator = _feetIndicatorLayer.GetNode<ColorRect>("FeetIndicator");
@@ -95,57 +99,83 @@ public partial class Player : Character
 	{
 		var bow = GetNode<Bow>("Bow");
 		float percentMultiplier = 1 + (upgrade.PercentageIncrease / 100f);
+		string statLog = "";
 
 		switch (upgrade)
 		{
 			case HealthUpgradeResource:
-				Health = (ushort)(Health * percentMultiplier);
+				ushort healthBonus = (ushort)(MaxHealth * upgrade.PercentageIncrease / 100f);
+				Health += healthBonus;
+				if (Health > MaxHealth) MaxHealth = Health;
+				statLog = $"Health: {Health}/{MaxHealth}";
 				break;
 			case AtkSpeedUpgradeResource:
 				bow.ObjectsPerSecond *= percentMultiplier;
+				statLog = $"Atk Speed: {bow.ObjectsPerSecond:F2}/sec";
 				break;
 			case MoveSpeedUpgradeResource:
 				Speed = (ushort)(Speed * percentMultiplier);
+				statLog = $"Move Speed: {Speed}";
 				break;
 			case LuckUpgradeResource:
 				LuckLevel += (int)upgrade.PercentageIncrease;
+				statLog = $"Luck Level: {LuckLevel}";
 				break;
 			case DamageUpgradeResource:
 				bow.BonusDamagePercent += upgrade.PercentageIncrease;
+				statLog = $"Bonus Damage: +{bow.BonusDamagePercent:F1}%";
 				break;
 			case CritChanceUpgradeResource:
 				bow.CritChance += upgrade.PercentageIncrease;
+				statLog = $"Crit Chance: {bow.CritChance:F1}%";
 				break;
 			case CritDmgUpgradeResource:
 				bow.CritDamageMultiplier += upgrade.PercentageIncrease / 100f;
+				statLog = $"Crit Damage: {bow.CritDamageMultiplier:F2}x";
 				break;
 			case DodgeUpgradeResource:
-				DodgeChance += upgrade.PercentageIncrease;
+				DodgeChance = Mathf.Min(DodgeChance + upgrade.PercentageIncrease, 50f);
+				statLog = $"Dodge Chance: {DodgeChance:F1}%{(DodgeChance >= 50f ? " (MAX)" : "")}";
 				break;
 			case FreezeChanceUpgradeResource:
 				bow.FreezeChance += upgrade.PercentageIncrease;
+				statLog = $"Freeze Chance: {bow.FreezeChance:F1}%";
 				break;
 			case BurnChanceUpgradeResource:
 				bow.BurnChance += upgrade.PercentageIncrease;
+				statLog = $"Burn Chance: {bow.BurnChance:F1}%";
 				break;
 			case ArrowSplitUpgradeOption:
 				bow.ArrowSplitChance += upgrade.PercentageIncrease;
+				statLog = $"Arrow Split Chance: {bow.ArrowSplitChance:F1}%";
+				break;
+			case PierceChanceUpgradeResource pierceUpgrade:
+				bow.PiercingLevel += pierceUpgrade.PierceAmount;
+				statLog = $"Arrow Pierce: +{pierceUpgrade.PierceAmount} (total: {bow.PiercingLevel} extra enemies)";
 				break;
 			case MagnetUpgradeResource:
 				var magnetShape = GetMagnetShape();
 				float newMagnetRadius = magnetShape.Radius * (1 + upgrade.PercentageIncrease / 100f);
 				magnetShape.Radius = Mathf.Min(newMagnetRadius, MaxMagnetRadius);
+				statLog = $"Magnet Radius: {magnetShape.Radius:F0}px{(magnetShape.Radius >= MaxMagnetRadius ? " (MAX)" : "")}";
 				break;
 			case DynamiteUpgradeResource:
 				var dynamiteThrower = GetDynamiteThrower();
-				// Add to bonus blast radius (capped at max)
+				if (dynamiteThrower.ObjectsPerSecond == 0)
+				{
+					dynamiteThrower.ObjectsPerSecond = GameConstants.InitialDynamiteThrowRate;
+				}
 				float addedRadius = GameConstants.PlayerDynamiteBlastRadius * (upgrade.PercentageIncrease / 100f);
 				dynamiteThrower.BonusBlastRadius = Mathf.Min(
 					dynamiteThrower.BonusBlastRadius + addedRadius,
 					MaxDynamiteBlastRadius - GameConstants.PlayerDynamiteBlastRadius
 				);
+				float totalBlastRadius = GameConstants.PlayerDynamiteBlastRadius + dynamiteThrower.BonusBlastRadius;
+				statLog = $"Dynamite Blast Radius: {totalBlastRadius:F0}px{(totalBlastRadius >= MaxDynamiteBlastRadius ? " (MAX)" : "")}";
 				break;
 		}
+
+		GD.Print($"[Upgrade] {upgrade.UpgradeName} +{upgrade.PercentageIncrease:F1}% ({upgrade.Quality}) -> {statLog}");
 	}
 
 	public override void _Process(double delta)

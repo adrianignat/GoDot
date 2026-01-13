@@ -55,8 +55,7 @@ public partial class UpgradeOption : Control
 		_upgrade = upgrade;
 
 		HeaderLabel.Text = upgrade.UpgradeName;
-		DescriptionLabel.Text =
-			$"{upgrade.PercentageIncrease:F1}% increase {upgrade.UpgradeName}";
+		DescriptionLabel.Text = upgrade.DisplayDescription;
 
 		ApplyHeaderTexture(upgrade.Quality);
 	}

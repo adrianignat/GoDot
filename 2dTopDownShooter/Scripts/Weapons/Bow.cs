@@ -18,11 +18,6 @@ public partial class Bow : Spawner<Arrow>
 	private float _baseAnimationDuration;
 
 	/// <summary>
-	/// Number of additional enemies arrows can bounce through.
-	/// </summary>
-	public int BouncingLevel { get; set; } = 0;
-
-	/// <summary>
 	/// Number of additional enemies arrows can pierce through.
 	/// </summary>
 	public int PiercingLevel { get; set; } = 0;
@@ -35,7 +30,7 @@ public partial class Bow : Spawner<Arrow>
 	/// <summary>
 	/// Critical hit chance percentage (0-100).
 	/// </summary>
-	public float CritChance { get; set; } = 0f;
+	public float CritChance { get; set; } = 5f;
 
 	/// <summary>
 	/// Critical hit damage multiplier (e.g., 1.5 = 150% damage).
@@ -156,7 +151,6 @@ public partial class Bow : Spawner<Arrow>
 
 	protected override void InitializeSpawnedObject(Arrow arrow)
 	{
-		arrow.BouncingLevel = BouncingLevel;
 		arrow.PiercingLevel = PiercingLevel;
 		arrow.BonusDamagePercent = BonusDamagePercent;
 		arrow.CritChance = CritChance;

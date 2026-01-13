@@ -10,14 +10,14 @@ public partial class FreezeChanceUpgradeResource : BaseUpgradeResource
 	// -------------------------------------------------
 	// Factory method
 	// -------------------------------------------------
-	public static FreezeChanceUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
+	public static FreezeChanceUpgradeResource Create(UpgradeQuality quality)
 	{
 		_rng.Randomize();
 
 		FreezeChanceUpgradeResource resource = new FreezeChanceUpgradeResource
 		{
 			Quality = quality,
-			PercentageIncrease = RollValue(quality, _rng, luckBonus)
+			PercentageIncrease = RollValue(quality, _rng)
 		};
 
 		return resource;

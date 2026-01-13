@@ -9,14 +9,14 @@ public partial class DynamiteUpgradeResource : BaseUpgradeResource
 	// -------------------------------------------------
 	// Factory method
 	// -------------------------------------------------
-	public static DynamiteUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
+	public static DynamiteUpgradeResource Create(UpgradeQuality quality)
 	{
 		_rng.Randomize();
 
 		DynamiteUpgradeResource resource = new DynamiteUpgradeResource
 		{
 			Quality = quality,
-			PercentageIncrease = RollValue(quality, _rng, luckBonus)
+			PercentageIncrease = RollValue(quality, _rng)
 		};
 
 		return resource;

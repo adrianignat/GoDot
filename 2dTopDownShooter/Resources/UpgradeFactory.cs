@@ -1,3 +1,4 @@
+using dTopDownShooter.Scripts;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -10,38 +11,57 @@ public static class UpgradeFactory
     private static readonly RandomNumberGenerator _rng = new();
 
     // -------------------------------------------------
-    // Registered upgrade creators (ONE PER TYPE)
-    // Takes quality and luck bonus percentage
+    // Upgrade creator with type for cap checking
     // -------------------------------------------------
-    private static readonly List<Func<BaseUpgradeResource.UpgradeQuality, float, BaseUpgradeResource>>
-        _registeredUpgradesWithLuck = new()
-        {
-            (quality, luckBonus) => DamageUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => LuckUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => MoveSpeedUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => AtkSpeedUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => HealthUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => CritChanceUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => CritDmgUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => DodgeUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => FreezeChanceUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => BurnChanceUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => ArrowSplitUpgradeOption.Create(quality, luckBonus),
-            (quality, luckBonus) => MagnetUpgradeResource.Create(quality, luckBonus),
-            (quality, luckBonus) => DynamiteUpgradeResource.Create(quality, luckBonus),
-        };
+    private record UpgradeCreator(
+        Type UpgradeType,
+        Func<BaseUpgradeResource.UpgradeQuality, BaseUpgradeResource> Create
+    );
 
     // -------------------------------------------------
-    // PUBLIC API — NO DUPLICATES
+    // Registered upgrade creators (ONE PER TYPE)
+    // -------------------------------------------------
+    private static readonly List<UpgradeCreator> _registeredUpgrades = new()
+    {
+        new(typeof(DamageUpgradeResource), quality => DamageUpgradeResource.Create(quality)),
+        new(typeof(LuckUpgradeResource), quality => LuckUpgradeResource.Create(quality)),
+        new(typeof(MoveSpeedUpgradeResource), quality => MoveSpeedUpgradeResource.Create(quality)),
+        new(typeof(AtkSpeedUpgradeResource), quality => AtkSpeedUpgradeResource.Create(quality)),
+        new(typeof(HealthUpgradeResource), quality => HealthUpgradeResource.Create(quality)),
+        new(typeof(CritChanceUpgradeResource), quality => CritChanceUpgradeResource.Create(quality)),
+        new(typeof(CritDmgUpgradeResource), quality => CritDmgUpgradeResource.Create(quality)),
+        new(typeof(DodgeUpgradeResource), quality => DodgeUpgradeResource.Create(quality)),
+        new(typeof(FreezeChanceUpgradeResource), quality => FreezeChanceUpgradeResource.Create(quality)),
+        new(typeof(BurnChanceUpgradeResource), quality => BurnChanceUpgradeResource.Create(quality)),
+        new(typeof(ArrowSplitUpgradeOption), quality => ArrowSplitUpgradeOption.Create(quality)),
+        new(typeof(MagnetUpgradeResource), quality => MagnetUpgradeResource.Create(quality)),
+        new(typeof(DynamiteUpgradeResource), quality => DynamiteUpgradeResource.Create(quality)),
+        new(typeof(PierceChanceUpgradeResource), quality => PierceChanceUpgradeResource.Create(quality)),
+    };
+
+    // -------------------------------------------------
+    // PUBLIC API — NO DUPLICATES, FILTERS CAPPED UPGRADES
     // -------------------------------------------------
     public static List<BaseUpgradeResource> CreateUpgradeRoll(int count, int luckLevel = 0)
     {
         _rng.Randomize();
 
-        List<BaseUpgradeResource> result = new();
-        List<Func<BaseUpgradeResource.UpgradeQuality, float, BaseUpgradeResource>>
-            available = new(_registeredUpgradesWithLuck);
+        var player = Game.Instance.Player;
+        var bow = player.GetNode<Bow>("Bow");
+        var dynamiteThrower = player.GetDynamiteThrower();
+        var magnetShape = player.GetMagnetShape();
 
+        // Filter out capped upgrades
+        List<UpgradeCreator> available = new();
+        foreach (var creator in _registeredUpgrades)
+        {
+            if (!IsUpgradeCapped(creator.UpgradeType, player, bow, dynamiteThrower, magnetShape))
+            {
+                available.Add(creator);
+            }
+        }
+
+        List<BaseUpgradeResource> result = new();
         count = Mathf.Min(count, available.Count);
 
         for (int i = 0; i < count; i++)
@@ -52,19 +72,37 @@ public static class UpgradeFactory
             var creator = available[index];
             available.RemoveAt(index); // 🔑 prevents duplicates
 
-            // Pass luck bonus percentage to affect roll amounts
-            float luckBonus = luckLevel * LuckBonusPerLevel;
-            result.Add(creator.Invoke(quality, luckBonus));
+            result.Add(creator.Create(quality));
         }
 
         return result;
     }
 
-    // Luck bonus per level (e.g., 0.5 = each luck level adds 0.5% to rolls)
-    private const float LuckBonusPerLevel = 0.5f;
+    // -------------------------------------------------
+    // Check if an upgrade type has reached its cap
+    // -------------------------------------------------
+    private static bool IsUpgradeCapped(
+        Type upgradeType,
+        Player player,
+        Bow bow,
+        DynamiteThrower dynamiteThrower,
+        CircleShape2D magnetShape)
+    {
+        if (upgradeType == typeof(DodgeUpgradeResource))
+            return player.DodgeChance >= 50f;
 
-    // Luck bonus to quality chances per level
-    private const float LuckQualityBonusPerLevel = 1f; // 1% per luck level
+        if (upgradeType == typeof(MagnetUpgradeResource))
+            return magnetShape.Radius >= GameConstants.MaxMagnetRadius;
+
+        if (upgradeType == typeof(DynamiteUpgradeResource))
+            return dynamiteThrower.BonusBlastRadius >=
+                   GameConstants.MaxDynamiteBlastRadius - GameConstants.PlayerDynamiteBlastRadius;
+
+        return false;
+    }
+
+    // Luck bonus to quality chances per level (0.5% per luck level)
+    private const float LuckQualityBonusPerLevel = 0.5f;
 
     // -------------------------------------------------
     // Quality roll with luck bonus

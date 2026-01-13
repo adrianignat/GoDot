@@ -39,6 +39,34 @@ public partial class DynamiteThrower : Spawner<Barrel>
 
     private Vector2 GetTargetPosition()
     {
+        const int maxAttempts = 10;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            Vector2 targetPosition = CalculateRawTargetPosition();
+
+            // Check if landing in water
+            if (!Game.Instance.IsInNoSpawnZone(targetPosition))
+            {
+                return targetPosition;
+            }
+
+            // Try to find a valid position along the throw path
+            Vector2 validPosition = FindValidPositionAlongPath(targetPosition);
+            if (validPosition != Vector2.Zero)
+            {
+                return validPosition;
+            }
+
+            // If no valid position found, try a different target
+        }
+
+        // Fallback: throw near player (should always be valid)
+        return _player.GlobalPosition + new Vector2(50, 0);
+    }
+
+    private Vector2 CalculateRawTargetPosition()
+    {
         Vector2 targetPosition;
 
         // Throw toward a random enemy, or random direction if no enemies
@@ -67,6 +95,26 @@ public partial class DynamiteThrower : Spawner<Barrel>
         }
 
         return targetPosition;
+    }
+
+    private Vector2 FindValidPositionAlongPath(Vector2 targetPosition)
+    {
+        // Trace back from target to player to find last valid position
+        Vector2 direction = (targetPosition - _player.GlobalPosition).Normalized();
+        float totalDistance = _player.GlobalPosition.DistanceTo(targetPosition);
+        const float stepSize = 20f;
+
+        // Start from near the target and work backwards
+        for (float dist = totalDistance - stepSize; dist > stepSize; dist -= stepSize)
+        {
+            Vector2 checkPos = _player.GlobalPosition + direction * dist;
+            if (!Game.Instance.IsInNoSpawnZone(checkPos))
+            {
+                return checkPos;
+            }
+        }
+
+        return Vector2.Zero; // No valid position found
     }
 
     protected override void InitializeSpawnedObject(Barrel barrel)

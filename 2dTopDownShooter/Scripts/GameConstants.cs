@@ -89,8 +89,6 @@ namespace dTopDownShooter.Scripts
 		public const ushort ArrowDamage = 100;                    // HP per hit
 		public const float ArrowSpeed = 500f;                     // pixels/sec
 		public const float ArrowLifespan = 3f;                    // seconds before despawn
-		public const float ArrowBounceSpeedReduction = 0.3f;      // multiplier (0.3 = 30% speed retained)
-		public const float ArrowPierceSpeedReduction = 0.7f;      // multiplier (0.7 = 70% speed retained)
 
 		#endregion
 
@@ -98,10 +96,10 @@ namespace dTopDownShooter.Scripts
 
 		public const ushort PlayerDynamiteDamage = 100;           // HP per hit
 		public const float PlayerDynamiteThrowDuration = 0.4f;    // seconds - flight time
-		public const float PlayerDynamiteBlastRadius = 100f;      // pixels
+		public const float PlayerDynamiteBlastRadius = 300f;      // pixels
 		public const float PlayerDynamiteFuseTime = 1.0f;         // seconds after landing
-		public const float PlayerDynamiteThrowRadius = 200f;      // pixels - random target range
-		public const float PlayerDynamiteMaxThrowDistance = 150f; // pixels - max throw distance
+		public const float PlayerDynamiteThrowRadius = 600f;      // pixels - random target range
+		public const float PlayerDynamiteMaxThrowDistance = 300f; // pixels - max throw distance
 		public const float InitialDynamiteThrowRate = 0.33f;      // throws/sec (~1 every 3 seconds)
 
 		#endregion
@@ -161,7 +159,7 @@ namespace dTopDownShooter.Scripts
 		#region Upgrades - Max Values
 
 		public const float MaxMagnetRadius = 300f;                // pixels - max pickup range
-		public const float MaxDynamiteBlastRadius = 150f;         // pixels - max bonus radius
+		public const float MaxDynamiteBlastRadius = 600f;         // pixels - max bonus radius
 
 		#endregion
 

@@ -10,14 +10,14 @@ public partial class BurnChanceUpgradeResource : BaseUpgradeResource
 	// -------------------------------------------------
 	// Factory method
 	// -------------------------------------------------
-	public static BurnChanceUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
+	public static BurnChanceUpgradeResource Create(UpgradeQuality quality)
 	{
 		_rng.Randomize();
 
 		BurnChanceUpgradeResource resource = new BurnChanceUpgradeResource
 		{
 			Quality = quality,
-			PercentageIncrease = RollValue(quality, _rng, luckBonus)
+			PercentageIncrease = RollValue(quality, _rng)
 		};
 
 		return resource;

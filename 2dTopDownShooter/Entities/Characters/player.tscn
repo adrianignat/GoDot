@@ -14,7 +14,7 @@ radius = 20.0
 height = 40.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_goldmagnet"]
-radius = 0.0
+radius = 50.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_thks6"]
 atlas = ExtResource("4_agnll")
@@ -473,6 +473,7 @@ ObjectsPerSecond = 1.0
 [node name="DynamiteThrower" type="Node2D" parent="."]
 script = ExtResource("3_dynamite")
 Scene = ExtResource("4_dynamite")
+ObjectsPerSecond = 0.0
 
 [node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_vnsn1")
