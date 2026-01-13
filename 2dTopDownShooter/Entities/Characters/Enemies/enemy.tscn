@@ -249,8 +249,8 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_bimp4"]
-radius = 24.0
-height = 68.0
+radius = 27.499998
+height = 82.99999
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xmrs5"]
 size = Vector2(154, 126)
@@ -268,7 +268,6 @@ Health = 100
 [node name="EnemyAnimations" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_wfccv")
 animation = &"attack"
-frame_progress = 0.75516814
 
 [node name="EnemyCollision" type="CollisionShape2D" parent="."]
 visibility_layer = 2
@@ -284,8 +283,10 @@ position = Vector2(1, 7)
 shape = SubResource("RectangleShape2D_xmrs5")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
-radius = 30.0
 path_desired_distance = 25.0
+avoidance_enabled = true
+radius = 30.0
+debug_enabled = true
 
 [connection signal="body_entered" from="AttackRange" to="." method="OnAttackRangeEntered"]
 [connection signal="body_exited" from="AttackRange" to="." method="OnAttackRangeExit"]

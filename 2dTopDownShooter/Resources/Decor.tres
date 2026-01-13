@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=43 format=3 uid="uid://b46eohqiriohf"]
+[gd_resource type="TileSet" load_steps=45 format=3 uid="uid://b46eohqiriohf"]
 
 [ext_resource type="Texture2D" uid="uid://bgspsokl718l8" path="res://Sprites/Decor/Bushes/Bushe1.png" id="1_iq78s"]
 [ext_resource type="Texture2D" uid="uid://iwjv1ercupgc" path="res://Sprites/Decor/Bushes/Bushe2.png" id="2_kpegx"]
@@ -184,6 +184,12 @@ texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 0:0/0/texture_origin = Vector2i(0, 10)
 
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_iq78s"]
+vertices = PackedVector2Array(16, -16, 16, 10.6640625, 10.6640625, 10.6640625, 10.6640625, -10.6640625, -10.6640625, -16, -10.6640625, -10.6640625, 16, 16, -10.6640625, 16, -10.6640625, 10.6640625, -16, 16, -16, -16)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 0, 3, 5), PackedInt32Array(2, 1, 6, 7), PackedInt32Array(8, 2, 7, 9), PackedInt32Array(8, 9, 10, 5), PackedInt32Array(4, 5, 10)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-16, -16, -10.666666, -16, 16, -16, 10.666668, -10.666666, -10.666666, -10.666666, -10.666666, 10.666668, 10.666668, 10.666668, 10.666668, -10.666666, 16, -16, 16, 10.666668, 16, 16, -10.666666, 16, -16, 16)])
+agent_radius = 0.0
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vmb8g"]
 texture = ExtResource("16_i486u")
 texture_region_size = Vector2i(32, 32)
@@ -199,8 +205,11 @@ texture_region_size = Vector2i(32, 32)
 0:0/animation_frame_6/duration = 1.0
 0:0/animation_frame_7/duration = 1.0
 0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, 64)
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-10.666666, -5.333333, 10.666668, -5.333333, 10.666668, 5.333334, -10.666666, 5.333334)
+0:0/0/texture_origin = Vector2i(0, 62)
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-5.333333, -10.666666, 5.333334, -10.666666, 5.333334, 5.333334, -5.333333, 5.333334)
+0:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_iq78s")
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_kpegx"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_21ksk"]
 texture = ExtResource("17_bh8d3")
@@ -218,6 +227,7 @@ texture_region_size = Vector2i(192, 192)
 0:0/0 = 0
 0:0/0/texture_origin = Vector2i(0, 60)
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-10.666666, -5.333333, 10.666668, -5.333333, 10.666668, 5.333334, -10.666666, 5.333334)
+0:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_kpegx")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_57gr7"]
 texture = ExtResource("18_4p4j2")
@@ -303,6 +313,7 @@ texture_region_size = Vector2i(32, 32)
 tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 8
 physics_layer_0/collision_mask = 0
+navigation_layer_0/layers = 1
 custom_data_layer_0/name = "obstacle"
 custom_data_layer_0/type = 1
 sources/0 = SubResource("TileSetAtlasSource_agqkw")

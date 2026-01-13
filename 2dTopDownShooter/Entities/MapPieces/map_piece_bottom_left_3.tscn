@@ -45,7 +45,7 @@ tile_map_data = PackedByteArray("AAAFAAYAAQAGAAAAAAAGAAYAAQAGAAAAAAAEAAYAAQAGAAA
 tile_set = ExtResource("3_vm70h")
 
 [node name="House" parent="." instance=ExtResource("2_ojbr5")]
-position = Vector2(1028, 167)
+position = Vector2(1027, 153)
 
 [node name="Decor_Hills" type="TileMapLayer" parent="."]
 z_index = 1

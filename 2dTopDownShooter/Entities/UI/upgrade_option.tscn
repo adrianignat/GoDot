@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://deca7ylwyk2e4"]
 
-[ext_resource type="Script" uid="uid://dv4obxw6ksmas" path="res://Scripts/UI/UpgradeOption.cs" id="1_x1pbh"]
+[ext_resource type="Script" uid="uid://b0spuc08ixajg" path="res://Scripts/UI/UpgradeOption.cs" id="1_x1pbh"]
 [ext_resource type="Texture2D" uid="uid://nfoj7n8wlwoj" path="res://Sprites/Ribbons/Ribbon_Blue_3Slides.png" id="2_ovyuw"]
 [ext_resource type="Texture2D" uid="uid://8w1hxh513ig7" path="res://Sprites/Ribbons/Ribbon_Red_3Slides.png" id="3_wxby5"]
 [ext_resource type="Texture2D" uid="uid://bo5ovsc08ejwf" path="res://Sprites/Ribbons/Ribbon_Yellow_3Slides.png" id="4_fobc7"]
@@ -44,7 +44,7 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9019608)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_fonts/font = ExtResource("5_fobc7")
-theme_override_font_sizes/font_size = 44
+theme_override_font_sizes/font_size = 40
 text = "+30% max health"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -52,8 +52,8 @@ autowrap_mode = 2
 
 [node name="HeaderSprite" type="TextureRect" parent="."]
 layout_mode = 0
-offset_left = 50.0
-offset_right = 450.0
+offset_left = 45.0
+offset_right = 445.0
 offset_bottom = 128.0
 mouse_filter = 2
 texture = ExtResource("2_ovyuw")
@@ -62,14 +62,14 @@ stretch_mode = 5
 
 [node name="HeaderLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 50.0
-offset_right = 450.0
-offset_bottom = 110.0
+offset_left = 45.0
+offset_right = 445.0
+offset_bottom = 95.0
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_fonts/font = ExtResource("5_fobc7")
-theme_override_font_sizes/font_size = 60
+theme_override_font_sizes/font_size = 50
 text = "Atk Speed"
 horizontal_alignment = 1
 vertical_alignment = 1
