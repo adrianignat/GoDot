@@ -19,6 +19,11 @@ public abstract partial class Enemy : Character
 {
 	private const float ClickRadius = 50f; // How close a click needs to be to select this enemy
 	private const float PathUpdateInterval = 0.25f; // Seconds between path recalculations (performance optimization)
+	private const float StuckCheckInterval = 0.5f; // How often to check if stuck
+	private const float StuckDistanceThreshold = 10f; // If moved less than this in StuckCheckInterval, consider stuck
+	private const int StuckCountThreshold = 3; // How many stuck checks before entering unstuck mode
+	private const float UnstuckDuration = 1.5f; // How long to move to random offset before resuming
+	private const float UnstuckOffsetDistance = 150f; // How far to offset the unstuck target
 
 	// Debug: Static ID counter
 	private static int _nextId = 1;
@@ -35,6 +40,12 @@ public abstract partial class Enemy : Character
 	// Navigation
 	private NavigationAgent2D _navigationAgent;
 	private double _pathUpdateTimer;
+	private double _stuckCheckTimer;
+	private Vector2 _lastStuckCheckPosition;
+	private int _stuckCount;
+	private bool _isUnstuckMode;
+	private double _unstuckTimer;
+	private Vector2 _unstuckTarget;
 
 	// Status effects
 	private float _freezeTimer = 0f;
@@ -62,8 +73,13 @@ public abstract partial class Enemy : Character
 		// Get NavigationAgent2D
 		_navigationAgent = GetNode<NavigationAgent2D>("NavigationAgent2D");
 
+		// Connect to avoidance callback for safe velocity computation
+		_navigationAgent.VelocityComputed += OnVelocityComputed;
+
 		// Randomize initial path update timer so all enemies don't recalculate on the same frame
 		_pathUpdateTimer = GD.RandRange(0.0, PathUpdateInterval);
+		_stuckCheckTimer = StuckCheckInterval;
+		_lastStuckCheckPosition = GlobalPosition;
 
 		// Add to enemies group for cleanup on day transition
 		AddToGroup(GameConstants.EnemiesGroup);
@@ -108,6 +124,16 @@ public abstract partial class Enemy : Character
 	protected virtual void OnAnimationFinished() { }
 
 	/// <summary>
+	/// Called when a body enters the attack range area. Override in subclass to handle melee attacks.
+	/// </summary>
+	public virtual void OnAttackRangeEntered(Node2D body) { }
+
+	/// <summary>
+	/// Called when a body exits the attack range area. Override in subclass to handle melee attacks.
+	/// </summary>
+	public virtual void OnAttackRangeExit(Node2D body) { }
+
+	/// <summary>
 	/// Override to prevent movement (e.g., while attacking or when in attack range).
 	/// </summary>
 	protected virtual bool CanMove() => true;
@@ -128,9 +154,38 @@ public abstract partial class Enemy : Character
 	protected virtual Vector2 GetNavigationTarget() => _player?.GlobalPosition ?? GlobalPosition;
 
 	/// <summary>
+	/// Gets the current navigation target, accounting for unstuck mode.
+	/// </summary>
+	private Vector2 GetCurrentNavigationTarget()
+	{
+		if (_isUnstuckMode)
+			return _unstuckTarget;
+		return GetNavigationTarget();
+	}
+
+	/// <summary>
+	/// Enters unstuck mode with a random offset target to break oscillation patterns.
+	/// </summary>
+	private void EnterUnstuckMode()
+	{
+		_isUnstuckMode = true;
+		_unstuckTimer = UnstuckDuration;
+		_stuckCount = 0;
+
+		// Pick a random direction and offset from current position
+		float randomAngle = (float)GD.RandRange(0, Mathf.Tau);
+		Vector2 offset = new Vector2(Mathf.Cos(randomAngle), Mathf.Sin(randomAngle)) * UnstuckOffsetDistance;
+		_unstuckTarget = GlobalPosition + offset;
+
+		// Force immediate path recalculation to new target
+		_pathUpdateTimer = 0;
+	}
+
+	/// <summary>
 	/// Movement using NavigationAgent2D.
 	/// Subclasses control movement via CanMove() override.
 	/// Path recalculation is throttled for performance (PathUpdateInterval).
+	/// Includes stuck detection to force path recalculation when not making progress.
 	/// </summary>
 	public override void _PhysicsProcess(double delta)
 	{
@@ -140,12 +195,54 @@ public abstract partial class Enemy : Character
 		if (!CanMove() || _player == null || _navigationAgent == null)
 			return;
 
+		// Handle unstuck mode timer
+		if (_isUnstuckMode)
+		{
+			_unstuckTimer -= delta;
+			if (_unstuckTimer <= 0)
+			{
+				_isUnstuckMode = false;
+				_pathUpdateTimer = 0; // Force recalculation back to player
+			}
+		}
+
+		// Stuck detection - track consecutive stuck checks
+		_stuckCheckTimer -= delta;
+		if (_stuckCheckTimer <= 0)
+		{
+			_stuckCheckTimer = StuckCheckInterval;
+			float distanceMoved = GlobalPosition.DistanceTo(_lastStuckCheckPosition);
+
+			if (distanceMoved < StuckDistanceThreshold)
+			{
+				_stuckCount++;
+
+				if (_stuckCount >= StuckCountThreshold && !_isUnstuckMode)
+				{
+					// Enemy is dancing/oscillating - enter unstuck mode
+					EnterUnstuckMode();
+				}
+				else
+				{
+					// Just stuck briefly - force path recalculation
+					_pathUpdateTimer = 0;
+				}
+			}
+			else
+			{
+				// Making progress - reset stuck count
+				_stuckCount = 0;
+			}
+
+			_lastStuckCheckPosition = GlobalPosition;
+		}
+
 		// Only recalculate path periodically (not every frame) for performance
 		_pathUpdateTimer -= delta;
 		if (_pathUpdateTimer <= 0)
 		{
 			_pathUpdateTimer = PathUpdateInterval;
-			_navigationAgent.TargetPosition = GetNavigationTarget();
+			_navigationAgent.TargetPosition = GetCurrentNavigationTarget();
 		}
 
 		if (_navigationAgent.IsNavigationFinished())
@@ -153,9 +250,36 @@ public abstract partial class Enemy : Character
 
 		Vector2 nextPosition = _navigationAgent.GetNextPathPosition();
 		Vector2 direction = (nextPosition - GlobalPosition).Normalized();
+		Vector2 desiredVelocity = direction * Speed;
 
-		Velocity = direction * Speed;
-		UpdateMovementAnimation(direction);
+		// Send velocity to navigation agent for avoidance calculation
+		if (_navigationAgent.AvoidanceEnabled)
+		{
+			_navigationAgent.Velocity = desiredVelocity;
+			// Movement happens in OnVelocityComputed callback
+		}
+		else
+		{
+			Velocity = desiredVelocity;
+			UpdateMovementAnimation(direction);
+			MoveAndSlide();
+		}
+	}
+
+	/// <summary>
+	/// Callback from NavigationAgent2D when safe velocity is computed (avoidance system).
+	/// </summary>
+	private void OnVelocityComputed(Vector2 safeVelocity)
+	{
+		if (!CanMove())
+			return;
+
+		Velocity = safeVelocity;
+
+		if (safeVelocity.LengthSquared() > 0)
+		{
+			UpdateMovementAnimation(safeVelocity.Normalized());
+		}
 
 		MoveAndSlide();
 	}

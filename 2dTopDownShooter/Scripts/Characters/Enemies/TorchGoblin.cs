@@ -122,7 +122,7 @@ public partial class TorchGoblin : Enemy
 		}
 	}
 
-	public void OnAttackRangeEntered(Node2D body)
+	public override void OnAttackRangeEntered(Node2D body)
 	{
 		if (body.IsInGroup(GameConstants.PlayerGroup))
 		{
@@ -130,7 +130,7 @@ public partial class TorchGoblin : Enemy
 		}
 	}
 
-	public void OnAttackRangeExit(Node2D body)
+	public override void OnAttackRangeExit(Node2D body)
 	{
 		if (body.IsInGroup(GameConstants.PlayerGroup))
 		{

@@ -284,9 +284,9 @@ shape = SubResource("RectangleShape2D_xmrs5")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 path_desired_distance = 25.0
-avoidance_enabled = true
+avoidance_enabled = false
 radius = 30.0
-debug_enabled = true
+debug_enabled = false
 
 [connection signal="body_entered" from="AttackRange" to="." method="OnAttackRangeEntered"]
 [connection signal="body_exited" from="AttackRange" to="." method="OnAttackRangeExit"]
