@@ -15,5 +15,6 @@ position = Vector2(0, -1)
 shape = SubResource("RectangleShape2D_house")
 
 [node name="Sprite" type="Sprite2D" parent="."]
+y_sort_enabled = true
 position = Vector2(0, -35)
 texture = ExtResource("1_house")
