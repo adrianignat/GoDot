@@ -6,6 +6,7 @@ public partial class BaseMap : Node2D
 	private TileSet _worldTileSet;
 	private TileSet _decorTileSet;
 	private TileSet _noSpawnTileSet;
+	private TileSet _hillsTileSet;
 
 	public override void _Ready()
 	{
@@ -18,6 +19,7 @@ public partial class BaseMap : Node2D
 		_worldTileSet = GD.Load<TileSet>("res://Resources/WorldTileset_Day.tres");
 		_decorTileSet = GD.Load<TileSet>("res://Resources/Decor.tres");
 		_noSpawnTileSet = GD.Load<TileSet>("res://Resources/noSpawn.tres");
+		_hillsTileSet = GD.Load<TileSet>("res://Resources/Hills.tres");
 	}
 
 	private void ApplyTileSets()
@@ -33,6 +35,10 @@ public partial class BaseMap : Node2D
 			else if (layerName.StartsWith("Decor"))
 			{
 				layer.TileSet = _decorTileSet;
+			}
+			else if (layerName.EndsWith("Hills"))
+			{
+				layer.TileSet = _hillsTileSet;
 			}
 			else
 			{
