@@ -36,6 +36,16 @@ public abstract partial class Enemy : Character
 	private NavigationAgent2D _navigationAgent;
 	private double _pathUpdateTimer;
 
+	// Status effects
+	private float _freezeTimer = 0f;
+	private float _freezeSlowPercent = 0f;
+	private float _originalSpeed;
+	private bool _isFrozen = false;
+
+	private float _burnTimer = 0f;
+	private float _burnTickTimer = 0f;
+	private ushort _burnDamagePerTick = 0;
+
 	public override void _Ready()
 	{
 		// Assign unique ID and record spawn position
@@ -69,6 +79,9 @@ public abstract partial class Enemy : Character
 
 		// Start with walk animation
 		_animation.Play("walk");
+
+		// Store original speed for freeze effect
+		_originalSpeed = Speed;
 
 		// Let subclass do additional initialization
 		OnReady();
@@ -121,6 +134,9 @@ public abstract partial class Enemy : Character
 	/// </summary>
 	public override void _PhysicsProcess(double delta)
 	{
+		// Always update status effects (burn can kill even when not moving)
+		UpdateStatusEffects(delta);
+
 		if (!CanMove() || _player == null || _navigationAgent == null)
 			return;
 
@@ -202,6 +218,63 @@ public abstract partial class Enemy : Character
 		Game.Instance.EmitSignal(Game.SignalName.EnemyKilled, this);
 		QueueFree();
 	}
+
+	#region Status Effects
+
+	/// <summary>
+	/// Apply freeze effect - slows enemy for duration.
+	/// </summary>
+	public void ApplyFreeze(float duration, float slowPercent)
+	{
+		_freezeTimer = duration;
+		_freezeSlowPercent = slowPercent;
+
+		if (!_isFrozen)
+		{
+			_isFrozen = true;
+			Speed = (ushort)(_originalSpeed * (1 - slowPercent / 100f));
+		}
+	}
+
+	/// <summary>
+	/// Apply burn effect - deals damage over time.
+	/// </summary>
+	public void ApplyBurn(float duration, ushort damagePerTick)
+	{
+		_burnTimer = duration;
+		_burnDamagePerTick = damagePerTick;
+		// Reset tick timer to apply damage immediately on first tick
+		_burnTickTimer = 0f;
+	}
+
+	private void UpdateStatusEffects(double delta)
+	{
+		// Handle freeze
+		if (_freezeTimer > 0)
+		{
+			_freezeTimer -= (float)delta;
+			if (_freezeTimer <= 0)
+			{
+				_isFrozen = false;
+				Speed = (ushort)_originalSpeed;
+			}
+		}
+
+		// Handle burn
+		if (_burnTimer > 0)
+		{
+			_burnTimer -= (float)delta;
+			_burnTickTimer -= (float)delta;
+
+			if (_burnTickTimer <= 0)
+			{
+				_burnTickTimer = GameConstants.BurnTickInterval;
+				TakeDamage(_burnDamagePerTick);
+			}
+		}
+	}
+
+	#endregion
 
 	/// <summary>
 	/// Helper to build animation frames from a sprite sheet.

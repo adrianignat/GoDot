@@ -33,6 +33,38 @@ public partial class Arrow : RigidBody2D
 	/// </summary>
 	public int PiercingLevel { get; set; } = 0;
 
+	/// <summary>
+	/// Bonus damage percentage added to base damage.
+	/// </summary>
+	public float BonusDamagePercent { get; set; } = 0f;
+
+	/// <summary>
+	/// Critical hit chance percentage (0-100).
+	/// </summary>
+	public float CritChance { get; set; } = 0f;
+
+	/// <summary>
+	/// Critical hit damage multiplier (e.g., 1.5 = 150% damage).
+	/// </summary>
+	public float CritDamageMultiplier { get; set; } = 1.5f;
+
+	/// <summary>
+	/// Chance to freeze (slow) enemies on hit (0-100).
+	/// </summary>
+	public float FreezeChance { get; set; } = 0f;
+
+	/// <summary>
+	/// Chance to burn enemies on hit (0-100).
+	/// </summary>
+	public float BurnChance { get; set; } = 0f;
+
+	/// <summary>
+	/// Optional specific enemy to target (for split arrows).
+	/// If null, uses normal targeting logic.
+	/// </summary>
+	public Node2D TargetOverride { get; set; } = null;
+
+	private static readonly RandomNumberGenerator _rng = new();
 	private Player _player;
 	private int _enemiesHit = 0;
 	private int _maxEnemiesCanHit;
@@ -79,16 +111,16 @@ public partial class Arrow : RigidBody2D
 		}
 		else
 		{
-			// Auto-aim mode: target closest enemy
+			// Auto-aim mode: target closest enemy (or override target for split arrows)
 			_currentDirection = new Vector2(-1, 0);
 
-			Node2D closestEnemy = GetClosestEnemy();
+			Node2D target = TargetOverride ?? GetClosestEnemy();
 
-			if (closestEnemy != null)
+			if (target != null && IsInstanceValid(target))
 			{
-				// Calculate the direction to the enemy
-				Vector2 enemyPosition = closestEnemy.GlobalPosition;
-				_currentDirection = (enemyPosition - _player.GlobalPosition).Normalized();
+				// Calculate the direction to the target
+				Vector2 targetPosition = target.GlobalPosition;
+				_currentDirection = (targetPosition - _player.GlobalPosition).Normalized();
 			}
 		}
 
@@ -130,7 +162,30 @@ public partial class Arrow : RigidBody2D
 				return;
 
 			_hitEnemies.Add(enemy);
-			enemy.TakeDamage(Damage);
+
+			// Calculate damage with bonus and crit
+			float finalDamage = Damage * (1 + BonusDamagePercent / 100f);
+
+			// Roll for crit
+			if (CritChance > 0 && _rng.Randf() * 100f < CritChance)
+			{
+				finalDamage *= CritDamageMultiplier;
+			}
+
+			enemy.TakeDamage((ushort)finalDamage);
+
+			// Roll for freeze effect
+			if (FreezeChance > 0 && _rng.Randf() * 100f < FreezeChance)
+			{
+				enemy.ApplyFreeze(GameConstants.FreezeDuration, GameConstants.FreezeSlowPercent);
+			}
+
+			// Roll for burn effect
+			if (BurnChance > 0 && _rng.Randf() * 100f < BurnChance)
+			{
+				enemy.ApplyBurn(GameConstants.BurnDuration, GameConstants.BurnDamagePerTick);
+			}
+
 			_enemiesHit++;
 
 			// Add collision exception so arrow passes through this enemy

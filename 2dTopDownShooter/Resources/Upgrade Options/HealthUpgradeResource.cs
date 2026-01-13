@@ -10,14 +10,14 @@ public partial class HealthUpgradeResource : BaseUpgradeResource
     // -------------------------------------------------
     // Factory method
     // -------------------------------------------------
-    public static HealthUpgradeResource Create(UpgradeQuality quality)
+    public static HealthUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
     {
         _rng.Randomize();
 
         HealthUpgradeResource resource = new HealthUpgradeResource
         {
             Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng)
+            PercentageIncrease = RollValue(quality, _rng, luckBonus)
         };
 
         return resource;

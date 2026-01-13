@@ -10,14 +10,14 @@ public partial class CritChanceUpgradeResource : BaseUpgradeResource
     // -------------------------------------------------
     // Factory method
     // -------------------------------------------------
-    public static CritChanceUpgradeResource Create(UpgradeQuality quality)
+    public static CritChanceUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
     {
         _rng.Randomize();
 
         CritChanceUpgradeResource resource = new CritChanceUpgradeResource
         {
             Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng)
+            PercentageIncrease = RollValue(quality, _rng, luckBonus)
         };
 
         return resource;

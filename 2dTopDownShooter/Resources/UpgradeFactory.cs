@@ -11,63 +11,84 @@ public static class UpgradeFactory
 
     // -------------------------------------------------
     // Registered upgrade creators (ONE PER TYPE)
+    // Takes quality and luck bonus percentage
     // -------------------------------------------------
-    private static readonly List<Func<BaseUpgradeResource.UpgradeQuality, BaseUpgradeResource>>
-        _registeredUpgrades = new()
+    private static readonly List<Func<BaseUpgradeResource.UpgradeQuality, float, BaseUpgradeResource>>
+        _registeredUpgradesWithLuck = new()
         {
-            quality => DamageUpgradeResource.Create(quality),
-            quality => LuckUpgradeResource.Create(quality),
-            quality => MoveSpeedUpgradeResource.Create(quality),
-            quality => AtkSpeedUpgradeResource.Create(quality),
-            quality => HealthUpgradeResource.Create(quality),
-            quality => CritChanceUpgradeResource.Create(quality),
-            quality => CritDmgUpgradeResource.Create(quality),
-            quality => DodgeUpgradeResource.Create(quality),
-            quality => FreezeChanceUpgradeResource.Create(quality),
-            quality => BurnChanceUpgradeResource.Create(quality),
-            quality => ArrowSplitUpgradeOption.Create(quality),
+            (quality, luckBonus) => DamageUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => LuckUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => MoveSpeedUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => AtkSpeedUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => HealthUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => CritChanceUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => CritDmgUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => DodgeUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => FreezeChanceUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => BurnChanceUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => ArrowSplitUpgradeOption.Create(quality, luckBonus),
+            (quality, luckBonus) => MagnetUpgradeResource.Create(quality, luckBonus),
+            (quality, luckBonus) => DynamiteUpgradeResource.Create(quality, luckBonus),
         };
 
     // -------------------------------------------------
     // PUBLIC API — NO DUPLICATES
     // -------------------------------------------------
-    public static List<BaseUpgradeResource> CreateUpgradeRoll(int count)
+    public static List<BaseUpgradeResource> CreateUpgradeRoll(int count, int luckLevel = 0)
     {
         _rng.Randomize();
 
         List<BaseUpgradeResource> result = new();
-        List<Func<BaseUpgradeResource.UpgradeQuality, BaseUpgradeResource>>
-            available = new(_registeredUpgrades);
+        List<Func<BaseUpgradeResource.UpgradeQuality, float, BaseUpgradeResource>>
+            available = new(_registeredUpgradesWithLuck);
 
         count = Mathf.Min(count, available.Count);
 
         for (int i = 0; i < count; i++)
         {
-            var quality = RollQuality();
+            var quality = RollQuality(luckLevel);
 
             int index = _rng.RandiRange(0, available.Count - 1);
             var creator = available[index];
             available.RemoveAt(index); // 🔑 prevents duplicates
 
-            result.Add(creator.Invoke(quality));
+            // Pass luck bonus percentage to affect roll amounts
+            float luckBonus = luckLevel * LuckBonusPerLevel;
+            result.Add(creator.Invoke(quality, luckBonus));
         }
 
         return result;
     }
 
+    // Luck bonus per level (e.g., 0.5 = each luck level adds 0.5% to rolls)
+    private const float LuckBonusPerLevel = 0.5f;
+
+    // Luck bonus to quality chances per level
+    private const float LuckQualityBonusPerLevel = 1f; // 1% per luck level
+
     // -------------------------------------------------
-    // Quality roll (70 / 20 / 10)
+    // Quality roll with luck bonus
+    // Base: 70% Common / 20% Rare / 10% Epic
+    // Each luck level adds 1% to Rare and Epic chances
     // -------------------------------------------------
-    private static BaseUpgradeResource.UpgradeQuality RollQuality()
+    private static BaseUpgradeResource.UpgradeQuality RollQuality(int luckLevel)
     {
-        float roll = _rng.Randf();
+        float roll = _rng.Randf() * 100f;
 
-        if (roll < 0.70f)
-            return BaseUpgradeResource.UpgradeQuality.Common;
+        // Calculate adjusted chances
+        float epicChance = 10f + luckLevel * LuckQualityBonusPerLevel;
+        float rareChance = 20f + luckLevel * LuckQualityBonusPerLevel;
 
-        if (roll < 0.90f)
+        // Cap at reasonable values
+        epicChance = Mathf.Min(epicChance, 40f);
+        rareChance = Mathf.Min(rareChance, 50f);
+
+        if (roll < epicChance)
+            return BaseUpgradeResource.UpgradeQuality.Epic;
+
+        if (roll < epicChance + rareChance)
             return BaseUpgradeResource.UpgradeQuality.Rare;
 
-        return BaseUpgradeResource.UpgradeQuality.Epic;
+        return BaseUpgradeResource.UpgradeQuality.Common;
     }
 }

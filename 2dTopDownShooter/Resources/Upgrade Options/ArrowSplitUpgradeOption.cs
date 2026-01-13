@@ -10,14 +10,14 @@ public partial class ArrowSplitUpgradeOption : BaseUpgradeResource
     // -------------------------------------------------
     // Factory method
     // -------------------------------------------------
-    public static ArrowSplitUpgradeOption Create(UpgradeQuality quality)
+    public static ArrowSplitUpgradeOption Create(UpgradeQuality quality, float luckBonus = 0f)
     {
         _rng.Randomize();
 
         ArrowSplitUpgradeOption resource = new ArrowSplitUpgradeOption
         {
             Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng)
+            PercentageIncrease = RollValue(quality, _rng, luckBonus)
         };
 
         return resource;

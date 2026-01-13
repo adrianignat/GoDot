@@ -77,6 +77,13 @@ namespace dTopDownShooter.Scripts
 		#region Weapons - Bow/Arrow
 
 		public const float InitialArrowsPerSecond = 1.5f;         // arrows/sec
+
+		// Arrow Effects
+		public const float FreezeDuration = 2.0f;                 // seconds - how long freeze lasts
+		public const float FreezeSlowPercent = 50f;               // percent - speed reduction (50 = 50% slower)
+		public const float BurnDuration = 3.0f;                   // seconds - how long burn lasts
+		public const ushort BurnDamagePerTick = 5;                // HP per tick
+		public const float BurnTickInterval = 0.5f;               // seconds between burn ticks
 		public const float BaseShootAnimationFps = 10f;           // frames/sec - default animation speed
 		public const float MaxShootAnimationSpeedScale = 3f;      // max animation speed multiplier
 		public const ushort ArrowDamage = 100;                    // HP per hit

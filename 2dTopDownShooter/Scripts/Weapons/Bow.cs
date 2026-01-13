@@ -1,6 +1,7 @@
 using dTopDownShooter.Scripts;
 using dTopDownShooter.Scripts.Spawners;
 using Godot;
+using System.Collections.Generic;
 
 public partial class Bow : Spawner<Arrow>
 {
@@ -52,9 +53,11 @@ public partial class Bow : Spawner<Arrow>
 	public float BurnChance { get; set; } = 0f;
 
 	/// <summary>
-	/// Level of arrow split (number of extra arrows spawned).
+	/// Chance to split arrows (0-100 percent).
 	/// </summary>
-	public int ArrowSplitLevel { get; set; } = 0;
+	public float ArrowSplitChance { get; set; } = 0f;
+
+	private static readonly RandomNumberGenerator _rng = new();
 
 	public override void _Ready()
 	{
@@ -155,5 +158,76 @@ public partial class Bow : Spawner<Arrow>
 	{
 		arrow.BouncingLevel = BouncingLevel;
 		arrow.PiercingLevel = PiercingLevel;
+		arrow.BonusDamagePercent = BonusDamagePercent;
+		arrow.CritChance = CritChance;
+		arrow.CritDamageMultiplier = CritDamageMultiplier;
+		arrow.FreezeChance = FreezeChance;
+		arrow.BurnChance = BurnChance;
+	}
+
+	protected override void Spawn()
+	{
+		// Spawn the main arrow
+		base.Spawn();
+
+		// Roll for split arrow if enabled and in auto-aim mode
+		if (ArrowSplitChance > 0 && GameSettings.ShootingStyle == dTopDownShooter.Scripts.ShootingStyle.AutoAim)
+		{
+			if (_rng.Randf() * 100f < ArrowSplitChance)
+			{
+				SpawnSplitArrow();
+			}
+		}
+	}
+
+	private void SpawnSplitArrow()
+	{
+		// Get visible enemies sorted by distance
+		var enemies = GetVisibleEnemiesSortedByDistance();
+
+		// Need at least 2 enemies (main arrow targets closest, split targets second)
+		if (enemies.Count < 2)
+			return;
+
+		var targetEnemy = enemies[1]; // Target the second closest enemy
+
+		var splitArrow = Scene.Instantiate<Arrow>();
+		splitArrow.GlobalPosition = GetLocation();
+
+		// Initialize with same properties as main arrow
+		InitializeSpawnedObject(splitArrow);
+
+		// Set target override for this split arrow
+		splitArrow.TargetOverride = targetEnemy;
+
+		GetSpawnParent().AddChild(splitArrow);
+	}
+
+	private List<Node2D> GetVisibleEnemiesSortedByDistance()
+	{
+		var viewRect = GetVisibleRect();
+		var enemies = GetTree().GetNodesInGroup(GameConstants.EnemiesGroup);
+		var visibleEnemies = new List<(Node2D enemy, float distance)>();
+
+		foreach (Node2D enemy in enemies)
+		{
+			if (viewRect.HasPoint(enemy.GlobalPosition))
+			{
+				float distance = _player.GlobalPosition.DistanceSquaredTo(enemy.GlobalPosition);
+				visibleEnemies.Add((enemy, distance));
+			}
+		}
+
+		// Sort by distance (closest first)
+		visibleEnemies.Sort((a, b) => a.distance.CompareTo(b.distance));
+
+		// Extract just the enemies
+		var result = new List<Node2D>();
+		foreach (var (enemy, _) in visibleEnemies)
+		{
+			result.Add(enemy);
+		}
+
+		return result;
 	}
 }

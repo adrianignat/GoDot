@@ -10,14 +10,14 @@ public partial class LuckUpgradeResource : BaseUpgradeResource
     // -------------------------------------------------
     // Factory method
     // -------------------------------------------------
-    public static LuckUpgradeResource Create(UpgradeQuality quality)
+    public static LuckUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
     {
         _rng.Randomize();
 
         LuckUpgradeResource resource = new LuckUpgradeResource
         {
             Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng)
+            PercentageIncrease = RollValue(quality, _rng, luckBonus)
         };
 
         return resource;

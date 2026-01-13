@@ -10,14 +10,14 @@ public partial class AtkSpeedUpgradeResource : BaseUpgradeResource
     // -------------------------------------------------
     // Factory method
     // -------------------------------------------------
-    public static AtkSpeedUpgradeResource Create(UpgradeQuality quality)
+    public static AtkSpeedUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
     {
         _rng.Randomize();
 
         AtkSpeedUpgradeResource resource = new AtkSpeedUpgradeResource
         {
             Quality = quality,
-            PercentageIncrease = RollValue(quality, _rng)
+            PercentageIncrease = RollValue(quality, _rng, luckBonus)
         };
 
         return resource;

@@ -1,20 +1,19 @@
 using Godot;
-using System;
 
-public partial class FreezeChanceUpgradeResource : BaseUpgradeResource
+public partial class DynamiteUpgradeResource : BaseUpgradeResource
 {
 	private static RandomNumberGenerator _rng = new();
 
-	public override string UpgradeName => "Arrow Freeze";
+	public override string UpgradeName => "Dynamite";
 
 	// -------------------------------------------------
 	// Factory method
 	// -------------------------------------------------
-	public static FreezeChanceUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
+	public static DynamiteUpgradeResource Create(UpgradeQuality quality, float luckBonus = 0f)
 	{
 		_rng.Randomize();
 
-		FreezeChanceUpgradeResource resource = new FreezeChanceUpgradeResource
+		DynamiteUpgradeResource resource = new DynamiteUpgradeResource
 		{
 			Quality = quality,
 			PercentageIncrease = RollValue(quality, _rng, luckBonus)

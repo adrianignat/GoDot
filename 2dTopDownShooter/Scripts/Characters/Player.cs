@@ -74,10 +74,19 @@ public partial class Player : Character
 		GD.Print($"Night damage! Health: {Health}");
 	}
 
+	private static readonly RandomNumberGenerator _rng = new();
+
 	internal override void TakeDamage(ushort damage)
 	{
 		// Ignore damage while dashing (invulnerable) or already dead
 		if (_isDashing || IsDead) return;
+
+		// Roll for dodge
+		if (DodgeChance > 0 && _rng.Randf() * 100f < DodgeChance)
+		{
+			// Dodged! Could add visual feedback here
+			return;
+		}
 
 		base.TakeDamage(damage);
 	}
@@ -120,7 +129,21 @@ public partial class Player : Character
 				bow.BurnChance += upgrade.PercentageIncrease;
 				break;
 			case ArrowSplitUpgradeOption:
-				bow.ArrowSplitLevel += 1;
+				bow.ArrowSplitChance += upgrade.PercentageIncrease;
+				break;
+			case MagnetUpgradeResource:
+				var magnetShape = GetMagnetShape();
+				float newMagnetRadius = magnetShape.Radius * (1 + upgrade.PercentageIncrease / 100f);
+				magnetShape.Radius = Mathf.Min(newMagnetRadius, MaxMagnetRadius);
+				break;
+			case DynamiteUpgradeResource:
+				var dynamiteThrower = GetDynamiteThrower();
+				// Add to bonus blast radius (capped at max)
+				float addedRadius = GameConstants.PlayerDynamiteBlastRadius * (upgrade.PercentageIncrease / 100f);
+				dynamiteThrower.BonusBlastRadius = Mathf.Min(
+					dynamiteThrower.BonusBlastRadius + addedRadius,
+					MaxDynamiteBlastRadius - GameConstants.PlayerDynamiteBlastRadius
+				);
 				break;
 		}
 	}

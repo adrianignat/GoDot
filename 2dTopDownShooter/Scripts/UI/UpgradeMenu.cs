@@ -116,7 +116,7 @@ public partial class UpgradeMenu : Control
 
 		ClearOptions();
 
-		var upgrades = UpgradeFactory.CreateUpgradeRoll(UpgradeOptionCount);
+		var upgrades = UpgradeFactory.CreateUpgradeRoll(UpgradeOptionCount, Game.Instance.Player.LuckLevel);
 		var options = new List<UpgradeOption>();
 
 		for (int i = 0; i < upgrades.Count; i++)
