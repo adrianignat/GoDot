@@ -185,10 +185,6 @@ texture_region_size = Vector2i(32, 32)
 0:0/0/texture_origin = Vector2i(0, 10)
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_iq78s"]
-vertices = PackedVector2Array(16, -16, 16, 10.6640625, 10.6640625, 10.6640625, 10.6640625, -10.6640625, -10.6640625, -16, -10.6640625, -10.6640625, 16, 16, -10.6640625, 16, -10.6640625, 10.6640625, -16, 16, -16, -16)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 0, 3, 5), PackedInt32Array(2, 1, 6, 7), PackedInt32Array(8, 2, 7, 9), PackedInt32Array(8, 9, 10, 5), PackedInt32Array(4, 5, 10)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-16, -16, -10.666666, -16, 16, -16, 10.666668, -10.666666, -10.666666, -10.666666, -10.666666, 10.666668, 10.666668, 10.666668, 10.666668, -10.666666, 16, -16, 16, 10.666668, 16, 16, -10.666666, 16, -16, 16)])
-agent_radius = 0.0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vmb8g"]
 texture = ExtResource("16_i486u")
