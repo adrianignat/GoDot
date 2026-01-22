@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://dgwwxedlws2fb"]
+
+[ext_resource type="Texture2D" uid="uid://ddjtwu8fkip4c" path="res://Sprites/Buildings/Blue Buildings/Monastery.png" id="1_mnjvf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_monastery"]
+size = Vector2(127, 108)
+
+[node name="Monastery" type="StaticBody2D"]
+visibility_layer = 2
+y_sort_enabled = true
+collision_layer = 8
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 4)
+shape = SubResource("RectangleShape2D_monastery")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+y_sort_enabled = true
+position = Vector2(0, -45)
+texture = ExtResource("1_mnjvf")

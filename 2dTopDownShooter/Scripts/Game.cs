@@ -1,3 +1,4 @@
+using dTopDownShooter.Scripts.Events;
 using dTopDownShooter.Scripts.UI;
 using Godot;
 
@@ -42,6 +43,9 @@ namespace dTopDownShooter.Scripts
 		public DayNightManager DayNightManager { get; private set; }
 		private DayNightUI _dayNightUI;
 		private ShelterMarker _shelterMarker;
+
+		// Events system
+		public EventsManager EventsManager { get; private set; }
 
 		public static Game Instance
 		{
@@ -119,6 +123,11 @@ namespace dTopDownShooter.Scripts
 			_shelterMarker.Name = "ShelterMarker";
 			AddChild(_shelterMarker);
 			_shelterMarker.SetDayNightManager(DayNightManager);
+
+			// Create EventsManager
+			EventsManager = new EventsManager();
+			EventsManager.Name = "EventsManager";
+			AddChild(EventsManager);
 		}
 
 		public void ApplyGameMode()
@@ -247,5 +256,8 @@ namespace dTopDownShooter.Scripts
 
 		[Signal]
 		public delegate void NightDamageTickEventHandler();
+
+		[Signal]
+		public delegate void MonkHealedEventHandler(ushort healAmount);
 	}
 }

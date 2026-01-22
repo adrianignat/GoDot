@@ -315,6 +315,16 @@ namespace dTopDownShooter.Scripts
 				dynamite.QueueFree();
 			}
 
+			// Remove all allies
+			var alliesNodes = GetTree().GetNodesInGroup(GameConstants.AlliesGroup);
+			foreach (Node ally in alliesNodes)
+			{
+				ally.QueueFree();
+			}
+
+			// Cleanup event entities
+			Game.Instance.EventsManager?.CleanupAllEventEntities();
+
 			GD.Print("Cleaned up entities for day transition");
 		}
 

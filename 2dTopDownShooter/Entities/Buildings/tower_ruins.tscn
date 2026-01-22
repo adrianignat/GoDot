@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://4oq6xvox7ntc"]
 
-[ext_resource type="Script" path="res://Scripts/Objects/TowerRuins.cs" id="1_4n1mu"]
+[ext_resource type="Script" uid="uid://c5eyucqj8c1va" path="res://Scripts/Objects/TowerRuins.cs" id="1_4n1mu"]
 [ext_resource type="Texture2D" uid="uid://y74abucwpswm" path="res://Sprites/Buildings/Tower/Tower_Destroyed.png" id="2_f7ucc"]
 [ext_resource type="Texture2D" uid="uid://ce4lhvhiwjy6u" path="res://Sprites/Buildings/Tower/Tower_Construction.png" id="3_dx55q"]
 [ext_resource type="Texture2D" uid="uid://v8qaoo84bsug" path="res://Sprites/Buildings/Tower/Tower_Blue.png" id="4_slq3l"]
@@ -30,10 +30,10 @@ position = Vector2(0.5, -1.5)
 shape = SubResource("RectangleShape2D_collision")
 
 [node name="WorkerSpawnPoint" type="Marker2D" parent="."]
-position = Vector2(156, 132)
+position = Vector2(113, 138)
 
 [node name="WorkerWorkPoint" type="Marker2D" parent="."]
-position = Vector2(72, 81)
+position = Vector2(28, 79)
 
 [node name="ArcherSpawnPoint" type="Marker2D" parent="."]
 position = Vector2(0, -50)

@@ -56,6 +56,7 @@ public partial class Player : Character
 		Game.Instance.GoldAcquired += AcquireGold;
 		Game.Instance.UpgradeSelected += OnUpgradeSelected;
 		Game.Instance.NightDamageTick += OnNightDamageTick;
+		Game.Instance.MonkHealed += OnMonkHealed;
 	}
 
 	public override void _Notification(int what)
@@ -76,6 +77,21 @@ public partial class Player : Character
 		// Take damage from the night
 		TakeDamage(GameConstants.PlayerNightDamage);
 		GD.Print($"Night damage! Health: {Health}");
+	}
+
+	private void OnMonkHealed(ushort healAmount)
+	{
+		if (IsDead) return;
+
+		// Don't heal over max health
+		ushort newHealth = (ushort)Mathf.Min(Health + healAmount, MaxHealth);
+		ushort actualHeal = (ushort)(newHealth - Health);
+
+		if (actualHeal > 0)
+		{
+			Health = newHealth;
+			GD.Print($"[Player] Healed by monk for {actualHeal} HP (now at {Health}/{MaxHealth})");
+		}
 	}
 
 	private static readonly RandomNumberGenerator _rng = new();

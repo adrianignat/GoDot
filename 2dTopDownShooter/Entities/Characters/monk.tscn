@@ -1,8 +1,9 @@
-[gd_scene load_steps=27 format=3 uid="uid://0n83ag04ks17"]
+[gd_scene load_steps=28 format=3 uid="uid://0n83ag04ks17"]
 
 [ext_resource type="Texture2D" uid="uid://bjh4c2bo2y102" path="res://Sprites/Characters/Knights/Monk/Idle.png" id="1_2xgcg"]
 [ext_resource type="Texture2D" uid="uid://dib3ibyc0tman" path="res://Sprites/Characters/Knights/Monk/Heal.png" id="1_dr32i"]
 [ext_resource type="Texture2D" uid="uid://4fdy6eej5mva" path="res://Sprites/Characters/Knights/Monk/Run.png" id="2_c6s4s"]
+[ext_resource type="Script" path="res://Scripts/Characters/Allies/Monk.cs" id="3_monk"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lbrxg"]
 atlas = ExtResource("1_dr32i")
@@ -124,7 +125,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_cc2rw")
 }],
-"loop": true,
+"loop": false,
 "name": &"heal",
 "speed": 10.0
 }, {
@@ -174,6 +175,13 @@ radius = 22.0
 height = 60.0
 
 [node name="Monk" type="CharacterBody2D"]
+y_sort_enabled = true
+collision_layer = 8
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("3_monk")
+Speed = 180.0
+Health = 150
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_qsmqc")
@@ -182,3 +190,8 @@ autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_gxy26")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 25.0
+avoidance_enabled = false
+radius = 30.0

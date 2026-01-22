@@ -195,6 +195,25 @@ namespace dTopDownShooter.Scripts
 		public const string ArrowsGroup = "arrows";
 		public const string DynamiteGroup = "dynamite";
 		public const string ValidSpawnLocationGroup = "validSpawnLocation";
+		public const string AlliesGroup = "allies";
+
+		#endregion
+
+		#region Events
+
+		public const float EscortEventTriggerDelay = 30f;         // seconds after day starts
+		public const float EventInteractionRadius = 100f;         // pixels to interact with event
+		public const float EventBuildingMinDistance = 500f;       // min distance between event buildings
+
+		#endregion
+
+		#region Monk (Ally)
+
+		public const float MonkHealInterval = 5f;                 // seconds between heals
+		public const ushort MonkHealAmount = 15;                  // HP restored per heal
+		public const float MonkFollowDistance = 80f;              // pixels from player
+		public const float MonkMoveSpeed = 180f;                  // pixels/sec (slightly slower than player)
+		public const ushort MonkHealth = 150;                     // HP
 
 		#endregion
 	}

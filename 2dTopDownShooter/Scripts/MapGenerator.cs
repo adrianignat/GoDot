@@ -28,12 +28,17 @@ namespace dTopDownShooter.Scripts
 		// Quest buildings
 		private const string HouseRuinsPath = "res://Entities/Buildings/house_ruins.tscn";
 		private const string TowerRuinsPath = "res://Entities/Buildings/tower_ruins.tscn";
+		private const string MonastaryRuinsPath = "res://Entities/Buildings/monastary_ruins.tscn";
+		private const string MonasteryPath = "res://Entities/Buildings/monastery.tscn";
 
 		private Random _random;
 		private List<Vector2> _housePositions = new();
 		private List<StaticBody2D> _houseBodies = new();
+		private List<Vector2> _buildingSpawnMarkers = new();
 		private HouseRuins _houseRuinsInstance;
 		private TowerRuins _towerRuinsInstance;
+		private MonastaryRuins _monastaryRuinsInstance;
+		private Node2D _monasteryInstance;
 
 
 	
@@ -42,8 +47,9 @@ namespace dTopDownShooter.Scripts
 			_random = new Random();
 			_housePositions = new List<Vector2>();
 			_houseBodies = new List<StaticBody2D>();
+			_buildingSpawnMarkers = new List<Vector2>();
 
-				GenerateMap();
+			GenerateMap();
 		}
 
 		public void Regenerate()
@@ -59,8 +65,11 @@ namespace dTopDownShooter.Scripts
 			// Reset state
 			_housePositions.Clear();
 			_houseBodies.Clear();
+			_buildingSpawnMarkers.Clear();
 			_houseRuinsInstance = null;
 			_towerRuinsInstance = null;
+			_monastaryRuinsInstance = null;
+			_monasteryInstance = null;
 
 			// Generate new map
 			CallDeferred(nameof(GenerateMapDeferred));
@@ -76,6 +85,7 @@ namespace dTopDownShooter.Scripts
 			PlaceMapPieces();
 			SpawnHouseRuins();
 			SpawnTowerRuins();
+			// MonastaryRuins is spawned dynamically by EscortEvent when needed
 		}
 
 		private void PlaceMapPieces()
@@ -168,6 +178,9 @@ namespace dTopDownShooter.Scripts
 
 			// Track house positions for shelter system
 			CollectHousesFromPiece(piece);
+
+			// Collect building spawn markers
+			CollectBuildingSpawnMarkers(piece);
 		}
 
 
@@ -208,6 +221,26 @@ namespace dTopDownShooter.Scripts
 			AddChild(_towerRuinsInstance);
 		}
 
+		/// <summary>
+		/// Spawn monastary ruins at a specific position. Called by EscortEvent.
+		/// </summary>
+		public MonastaryRuins SpawnMonastaryRuinsAt(Vector2 position)
+		{
+			var monastaryRuinsScene = GD.Load<PackedScene>(MonastaryRuinsPath);
+			if (monastaryRuinsScene == null)
+			{
+				GD.PrintErr($"Failed to load monastary ruins: {MonastaryRuinsPath}");
+				return null;
+			}
+
+			_monastaryRuinsInstance = monastaryRuinsScene.Instantiate<MonastaryRuins>();
+			_monastaryRuinsInstance.Position = position;
+			AddChild(_monastaryRuinsInstance);
+
+			GD.Print($"[MapGenerator] Spawned monastary ruins at {position}");
+			return _monastaryRuinsInstance;
+		}
+
 		private void CollectHousesFromPiece(Node2D piece)
 		{
 			foreach (Node child in piece.GetChildren())
@@ -224,6 +257,66 @@ namespace dTopDownShooter.Scripts
 					}
 				}
 			}
+		}
+
+		private void CollectBuildingSpawnMarkers(Node2D piece)
+		{
+			var buildingSpawns = piece.GetNodeOrNull<Node2D>("BuildingSpawns");
+			if (buildingSpawns == null)
+				return;
+
+			foreach (Node child in buildingSpawns.GetChildren())
+			{
+				if (child is Marker2D marker)
+				{
+					Vector2 worldPos = piece.Position + marker.Position;
+					_buildingSpawnMarkers.Add(worldPos);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get all building spawn marker positions from map pieces.
+		/// </summary>
+		public List<Vector2> GetBuildingSpawnMarkers()
+		{
+			return new List<Vector2>(_buildingSpawnMarkers);
+		}
+
+		/// <summary>
+		/// Get a random building spawn marker position that is at least minDistance from a given position.
+		/// </summary>
+		public Vector2? GetSpawnMarkerAwayFrom(Vector2 position, float minDistance)
+		{
+			var candidates = _buildingSpawnMarkers.FindAll(m => m.DistanceTo(position) >= minDistance);
+			if (candidates.Count == 0)
+			{
+				// Fallback to any marker
+				if (_buildingSpawnMarkers.Count > 0)
+					return _buildingSpawnMarkers[_random.Next(_buildingSpawnMarkers.Count)];
+				return null;
+			}
+			return candidates[_random.Next(candidates.Count)];
+		}
+
+		/// <summary>
+		/// Spawn a monastery building at a specific position. Returns the instance.
+		/// </summary>
+		public Node2D SpawnMonasteryAt(Vector2 position)
+		{
+			var monasteryScene = GD.Load<PackedScene>(MonasteryPath);
+			if (monasteryScene == null)
+			{
+				GD.PrintErr($"Failed to load monastery: {MonasteryPath}");
+				return null;
+			}
+
+			_monasteryInstance = monasteryScene.Instantiate<Node2D>();
+			_monasteryInstance.Position = position;
+			AddChild(_monasteryInstance);
+
+			GD.Print($"[MapGenerator] Spawned monastery at {position}");
+			return _monasteryInstance;
 		}
 		
 		public Vector2 GetPlayerSpawnPosition()
@@ -269,6 +362,10 @@ namespace dTopDownShooter.Scripts
 
 		public Vector2 GetShelterPosition()
 		{
+			// If monastary ruins exists and is built, use it as shelter (highest priority)
+			if (_monastaryRuinsInstance != null && IsInstanceValid(_monastaryRuinsInstance) && _monastaryRuinsInstance.IsBuilt)
+				return _monastaryRuinsInstance.GlobalPosition;
+
 			// If house ruins is built, use it as shelter
 			if (_houseRuinsInstance != null && _houseRuinsInstance.IsBuilt)
 				return _houseRuinsInstance.GlobalPosition;
