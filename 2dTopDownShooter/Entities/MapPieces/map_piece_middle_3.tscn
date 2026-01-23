@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=4 uid="uid://cgdi4o2cribkj"]
+[gd_scene load_steps=7 format=4 uid="uid://cgdi4o2cribkj"]
 
 [ext_resource type="Script" uid="uid://b2guuwfek6lvi" path="res://Scripts/Objects/BaseMap.cs" id="1_1bnfu"]
 [ext_resource type="TileSet" uid="uid://dskgqq52rkuhh" path="res://Resources/noSpawn.tres" id="2_1bnfu"]
 [ext_resource type="PackedScene" uid="uid://mb1euaenbdro" path="res://Entities/Buildings/House.tscn" id="2_3bl16"]
 [ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Resources/WorldTileset_Day.tres" id="3_51kma"]
 [ext_resource type="TileSet" uid="uid://b46eohqiriohf" path="res://Resources/Decor.tres" id="4_1lu13"]
+[ext_resource type="TileSet" uid="uid://kgdhkrkveo1n" path="res://Resources/Hills.tres" id="5_yoxui"]
 
 [node name="map" type="Node2D"]
 y_sort_enabled = true
@@ -39,7 +40,7 @@ tile_set = ExtResource("4_1lu13")
 
 [node name="Layer_5_Hills" type="TileMapLayer" parent="."]
 y_sort_enabled = true
-tile_set = ExtResource("3_51kma")
+tile_set = ExtResource("5_yoxui")
 
 [node name="House" parent="." instance=ExtResource("2_3bl16")]
 position = Vector2(510, 1112)

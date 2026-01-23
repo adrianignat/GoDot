@@ -179,11 +179,10 @@ radius = 23.021729
 y_sort_enabled = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+modulate = Color(0.9794139, 0.29434365, 0.9987847, 1)
 sprite_frames = SubResource("SpriteFrames_ou367")
 animation = &"idle"
 autoplay = "idle"
-frame = 9
-frame_progress = 0.38609675
 script = ExtResource("2_pmaji")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

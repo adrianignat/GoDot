@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=4 uid="uid://sgw6s1hwpglx"]
+[gd_scene load_steps=7 format=4 uid="uid://sgw6s1hwpglx"]
 
 [ext_resource type="Script" uid="uid://b2guuwfek6lvi" path="res://Scripts/Objects/BaseMap.cs" id="1_wmtr8"]
 [ext_resource type="PackedScene" uid="uid://mb1euaenbdro" path="res://Entities/Buildings/House.tscn" id="2_i2cqc"]
 [ext_resource type="TileSet" uid="uid://dskgqq52rkuhh" path="res://Resources/noSpawn.tres" id="2_wmtr8"]
 [ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Resources/WorldTileset_Day.tres" id="3_6y06d"]
 [ext_resource type="TileSet" uid="uid://b46eohqiriohf" path="res://Resources/Decor.tres" id="4_ibuc0"]
+[ext_resource type="TileSet" uid="uid://kgdhkrkveo1n" path="res://Resources/Hills.tres" id="5_r0sem"]
 
 [node name="map" type="Node2D"]
 y_sort_enabled = true
@@ -41,7 +42,7 @@ tile_set = ExtResource("4_ibuc0")
 [node name="Layer_5_Hills" type="TileMapLayer" parent="."]
 y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAUABIAAQAIAAQAAAAUABMAAQAIAAUAAAARAAgAAQAIAAQAAAARAAkAAQAIAAUAAAASAAYAAQAIAAQAAAASAAcAAQAIAAUAAAAGABAAAQAGAAAAAAAGABEAAQAGAAEAAAAGABIAAQAFAAIAAAAGABMAAQAFAAMAAAAHABAAAQAGAAAAAAAHABEAAQAGAAEAAAAHABIAAQAGAAIAAAAHABMAAQAGAAMAAAAIABAAAQAHAAAAAAAIABEAAQAHAAEAAAAIABIAAQAHAAIAAAAIABMAAQAHAAMAAAADAA8AAQAFAAAAAAADABAAAQAFAAEAAAADABEAAQAFAAIAAAADABIAAQAFAAMAAAAEAA8AAQAGAAAAAAAEABAAAQAGAAEAAAAEABEAAQAGAAIAAAAEABIAAQAGAAMAAAAFAA8AAQAHAAAAAAAFABAAAQAGAAEAAAAFABEAAQAGAAIAAAAFABIAAQAGAAMAAAA=")
-tile_set = ExtResource("3_6y06d")
+tile_set = ExtResource("5_r0sem")
 
 [node name="House" parent="." instance=ExtResource("2_i2cqc")]
 position = Vector2(578, 354)
