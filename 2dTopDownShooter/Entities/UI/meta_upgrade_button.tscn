@@ -1,0 +1,85 @@
+[gd_scene load_steps=6 format=3 uid="uid://cmrvymjqli8vs"]
+
+[ext_resource type="Script" uid="uid://bri87u6ekd8k2" path="res://Scripts/UI/MetaUpgradeButton.cs" id="1_00dsp"]
+[ext_resource type="Texture2D" uid="uid://cptislnnvvftq" path="res://Sprites/UI/Buttons/Button_Blue_9Slides.png" id="2_urkic"]
+[ext_resource type="Texture2D" uid="uid://brqt11ihyxaok" path="res://Sprites/UI/Buttons/Button_Hover_9Slides.png" id="3_fqokt"]
+[ext_resource type="Texture2D" uid="uid://bag8cboecxrwo" path="res://Sprites/UI/Buttons/Button_Blue_9Slides_Pressed.png" id="4_do63u"]
+[ext_resource type="FontFile" uid="uid://bn5q2n7epas52" path="res://PirataOne-Regular.ttf" id="5_fqokt"]
+
+[node name="MetaUpgradeButton" type="Button"]
+texture_filter = 1
+custom_minimum_size = Vector2(192, 192)
+offset_right = 8.0
+offset_bottom = 8.0
+size_flags_horizontal = 3
+flat = true
+script = ExtResource("1_00dsp")
+NormalTexture = ExtResource("2_urkic")
+HoverTexture = ExtResource("3_fqokt")
+PressedTexture = ExtResource("4_do63u")
+
+[node name="Background" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(192, 192)
+layout_mode = 0
+offset_top = -2.0
+offset_right = 40.0
+offset_bottom = 38.0
+mouse_filter = 2
+texture = ExtResource("2_urkic")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Content" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(192, 192)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NameMargin" type="MarginContainer" parent="Content"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="NameLabel" type="Label" parent="Content/NameMargin"]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.75686276)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_fqokt")
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+
+[node name="CostMargin" type="MarginContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="CostLabel" type="Label" parent="Content/CostMargin"]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.75686276)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_fqokt")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BonusMargin" type="MarginContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 12
+
+[node name="BonusLabel" type="Label" parent="Content/BonusMargin"]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.75686276)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_fqokt")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1

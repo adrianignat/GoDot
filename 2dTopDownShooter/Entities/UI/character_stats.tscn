@@ -1,0 +1,330 @@
+[gd_scene load_steps=13 format=3 uid="uid://6xo0valclr5a"]
+
+[ext_resource type="Texture2D" uid="uid://brsowqocmtamq" path="res://Resources/Paper/special_paper_TopLeft.tres" id="1_jdawk"]
+[ext_resource type="Script" uid="uid://bko7vgmuok44j" path="res://Entities/UI/CharacterStatsUI.cs" id="1_re3wf"]
+[ext_resource type="Script" uid="uid://vidpwf08qo1k" path="res://Scripts/UI/SpecialPaper9Slice.cs" id="2_vdkk6"]
+[ext_resource type="Texture2D" uid="uid://c1y58525rlgos" path="res://Resources/Paper/special_paper_TopMiddle.tres" id="2_vvmmm"]
+[ext_resource type="Texture2D" uid="uid://cldjev303b71r" path="res://Resources/Paper/special_paper_TopRight.tres" id="3_72xrh"]
+[ext_resource type="Texture2D" uid="uid://brpyb2pgy51j2" path="res://Resources/Paper/special_paper_LeftMiddle.tres" id="4_vvmmm"]
+[ext_resource type="Texture2D" uid="uid://djiu6x4t7l63d" path="res://Resources/Paper/special_paper_Middle.tres" id="5_72xrh"]
+[ext_resource type="Texture2D" uid="uid://d2mlawvkk7ud5" path="res://Resources/Paper/special_paper_RightMiddle.tres" id="6_wke2d"]
+[ext_resource type="Texture2D" uid="uid://jy5qku48sgy5" path="res://Resources/Paper/special_paper_BottomLeft.tres" id="7_qn2py"]
+[ext_resource type="Texture2D" uid="uid://b4j7tuy5c5ns0" path="res://Resources/Paper/special_paper_Bottom.tres" id="8_vvqwu"]
+[ext_resource type="Texture2D" uid="uid://bultagi5vu8i" path="res://Resources/Paper/special_paper_BottomRight.tres" id="9_f0jpd"]
+[ext_resource type="FontFile" uid="uid://bn5q2n7epas52" path="res://PirataOne-Regular.ttf" id="10_0otnk"]
+
+[node name="CharacterStats" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_re3wf")
+
+[node name="AnchorBL" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PanelRoot" type="Control" parent="AnchorBL"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SpecialPaper" type="Control" parent="AnchorBL/PanelRoot" node_paths=PackedStringArray("TopLeft", "Top", "TopRight", "Left", "Center", "Right", "BottomLeft", "Bottom", "BottomRight")]
+custom_minimum_size = Vector2(260, 360)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_vdkk6")
+TopLeft = NodePath("TopLeft")
+Top = NodePath("Top")
+TopRight = NodePath("TopRight")
+Left = NodePath("Left")
+Center = NodePath("Center")
+Right = NodePath("Right")
+BottomLeft = NodePath("BottomLeft")
+Bottom = NodePath("Bottom")
+BottomRight = NodePath("BottomRight")
+
+[node name="TopLeft" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_jdawk")
+stretch_mode = 2
+
+[node name="Top" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_vvmmm")
+
+[node name="TopRight" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("3_72xrh")
+stretch_mode = 2
+
+[node name="Left" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("4_vvmmm")
+
+[node name="Center" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("5_72xrh")
+stretch_mode = 1
+
+[node name="Right" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("6_wke2d")
+
+[node name="BottomLeft" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("7_qn2py")
+stretch_mode = 2
+
+[node name="Bottom" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("8_vvqwu")
+
+[node name="BottomRight" type="TextureRect" parent="AnchorBL/PanelRoot/SpecialPaper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("9_f0jpd")
+
+[node name="Content" type="MarginContainer" parent="AnchorBL/PanelRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="AnchorBL/PanelRoot/Content"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="AnchorBL/PanelRoot/Content/VBox"]
+texture_filter = 1
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 32
+text = "Character Stats"
+
+[node name="StatsRow_Health" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_Health"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "Max Health"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_Health"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "100"
+horizontal_alignment = 2
+
+[node name="StatsRow_Damage" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_Damage"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "Damage"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_Damage"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "20"
+horizontal_alignment = 2
+
+[node name="StatsRow_CritChance" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_CritChance"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "Crit Chance"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_CritChance"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "10%"
+horizontal_alignment = 2
+
+[node name="StatsRow_CritDamage" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_CritDamage"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "Crit Damage"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_CritDamage"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "160%"
+horizontal_alignment = 2
+
+[node name="StatsRow_MoveSpeed" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_MoveSpeed"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "Move Speed"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_MoveSpeed"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "1"
+horizontal_alignment = 2
+
+[node name="StatsRow_AttackSpeed" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_AttackSpeed"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "Attack Speed"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_AttackSpeed"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "1"
+horizontal_alignment = 2
+
+[node name="StatsRow_Armor" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_Armor"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "Armor"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_Armor"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="StatsRow_XPGain" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_XPGain"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "XP Gain"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_XPGain"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "0%"
+horizontal_alignment = 2
+
+[node name="StatsRow_HPGen" type="HBoxContainer" parent="AnchorBL/PanelRoot/Content/VBox"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_HPGen"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "HP Generation"
+
+[node name="Value" type="Label" parent="AnchorBL/PanelRoot/Content/VBox/StatsRow_HPGen"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_0otnk")
+theme_override_font_sizes/font_size = 18
+text = "1/min"
+horizontal_alignment = 2
