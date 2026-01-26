@@ -13,6 +13,7 @@ size = Vector2(98.5, 79)
 radius = 130.0
 
 [node name="GoldmineRuins" type="Node2D"]
+y_sort_enabled = true
 script = ExtResource("1_vgd42")
 DestroyedTexture = ExtResource("2_3l8r6")
 ConstructionTexture = ExtResource("3_rdgpw")

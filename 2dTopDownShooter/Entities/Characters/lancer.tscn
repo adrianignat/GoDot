@@ -289,4 +289,5 @@ animation = &"idle"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(0.8, 0.8)
 shape = SubResource("CapsuleShape2D_afg37")

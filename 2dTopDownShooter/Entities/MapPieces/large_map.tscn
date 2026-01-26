@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=4 uid="uid://blajm32tdwp1b"]
+[gd_scene load_steps=8 format=4 uid="uid://blajm32tdwp1b"]
 
 [ext_resource type="Texture2D" uid="uid://qthyj17wkioa" path="res://Sprites/Water.png" id="1_maiyj"]
 [ext_resource type="TileSet" uid="uid://dvm3cyrdxm23f" path="res://Resources/WorldTileset_Day.tres" id="2_uoalo"]
-[ext_resource type="PackedScene" uid="uid://dkb0ngx8tvryr" path="res://Entities/Buildings/barracks_ruins.tscn" id="3_yn4ca"]
-[ext_resource type="PackedScene" uid="uid://dufa42y6ppjcy" path="res://Entities/Buildings/castle_ruins.tscn" id="4_wfl6m"]
-[ext_resource type="PackedScene" uid="uid://5l2ee7oh4g2i" path="res://Entities/Buildings/monastary_ruins.tscn" id="5_yeqt1"]
+[ext_resource type="PackedScene" uid="uid://dprbppjbe2pl8" path="res://Entities/Buildings/archery_ruins.tscn" id="4_i60xo"]
+[ext_resource type="PackedScene" uid="uid://dgwwxedlws2fb" path="res://Entities/Buildings/monastery.tscn" id="5_4vl63"]
 [ext_resource type="PackedScene" uid="uid://bwo3muim8kicq" path="res://Entities/Characters/player.tscn" id="6_cuucq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_i60xo"]
@@ -56,14 +55,11 @@ y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAFAAQABgAAAAAAAAA=")
 tile_set = ExtResource("2_uoalo")
 
-[node name="BarracksRuins" parent="." instance=ExtResource("3_yn4ca")]
-position = Vector2(977, 794)
+[node name="ArcheryRuins" parent="." instance=ExtResource("4_i60xo")]
+position = Vector2(718, 268)
 
-[node name="CastleRuins" parent="." instance=ExtResource("4_wfl6m")]
-position = Vector2(292, 860)
-
-[node name="MonastaryRuins" parent="." instance=ExtResource("5_yeqt1")]
-position = Vector2(770, 301)
+[node name="Monastery" parent="." instance=ExtResource("5_4vl63")]
+position = Vector2(1064, 301)
 
 [node name="Player" parent="." instance=ExtResource("6_cuucq")]
-position = Vector2(347, 570)
+position = Vector2(958, 314)

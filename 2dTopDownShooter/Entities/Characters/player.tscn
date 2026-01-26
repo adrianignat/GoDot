@@ -9,13 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://c7867x5vk3npg" path="res://Entities/Projectiles/arrow.tscn" id="4_lyi1c"]
 [ext_resource type="Material" path="res://Shaders/feet_indicator_material.tres" id="15_feet"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c601n"]
-radius = 20.0
-height = 40.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_goldmagnet"]
-radius = 50.0
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_thks6"]
 atlas = ExtResource("4_agnll")
 region = Rect2(0, 0, 128, 128)
@@ -444,6 +437,13 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c601n"]
+radius = 14.999998
+height = 34.999996
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_goldmagnet"]
+radius = 50.0
+
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 y_sort_enabled = true
 scale = Vector2(0.8, 0.8)
@@ -454,10 +454,18 @@ script = ExtResource("1_3jw8b")
 Speed = 150.0
 Health = 100
 
+[node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
+y_sort_enabled = true
+scale = Vector2(0.99999994, 0.99999994)
+sprite_frames = SubResource("SpriteFrames_vnsn1")
+animation = &"idle"
+offset = Vector2(0, -15)
+
 [node name="PlayerCollisionShape" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_c601n")
 
 [node name="GoldMagnetArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 64
 collision_mask = 32
 
@@ -473,12 +481,6 @@ ObjectsPerSecond = 1.0
 [node name="DynamiteThrower" type="Node2D" parent="."]
 script = ExtResource("3_dynamite")
 Scene = ExtResource("4_dynamite")
-ObjectsPerSecond = 0.0
-
-[node name="PlayerAnimations" type="AnimatedSprite2D" parent="."]
-sprite_frames = SubResource("SpriteFrames_vnsn1")
-animation = &"idle"
-offset = Vector2(0, -15)
 
 [node name="FeetIndicatorLayer" type="CanvasLayer" parent="."]
 layer = 5

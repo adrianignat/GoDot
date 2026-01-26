@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://4oq6xvox7ntc"]
 
-[ext_resource type="Script" uid="uid://c5eyucqj8c1va" path="res://Scripts/Objects/TowerRuins.cs" id="1_4n1mu"]
+[ext_resource type="Script" uid="uid://cfmh14845nerr" path="res://Scripts/Objects/TowerRuins.cs" id="1_4n1mu"]
 [ext_resource type="Texture2D" uid="uid://y74abucwpswm" path="res://Sprites/Buildings/Tower/Tower_Destroyed.png" id="2_f7ucc"]
 [ext_resource type="Texture2D" uid="uid://ce4lhvhiwjy6u" path="res://Sprites/Buildings/Tower/Tower_Construction.png" id="3_dx55q"]
 [ext_resource type="Texture2D" uid="uid://v8qaoo84bsug" path="res://Sprites/Buildings/Tower/Tower_Blue.png" id="4_slq3l"]
@@ -12,6 +12,7 @@ size = Vector2(63, 67)
 radius = 130.0
 
 [node name="TowerRuins" type="Node2D"]
+y_sort_enabled = true
 script = ExtResource("1_4n1mu")
 DestroyedTexture = ExtResource("2_f7ucc")
 ConstructionTexture = ExtResource("3_dx55q")

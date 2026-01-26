@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bjh4c2bo2y102" path="res://Sprites/Characters/Knights/Monk/Idle.png" id="1_2xgcg"]
 [ext_resource type="Texture2D" uid="uid://dib3ibyc0tman" path="res://Sprites/Characters/Knights/Monk/Heal.png" id="1_dr32i"]
 [ext_resource type="Texture2D" uid="uid://4fdy6eej5mva" path="res://Sprites/Characters/Knights/Monk/Run.png" id="2_c6s4s"]
-[ext_resource type="Script" path="res://Scripts/Characters/Allies/Monk.cs" id="3_monk"]
+[ext_resource type="Script" uid="uid://sqo6en6fry6b" path="res://Scripts/Characters/Allies/Monk.cs" id="3_monk"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lbrxg"]
 atlas = ExtResource("1_dr32i")
@@ -177,21 +177,22 @@ height = 60.0
 [node name="Monk" type="CharacterBody2D"]
 y_sort_enabled = true
 collision_layer = 8
-collision_mask = 1
 motion_mode = 1
 script = ExtResource("3_monk")
 Speed = 180.0
 Health = 150
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_qsmqc")
 animation = &"heal"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 9.999999)
+scale = Vector2(0.8, 0.8)
 shape = SubResource("CapsuleShape2D_gxy26")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 path_desired_distance = 25.0
-avoidance_enabled = false
 radius = 30.0
