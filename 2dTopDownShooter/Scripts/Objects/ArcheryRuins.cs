@@ -3,6 +3,9 @@ using Godot;
 
 public partial class ArcheryRuins : Node2D
 {
+	[Signal]
+	public delegate void BuiltEventHandler(ArcheryRuins ruins);
+
 	[Export] public Texture2D DestroyedTexture;
 	[Export] public Texture2D ConstructionTexture;
 	[Export] public Texture2D BuiltTexture;
@@ -37,14 +40,12 @@ public partial class ArcheryRuins : Node2D
 		_workerWorkPoint = GetNode<Marker2D>("WorkerWorkPoint");
 
 		_buildTimer.Timeout += OnBuildTick;
-		_buildTimer.WaitTime = 1.0; // 1 second per tick
+		_buildTimer.WaitTime = 1.0;
 
 		_sprite.Texture = DestroyedTexture;
 
-		// fallback: load worker scene if not assigned in the inspector
 		if (WorkerScene == null)
 			WorkerScene = GD.Load<PackedScene>("res://Entities/Characters/worker.tscn");
-
 	}
 
 	public void OnPlayerDetectionEntered(Node2D body)
@@ -72,7 +73,7 @@ public partial class ArcheryRuins : Node2D
 		if (_state == ArcheryState.Destroyed)
 			StartBuilding();
 		else if (_state == ArcheryState.Building)
-			_buildTimer.Start(); // resume building
+			_buildTimer.Start();
 	}
 
 	private void OnPlayerExited()
@@ -81,12 +82,12 @@ public partial class ArcheryRuins : Node2D
 		_buildTimer.Stop();
 		SendWorkerBack();
 	}
+
 	private void SpawnOrRecallWorker()
 	{
 		if (WorkerScene == null)
 			return;
 
-		// If worker already exists and is valid, recall it to work point
 		if (GodotObject.IsInstanceValid(_workerInstance))
 		{
 			_workerInstance.MoveTo(_workerWorkPoint.GlobalPosition);
@@ -94,19 +95,20 @@ public partial class ArcheryRuins : Node2D
 			return;
 		}
 
-		// Spawn new worker
 		_workerInstance = WorkerScene.Instantiate<Worker>();
 		GetParent().CallDeferred("add_child", _workerInstance);
 		_workerInstance.GlobalPosition = _workerSpawnPoint.GlobalPosition;
 		_workerInstance.MoveTo(_workerWorkPoint.GlobalPosition);
 		_workerInstance.FaceTowards(_workerWorkPoint.GlobalPosition);
 	}
+
 	private void StartBuilding()
 	{
 		_state = ArcheryState.Building;
 		_sprite.Texture = ConstructionTexture;
 		_buildTimer.Start();
 	}
+
 	private void OnBuildTick()
 	{
 		if (!_playerInRange || _state != ArcheryState.Building)
@@ -117,20 +119,21 @@ public partial class ArcheryRuins : Node2D
 		if (_buildProgress >= BuildTimeRequired)
 			FinishBuilding();
 	}
+
 	private void FinishBuilding()
 	{
 		_state = ArcheryState.Built;
 		_sprite.Texture = BuiltTexture;
 		_buildTimer.Stop();
 		SendWorkerBack();
+		EmitSignal(SignalName.Built, this);
 	}
+
 	private void SendWorkerBack()
 	{
 		if (!GodotObject.IsInstanceValid(_workerInstance))
 			return;
 
-		// tell worker to walk back to spawn point and despawn when arrived
-		// don't null the reference - worker will be freed on despawn and IsInstanceValid will return false
 		_workerInstance.MoveToAndDespawn(_workerSpawnPoint.GlobalPosition);
 		_workerInstance.FaceTowards(_workerSpawnPoint.GlobalPosition);
 	}

@@ -1,94 +1,85 @@
 using Godot;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace dTopDownShooter.Scripts.Events
 {
-	/// <summary>
-	/// Central manager for all game events. Handles event lifecycle and cleanup.
-	/// </summary>
 	public partial class EventsManager : Node
 	{
-		private Dictionary<string, GameEvent> _activeEvents = new();
-		private List<GameEvent> _pendingEvents = new();
+		private readonly Dictionary<string, Func<GameEvent>> _eventFactories = new();
+		private readonly Dictionary<string, GameEvent> _activeEvents = new();
+		private readonly Random _random = new();
+		private string _lastEventId = string.Empty;
 
 		public override void _Ready()
 		{
-			// Connect to day/night signals
 			Game.Instance.DayStarted += OnDayStarted;
 			Game.Instance.NightStarted += OnNightStarted;
 			Game.Instance.DayCompleted += OnDayCompleted;
 
-			// Register default events
-			RegisterEscortEvent();
+			RegisterDefaultEvents();
 		}
 
-		private void RegisterEscortEvent()
+		private void RegisterDefaultEvents()
 		{
-			var escortEvent = new EscortEvent();
-			escortEvent.Name = "EscortEvent";
-			AddChild(escortEvent);
-			_pendingEvents.Add(escortEvent);
+			RegisterEventFactory("escort_monk", () => new EscortEvent());
+			RegisterEventFactory("help_knight", () => new KnightGoblinEvent());
+			RegisterEventFactory("build_archer_tower", () => new BuildArcherTowerEvent());
+			RegisterEventFactory("deplete_gold_mine", () => new DepleteGoldMineEvent());
+			RegisterEventFactory("gather_pink_sheep", () => new GatherPinkSheepEvent());
+			RegisterEventFactory("gather_lumber", () => new GatherLumberEvent());
+			RegisterEventFactory("kill_enemy_type", () => new KillEnemyTypeEvent());
 		}
 
 		public override void _Process(double delta)
 		{
-			// Update all active events
-			foreach (var eventEntry in _activeEvents.Values)
-			{
-				eventEntry.UpdateEvent(delta);
-			}
+			foreach (var gameEvent in _activeEvents.Values)
+				gameEvent.UpdateEvent(delta);
 		}
 
-		/// <summary>
-		/// Register an event to be triggered.
-		/// </summary>
-		public void RegisterEvent(GameEvent gameEvent)
+		public void RegisterEventFactory(string eventId, Func<GameEvent> factory)
+		{
+			_eventFactories[eventId] = factory;
+		}
+
+		public void StartEvent(string eventId)
+		{
+			if (!_eventFactories.TryGetValue(eventId, out var factory))
+			{
+				GD.PrintErr($"[EventsManager] Event factory not found: {eventId}");
+				return;
+			}
+
+			StartEvent(factory());
+		}
+
+		private void StartEvent(GameEvent gameEvent)
 		{
 			if (!IsInstanceValid(gameEvent))
 			{
-				GD.PrintErr("[EventsManager] Attempted to register invalid event");
+				GD.PrintErr("[EventsManager] Attempted to start invalid event instance");
+				return;
+			}
+
+			if (_activeEvents.Count > 0)
+			{
+				GD.Print("[EventsManager] Skipping event start because another event is already active");
+				gameEvent.QueueFree();
 				return;
 			}
 
 			AddChild(gameEvent);
-			_pendingEvents.Add(gameEvent);
-			GD.Print($"[EventsManager] Registered event: {gameEvent.EventId}");
+			_activeEvents[gameEvent.EventId] = gameEvent;
+			_lastEventId = gameEvent.EventId;
+			gameEvent.StartEvent();
 		}
 
-		/// <summary>
-		/// Start an event by ID.
-		/// </summary>
-		public void StartEvent(string eventId)
-		{
-			var eventToStart = _pendingEvents.Find(e => e.EventId == eventId);
-			if (eventToStart == null)
-			{
-				GD.PrintErr($"[EventsManager] Event not found: {eventId}");
-				return;
-			}
-
-			if (!eventToStart.CanStart())
-			{
-				GD.Print($"[EventsManager] Event cannot start: {eventId}");
-				return;
-			}
-
-			_pendingEvents.Remove(eventToStart);
-			_activeEvents[eventId] = eventToStart;
-			eventToStart.StartEvent();
-		}
-
-		/// <summary>
-		/// Get an active event by ID.
-		/// </summary>
 		public GameEvent GetActiveEvent(string eventId)
 		{
 			return _activeEvents.GetValueOrDefault(eventId);
 		}
 
-		/// <summary>
-		/// Check if an event is active.
-		/// </summary>
 		public bool IsEventActive(string eventId)
 		{
 			return _activeEvents.ContainsKey(eventId);
@@ -96,93 +87,54 @@ namespace dTopDownShooter.Scripts.Events
 
 		private void OnDayStarted(int dayNumber)
 		{
-			GD.Print($"[EventsManager] Day {dayNumber} started - checking for events to trigger");
+			if (_activeEvents.Count > 0 || _eventFactories.Count == 0)
+				return;
 
-			// Start pending events that can now begin
-			var eventsToStart = new List<GameEvent>();
-			foreach (var pendingEvent in _pendingEvents)
-			{
-				if (pendingEvent.CanStart())
-				{
-					eventsToStart.Add(pendingEvent);
-				}
-			}
+			var availableFactories = _eventFactories.Keys.ToList();
+			if (availableFactories.Count > 1 && !string.IsNullOrEmpty(_lastEventId))
+				availableFactories.Remove(_lastEventId);
 
-			foreach (var eventToStart in eventsToStart)
-			{
-				_pendingEvents.Remove(eventToStart);
-				_activeEvents[eventToStart.EventId] = eventToStart;
-				eventToStart.StartEvent();
-			}
+			string selectedId = availableFactories[_random.Next(availableFactories.Count)];
+			StartEvent(selectedId);
 		}
 
 		private void OnNightStarted()
 		{
-			// Fail active events when night starts (player didn't complete in time)
-			var eventsToFail = new List<GameEvent>(_activeEvents.Values);
-			foreach (var activeEvent in eventsToFail)
+			foreach (var activeEvent in _activeEvents.Values.ToList())
 			{
 				if (activeEvent.State == EventState.Active)
-				{
 					activeEvent.FailEvent();
-				}
 			}
 		}
 
 		private void OnDayCompleted(int dayNumber)
 		{
-			// Fail any active events that weren't completed (player ran out of time)
-			foreach (var activeEvent in _activeEvents.Values)
+			foreach (var activeEvent in _activeEvents.Values.ToList())
 			{
 				if (activeEvent.State == EventState.Active)
-				{
-					GD.Print($"[EventsManager] Failing active event at day end: {activeEvent.EventId}");
 					activeEvent.FailEvent();
-				}
 			}
 
-			// Cleanup completed/failed events and register new ones for next day
 			CleanupFinishedEvents();
 		}
 
 		private void CleanupFinishedEvents()
 		{
-			var eventsToRemove = new List<string>();
-
-			foreach (var (eventId, gameEvent) in _activeEvents)
+			foreach (var (eventId, gameEvent) in _activeEvents.ToList())
 			{
-				if (gameEvent.State == EventState.Completed || gameEvent.State == EventState.Failed)
-				{
-					gameEvent.CleanupEventEntities();
-					eventsToRemove.Add(eventId);
-				}
-			}
+				if (gameEvent.State != EventState.Completed && gameEvent.State != EventState.Failed)
+					continue;
 
-			foreach (var eventId in eventsToRemove)
-			{
-				var gameEvent = _activeEvents[eventId];
+				gameEvent.CleanupEventEntities();
 				_activeEvents.Remove(eventId);
 				gameEvent.QueueFree();
-				GD.Print($"[EventsManager] Cleaned up event: {eventId}");
-
-				// Register a new event of the same type for next day
-				if (eventId == "escort_monk")
-				{
-					RegisterEscortEvent();
-					GD.Print($"[EventsManager] Registered new escort event for next day");
-				}
 			}
 		}
 
-		/// <summary>
-		/// Cleanup all event entities (called during day transition).
-		/// </summary>
 		public void CleanupAllEventEntities()
 		{
 			foreach (var gameEvent in _activeEvents.Values)
-			{
 				gameEvent.CleanupEventEntities();
-			}
 		}
 	}
 }

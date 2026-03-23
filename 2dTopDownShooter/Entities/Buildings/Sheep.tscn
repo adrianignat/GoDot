@@ -1,9 +1,10 @@
-[gd_scene load_steps=29 format=3 uid="uid://kf4yahvpwqck"]
+[gd_scene load_steps=30 format=3 uid="uid://kf4yahvpwqck"]
 
 [ext_resource type="Texture2D" uid="uid://ddbadx7fdqyq" path="res://Sprites/Decor/Sheep/Sheep_Idle.png" id="1_kafa4"]
 [ext_resource type="Texture2D" uid="uid://4lijw4551tv2" path="res://Sprites/Decor/Sheep/Sheep_Grass.png" id="2_ei7uw"]
 [ext_resource type="Script" uid="uid://ccau3psaqwosg" path="res://Scripts/Objects/Sheep.cs" id="2_pmaji"]
 [ext_resource type="Texture2D" uid="uid://bwqhgo0bhlvf7" path="res://Sprites/Decor/Sheep/Sheep_Move.png" id="2_y6srv"]
+[ext_resource type="Script" path="res://Scripts/Events/EventSheep.cs" id="5_event_sheep"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ei7uw"]
 atlas = ExtResource("1_kafa4")
@@ -177,6 +178,7 @@ radius = 23.021729
 
 [node name="Sheep" type="CharacterBody2D"]
 y_sort_enabled = true
+script = ExtResource("5_event_sheep")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 modulate = Color(0.9794139, 0.29434365, 0.9987847, 1)
