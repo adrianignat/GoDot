@@ -2,36 +2,52 @@ using Godot;
 
 namespace dTopDownShooter.Scripts.UI
 {
-	public partial class ShelterMarker : Node2D
+	public partial class ShelterMarker : CanvasLayer
 	{
-		private Sprite2D _markerSprite;
+		private Control _container;
+		private Sprite2D _arrowSprite;
+		private Label _nameLabel;
 		private Label _distanceLabel;
 		private DayNightManager _dayNightManager;
 		private float _pulseTime = 0f;
-		private const float PulseSpeed = 3f;
+		private const float PulseSpeed = 2.5f;
 
 		public override void _Ready()
 		{
-			// Create marker sprite (a simple circle/indicator)
-			_markerSprite = new Sprite2D();
-			AddChild(_markerSprite);
-			CreateMarkerTexture();
+			Layer = 55;
 
-			// Distance label
+			_container = new Control();
+			_container.SetAnchorsPreset(Control.LayoutPreset.TopWide);
+			_container.CustomMinimumSize = new Vector2(0, 110);
+			_container.MouseFilter = Control.MouseFilterEnum.Ignore;
+			AddChild(_container);
+
+			_arrowSprite = new Sprite2D();
+			CreateArrowTexture();
+			_container.AddChild(_arrowSprite);
+
+			_nameLabel = new Label();
+			_nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
+			_nameLabel.AddThemeColorOverride("font_color", Colors.Gold);
+			_nameLabel.AddThemeFontSizeOverride("font_size", 17);
+			_nameLabel.AddThemeConstantOverride("outline_size", 3);
+			_nameLabel.AddThemeColorOverride("font_outline_color", Colors.Black);
+			_nameLabel.Text = "Shelter";
+			_container.AddChild(_nameLabel);
+
 			_distanceLabel = new Label();
-			_distanceLabel.Position = new Vector2(0, 50);
 			_distanceLabel.HorizontalAlignment = HorizontalAlignment.Center;
-			_distanceLabel.AddThemeColorOverride("font_color", Colors.Yellow);
+			_distanceLabel.AddThemeColorOverride("font_color", Colors.Gold);
 			_distanceLabel.AddThemeFontSizeOverride("font_size", 14);
-			AddChild(_distanceLabel);
+			_distanceLabel.AddThemeConstantOverride("outline_size", 2);
+			_distanceLabel.AddThemeColorOverride("font_outline_color", Colors.Black);
+			_container.AddChild(_distanceLabel);
 
-			// Connect to signals
 			Game.Instance.ShelterWarning += OnShelterWarning;
 			Game.Instance.DayStarted += OnDayStarted;
 			Game.Instance.PlayerEnteredShelter += OnPlayerEnteredShelter;
 
 			Visible = false;
-			ZIndex = 10;
 		}
 
 		public void SetDayNightManager(DayNightManager manager)
@@ -39,38 +55,67 @@ namespace dTopDownShooter.Scripts.UI
 			_dayNightManager = manager;
 		}
 
-		private void CreateMarkerTexture()
+		private void CreateArrowTexture()
 		{
-			// Create a simple arrow/marker texture procedurally
-			var image = Image.CreateEmpty(64, 64, false, Image.Format.Rgba8);
+			const int width = 48;
+			const int height = 64;
+			var image = Image.CreateEmpty(width, height, false, Image.Format.Rgba8);
 			image.Fill(new Color(0, 0, 0, 0));
 
-			// Draw a simple down-pointing triangle marker
-			var color = new Color(1, 0.8f, 0, 1); // Yellow/gold
+			Color baseColor = new Color(1f, 0.90f, 0.45f, 1f);
+			Color leftShade = new Color(0.86f, 0.62f, 0.16f, 1f);
+			Color rightShade = new Color(1f, 0.98f, 0.72f, 1f);
+			Color darkOutline = new Color(0.24f, 0.14f, 0.04f, 0.98f);
+			Color fletching = new Color(0.55f, 0.20f, 0.08f, 1f);
 
-			// Draw filled triangle pointing down
-			for (int y = 0; y < 32; y++)
+			for (int y = 0; y <= 28; y++)
 			{
-				int halfWidth = y / 2;
-				for (int x = 32 - halfWidth; x <= 32 + halfWidth; x++)
+				float t = y / 28.0f;
+				int halfWidth = Mathf.RoundToInt(Mathf.Lerp(2, 18, t));
+				int centerX = width / 2;
+				for (int x = centerX - halfWidth; x <= centerX + halfWidth; x++)
 				{
-					if (x >= 0 && x < 64)
-						image.SetPixel(x, y, color);
+					if (x < 0 || x >= width)
+						continue;
+
+					Color color = x < centerX ? leftShade : rightShade;
+					if (Mathf.Abs(x - centerX) <= 1)
+						color = baseColor;
+
+					bool edge = x == centerX - halfWidth || x == centerX + halfWidth || y == 0 || y == 28;
+					image.SetPixel(x, y, edge ? darkOutline : color);
 				}
 			}
 
-			// Draw outline of circle at bottom
-			for (int angle = 0; angle < 360; angle++)
+			for (int y = 20; y <= 56; y++)
 			{
-				float rad = Mathf.DegToRad(angle);
-				int x = 32 + (int)(12 * Mathf.Cos(rad));
-				int y = 44 + (int)(12 * Mathf.Sin(rad));
-				if (x >= 0 && x < 64 && y >= 0 && y < 64)
-					image.SetPixel(x, y, color);
+				for (int x = 21; x <= 27; x++)
+				{
+					Color color = x <= 23 ? leftShade : rightShade;
+					if (x == 24)
+						color = baseColor;
+					bool edge = x == 21 || x == 27;
+					image.SetPixel(x, y, edge ? darkOutline : color);
+				}
 			}
 
-			var texture = ImageTexture.CreateFromImage(image);
-			_markerSprite.Texture = texture;
+			for (int y = 44; y <= 60; y++)
+			{
+				int spread = y - 44;
+				for (int x = 24 - spread; x <= 24 - Mathf.Max(1, spread / 2); x++)
+				{
+					if (x >= 0 && x < width)
+						image.SetPixel(x, y, x == 24 - spread ? darkOutline : fletching);
+				}
+				for (int x = 24 + Mathf.Max(1, spread / 2); x <= 24 + spread; x++)
+				{
+					if (x >= 0 && x < width)
+						image.SetPixel(x, y, x == 24 + spread ? darkOutline : fletching);
+				}
+			}
+
+			_arrowSprite.Texture = ImageTexture.CreateFromImage(image);
+			_arrowSprite.Modulate = Colors.Gold;
 		}
 
 		public override void _Process(double delta)
@@ -78,37 +123,43 @@ namespace dTopDownShooter.Scripts.UI
 			if (!Visible || _dayNightManager == null)
 				return;
 
-			// Position at shelter location
-			GlobalPosition = _dayNightManager.CurrentShelterPosition + new Vector2(0, -60);
-
-			// Pulse animation
-			_pulseTime += (float)delta * PulseSpeed;
-			float scale = 1f + 0.2f * Mathf.Sin(_pulseTime);
-			_markerSprite.Scale = new Vector2(scale, scale);
-
-			// Update distance label
 			var player = Game.Instance.Player;
-			if (player != null)
-			{
-				float distance = player.GlobalPosition.DistanceTo(_dayNightManager.CurrentShelterPosition);
-				_distanceLabel.Text = $"{(int)distance}m";
+			if (player == null)
+				return;
 
-				// Change color based on distance
-				if (distance < 100)
-				{
-					_markerSprite.Modulate = Colors.Green;
-					_distanceLabel.AddThemeColorOverride("font_color", Colors.Green);
-				}
-				else if (distance < 200)
-				{
-					_markerSprite.Modulate = Colors.Yellow;
-					_distanceLabel.AddThemeColorOverride("font_color", Colors.Yellow);
-				}
-				else
-				{
-					_markerSprite.Modulate = Colors.Red;
-					_distanceLabel.AddThemeColorOverride("font_color", Colors.Red);
-				}
+			Vector2 shelterPosition = _dayNightManager.CurrentShelterPosition;
+			Vector2 direction = (shelterPosition - player.GlobalPosition).Normalized();
+			float distance = player.GlobalPosition.DistanceTo(shelterPosition);
+			float angle = direction.Angle() + Mathf.Pi / 2;
+
+			var screenSize = GetViewport().GetVisibleRect().Size;
+			float screenCenterX = screenSize.X / 2;
+			_arrowSprite.Position = new Vector2(screenCenterX, 55);
+			_nameLabel.Position = new Vector2(screenCenterX - 80, 5);
+			_nameLabel.Size = new Vector2(160, 25);
+			_distanceLabel.Position = new Vector2(screenCenterX - 50, 88);
+			_distanceLabel.Size = new Vector2(100, 20);
+
+			_arrowSprite.Rotation = angle;
+			_pulseTime += (float)delta * PulseSpeed;
+			float scale = 1f + 0.08f * Mathf.Sin(_pulseTime);
+			_arrowSprite.Scale = new Vector2(scale, scale);
+			_distanceLabel.Text = $"{(int)distance}m";
+
+			if (distance < 100)
+			{
+				_arrowSprite.Modulate = Colors.Green;
+				_distanceLabel.AddThemeColorOverride("font_color", Colors.Green);
+			}
+			else if (distance < 250)
+			{
+				_arrowSprite.Modulate = Colors.Yellow;
+				_distanceLabel.AddThemeColorOverride("font_color", Colors.Yellow);
+			}
+			else
+			{
+				_arrowSprite.Modulate = Colors.Gold;
+				_distanceLabel.AddThemeColorOverride("font_color", Colors.Gold);
 			}
 		}
 
@@ -121,12 +172,12 @@ namespace dTopDownShooter.Scripts.UI
 		private void OnDayStarted(int dayNumber)
 		{
 			Visible = false;
+			_arrowSprite.Modulate = Colors.Gold;
 		}
 
 		private void OnPlayerEnteredShelter()
 		{
-			// Brief flash then hide
-			_markerSprite.Modulate = Colors.Green;
+			_arrowSprite.Modulate = Colors.Green;
 		}
 	}
 }
