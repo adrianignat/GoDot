@@ -7,18 +7,18 @@ namespace dTopDownShooter.Scripts.Events
 {
 	public partial class GatherLumberEvent : GameEvent
 	{
-		private const int TargetLumberCount = 5;
+		private const int TargetLumberCount = 8;
+		private const int SimultaneousSpawnCount = 5;
 		private const float MinDistance = 650f;
 		private const float PickupRadius = 75f;
-		private const float DropoffRadius = 110f;
 
 		public override string EventId => "gather_lumber";
 		public override string DisplayName => "Gather Lumber";
 
 		private readonly List<LumberBundle> _bundles = new();
+		private readonly Queue<Vector2> _remainingSpawnPositions = new();
 		private MapGenerator _mapGenerator;
 		private EventMarker _eventMarker;
-		private Vector2 _dropoffPosition;
 		private int _collectedCount;
 
 		protected override void OnEventStart()
@@ -35,17 +35,9 @@ namespace dTopDownShooter.Scripts.Events
 			}
 
 			var playerPos = Game.Instance.Player?.GlobalPosition ?? _mapGenerator.GetPlayerSpawnPosition();
-			var dropoff = _mapGenerator.GetSpawnMarkerAwayFrom(playerPos, MinDistance);
-			if (!dropoff.HasValue)
-			{
-				FailEvent();
-				return;
-			}
-
-			_dropoffPosition = dropoff.Value;
-			SpawnBundles(playerPos);
-			SetObjective($"Gather {TargetLumberCount} bundles of lumber");
-			UpdateMarker();
+			PrepareSpawnQueue(playerPos);
+			SpawnAvailableLumber();
+			UpdateProgressUI();
 			_eventMarker.Show();
 		}
 
@@ -60,59 +52,62 @@ namespace dTopDownShooter.Scripts.Events
 				if (!bundle.IsCollected && bundle.GlobalPosition.DistanceTo(player.GlobalPosition) <= PickupRadius)
 					bundle.Collect();
 			}
-
-			if (_collectedCount >= TargetLumberCount && player.GlobalPosition.DistanceTo(_dropoffPosition) <= DropoffRadius)
-				CompleteEvent();
 		}
 
-		private void SpawnBundles(Vector2 playerPos)
+		private void PrepareSpawnQueue(Vector2 playerPos)
 		{
-			var markers = _mapGenerator.GetBuildingSpawnMarkers()
-				.Where(pos => pos.DistanceTo(playerPos) >= MinDistance * 0.5f)
+			var positions = _mapGenerator.GetBuildingSpawnMarkers()
+				.Where(pos => pos.DistanceTo(playerPos) >= MinDistance * 0.45f)
 				.Take(TargetLumberCount)
 				.ToList();
 
-			if (markers.Count < TargetLumberCount)
-				markers = _mapGenerator.GetBuildingSpawnMarkers().Take(TargetLumberCount).ToList();
+			if (positions.Count < TargetLumberCount)
+			{
+				positions = _mapGenerator.GetBuildingSpawnMarkers().Take(TargetLumberCount).ToList();
+			}
 
-			for (int i = 0; i < markers.Count; i++)
+			for (int i = 0; i < positions.Count; i++)
+				_remainingSpawnPositions.Enqueue(positions[i] + new Vector2((i % 2) * 28, (i % 3) * -18));
+		}
+
+		private void SpawnAvailableLumber()
+		{
+			int activeCount = _bundles.Count(b => b != null && GodotObject.IsInstanceValid(b) && !b.IsCollected);
+			while (activeCount < SimultaneousSpawnCount && _remainingSpawnPositions.Count > 0)
 			{
 				var bundle = new LumberBundle();
-				bundle.GlobalPosition = markers[i] + new Vector2(20 * i, -15 * i);
+				bundle.GlobalPosition = _remainingSpawnPositions.Dequeue();
 				bundle.Collected += OnBundleCollected;
 				_mapGenerator.AddChild(bundle);
 				_bundles.Add(bundle);
+				activeCount++;
 			}
 		}
 
 		private void OnBundleCollected(LumberBundle bundle)
 		{
 			_collectedCount++;
-			if (_collectedCount < TargetLumberCount)
+			if (_collectedCount >= TargetLumberCount)
 			{
-				SetObjective($"Gather {TargetLumberCount - _collectedCount} more bundles of lumber");
+				UpdateProgressUI();
+				CompleteEvent();
+				return;
 			}
-			else
-			{
-				SetObjective("Take the lumber to the drop-off point");
-			}
-			UpdateMarker();
+
+			SpawnAvailableLumber();
+			UpdateProgressUI();
 		}
 
-		private void UpdateMarker()
+		private void UpdateProgressUI()
 		{
+			SetObjective($"Collect lumber {_collectedCount}/{TargetLumberCount}");
 			if (_eventMarker == null)
 				return;
 
-			if (_collectedCount >= TargetLumberCount)
-			{
-				_eventMarker.Configure("Drop-off", Colors.SaddleBrown);
-				_eventMarker.SetTarget(_dropoffPosition);
-				return;
-			}
+			_eventMarker.Configure("Lumber", Colors.SaddleBrown);
+			_eventMarker.SetStatus($"Collected {_collectedCount}/{TargetLumberCount}");
 
 			var nextBundle = _bundles.FirstOrDefault(b => b != null && GodotObject.IsInstanceValid(b) && !b.IsCollected);
-			_eventMarker.Configure("Lumber", Colors.SaddleBrown);
 			if (nextBundle != null)
 				_eventMarker.SetTarget(nextBundle);
 		}

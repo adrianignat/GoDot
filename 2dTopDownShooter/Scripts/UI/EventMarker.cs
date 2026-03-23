@@ -7,6 +7,7 @@ namespace dTopDownShooter.Scripts.UI
 		private Control _container;
 		private Sprite2D _arrowSprite;
 		private Label _nameLabel;
+		private Label _statusLabel;
 		private Label _distanceLabel;
 		private float _pulseTime = 0f;
 		private const float PulseSpeed = 2f;
@@ -15,6 +16,7 @@ namespace dTopDownShooter.Scripts.UI
 		private Node2D _targetNode;
 		private Color _markerColor = Colors.Cyan;
 		private string _markerName = "Objective";
+		private string _statusText = string.Empty;
 
 		public override void _Ready()
 		{
@@ -22,12 +24,12 @@ namespace dTopDownShooter.Scripts.UI
 
 			_container = new Control();
 			_container.SetAnchorsPreset(Control.LayoutPreset.TopWide);
-			_container.CustomMinimumSize = new Vector2(0, 100);
+			_container.CustomMinimumSize = new Vector2(0, 118);
 			_container.MouseFilter = Control.MouseFilterEnum.Ignore;
 			AddChild(_container);
 
 			_arrowSprite = new Sprite2D();
-			_arrowSprite.Position = new Vector2(0, 60);
+			_arrowSprite.Position = new Vector2(0, 66);
 			CreateArrowTexture();
 			_container.AddChild(_arrowSprite);
 
@@ -39,6 +41,15 @@ namespace dTopDownShooter.Scripts.UI
 			_nameLabel.AddThemeColorOverride("font_outline_color", Colors.Black);
 			_nameLabel.Text = _markerName;
 			_container.AddChild(_nameLabel);
+
+			_statusLabel = new Label();
+			_statusLabel.HorizontalAlignment = HorizontalAlignment.Center;
+			_statusLabel.AddThemeColorOverride("font_color", Colors.White);
+			_statusLabel.AddThemeFontSizeOverride("font_size", 13);
+			_statusLabel.AddThemeConstantOverride("outline_size", 2);
+			_statusLabel.AddThemeColorOverride("font_outline_color", Colors.Black);
+			_statusLabel.Visible = false;
+			_container.AddChild(_statusLabel);
 
 			_distanceLabel = new Label();
 			_distanceLabel.HorizontalAlignment = HorizontalAlignment.Center;
@@ -53,61 +64,59 @@ namespace dTopDownShooter.Scripts.UI
 
 		private void CreateArrowTexture()
 		{
-			const int width = 48;
-			const int height = 64;
+			const int width = 52;
+			const int height = 52;
 			var image = Image.CreateEmpty(width, height, false, Image.Format.Rgba8);
 			image.Fill(new Color(0, 0, 0, 0));
 
-			Color baseColor = new Color(0.90f, 0.95f, 1f, 1f);
-			Color leftShade = new Color(0.62f, 0.72f, 0.82f, 1f);
-			Color rightShade = new Color(0.97f, 0.99f, 1f, 1f);
-			Color darkOutline = new Color(0.12f, 0.16f, 0.22f, 0.95f);
-			Color fletching = new Color(0.47f, 0.26f, 0.12f, 1f);
+			Color darkOutline = new Color(0.10f, 0.14f, 0.20f, 0.95f);
+			Color leftShade = new Color(0.63f, 0.74f, 0.86f, 1f);
+			Color rightShade = new Color(0.92f, 0.97f, 1f, 1f);
+			Color centerHighlight = new Color(1f, 1f, 1f, 0.95f);
 
-			for (int y = 0; y <= 28; y++)
+			Vector2[] pointer =
 			{
-				float t = y / 28.0f;
-				int halfWidth = Mathf.RoundToInt(Mathf.Lerp(2, 18, t));
-				int centerX = width / 2;
-				for (int x = centerX - halfWidth; x <= centerX + halfWidth; x++)
+				new Vector2(width * 0.5f, 2),
+				new Vector2(width - 4, height - 10),
+				new Vector2(width * 0.5f, height - 18),
+				new Vector2(4, height - 10)
+			};
+
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
 				{
-					if (x < 0 || x >= width)
+					var point = new Vector2(x + 0.5f, y + 0.5f);
+					if (!Geometry2D.IsPointInPolygon(point, pointer))
 						continue;
 
-					Color color = x < centerX ? leftShade : rightShade;
-					if (Mathf.Abs(x - centerX) <= 1)
-						color = baseColor;
+					bool border = false;
+					for (int oy = -1; oy <= 1 && !border; oy++)
+					{
+						for (int ox = -1; ox <= 1; ox++)
+						{
+							var sample = new Vector2(x + ox + 0.5f, y + oy + 0.5f);
+							if (!Geometry2D.IsPointInPolygon(sample, pointer))
+							{
+								border = true;
+								break;
+							}
+						}
+					}
 
-					bool edge = x == centerX - halfWidth || x == centerX + halfWidth || y == 0 || y == 28;
-					image.SetPixel(x, y, edge ? darkOutline : color);
+					Color fill = x < width / 2 ? leftShade : rightShade;
+					if (Mathf.Abs(x - width / 2f) < 3)
+						fill = centerHighlight;
+
+					image.SetPixel(x, y, border ? darkOutline : fill);
 				}
 			}
 
-			for (int y = 20; y <= 56; y++)
+			for (int y = height - 18; y < height - 8; y++)
 			{
-				for (int x = 21; x <= 27; x++)
-				{
-					Color color = x <= 23 ? leftShade : rightShade;
-					if (x == 24)
-						color = baseColor;
-					bool edge = x == 21 || x == 27;
-					image.SetPixel(x, y, edge ? darkOutline : color);
-				}
-			}
-
-			for (int y = 44; y <= 60; y++)
-			{
-				int spread = y - 44;
-				for (int x = 24 - spread; x <= 24 - Mathf.Max(1, spread / 2); x++)
-				{
-					if (x >= 0 && x < width)
-						image.SetPixel(x, y, x == 24 - spread ? darkOutline : fletching);
-				}
-				for (int x = 24 + Mathf.Max(1, spread / 2); x <= 24 + spread; x++)
-				{
-					if (x >= 0 && x < width)
-						image.SetPixel(x, y, x == 24 + spread ? darkOutline : fletching);
-				}
+				int inset = (y - (height - 18)) / 2 + 1;
+				for (int x = width / 2 - 5 + inset; x <= width / 2 + 5 - inset; x++)
+					image.SetPixel(x, y, new Color(0, 0, 0, 0));
 			}
 
 			var texture = ImageTexture.CreateFromImage(image);
@@ -132,11 +141,13 @@ namespace dTopDownShooter.Scripts.UI
 			var screenSize = viewport.GetVisibleRect().Size;
 			float screenCenterX = screenSize.X / 2;
 
-			_arrowSprite.Position = new Vector2(screenCenterX, 55);
-			_nameLabel.Position = new Vector2(screenCenterX - 80, 4);
-			_nameLabel.Size = new Vector2(160, 25);
-			_distanceLabel.Position = new Vector2(screenCenterX - 50, 88);
-			_distanceLabel.Size = new Vector2(100, 20);
+			_arrowSprite.Position = new Vector2(screenCenterX, 63);
+			_nameLabel.Position = new Vector2(screenCenterX - 90, 4);
+			_nameLabel.Size = new Vector2(180, 22);
+			_statusLabel.Position = new Vector2(screenCenterX - 120, 25);
+			_statusLabel.Size = new Vector2(240, 20);
+			_distanceLabel.Position = new Vector2(screenCenterX - 60, 92);
+			_distanceLabel.Size = new Vector2(120, 20);
 
 			Vector2 playerPos = player.GlobalPosition;
 			Vector2 direction = (targetPos - playerPos).Normalized();
@@ -147,7 +158,6 @@ namespace dTopDownShooter.Scripts.UI
 			_pulseTime += (float)delta * PulseSpeed;
 			float pulseScale = 1f + 0.08f * Mathf.Sin(_pulseTime);
 			_arrowSprite.Scale = new Vector2(pulseScale, pulseScale);
-
 			_distanceLabel.Text = $"{(int)distance}m";
 
 			Color distanceColor;
@@ -200,10 +210,21 @@ namespace dTopDownShooter.Scripts.UI
 				_distanceLabel.AddThemeColorOverride("font_color", color);
 		}
 
+		public void SetStatus(string status)
+		{
+			_statusText = status ?? string.Empty;
+			if (_statusLabel == null)
+				return;
+
+			_statusLabel.Text = _statusText;
+			_statusLabel.Visible = !string.IsNullOrWhiteSpace(_statusText);
+		}
+
 		public new void Show()
 		{
 			Visible = true;
 			_pulseTime = 0f;
+			SetStatus(_statusText);
 		}
 
 		public new void Hide()
@@ -212,3 +233,4 @@ namespace dTopDownShooter.Scripts.UI
 		}
 	}
 }
+

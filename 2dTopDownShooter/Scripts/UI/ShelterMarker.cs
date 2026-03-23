@@ -57,61 +57,59 @@ namespace dTopDownShooter.Scripts.UI
 
 		private void CreateArrowTexture()
 		{
-			const int width = 48;
-			const int height = 64;
+			const int width = 52;
+			const int height = 52;
 			var image = Image.CreateEmpty(width, height, false, Image.Format.Rgba8);
 			image.Fill(new Color(0, 0, 0, 0));
 
-			Color baseColor = new Color(1f, 0.90f, 0.45f, 1f);
-			Color leftShade = new Color(0.86f, 0.62f, 0.16f, 1f);
-			Color rightShade = new Color(1f, 0.98f, 0.72f, 1f);
 			Color darkOutline = new Color(0.24f, 0.14f, 0.04f, 0.98f);
-			Color fletching = new Color(0.55f, 0.20f, 0.08f, 1f);
+			Color leftShade = new Color(0.85f, 0.64f, 0.18f, 1f);
+			Color rightShade = new Color(1f, 0.95f, 0.60f, 1f);
+			Color centerHighlight = new Color(1f, 0.99f, 0.82f, 0.98f);
 
-			for (int y = 0; y <= 28; y++)
+			Vector2[] pointer =
 			{
-				float t = y / 28.0f;
-				int halfWidth = Mathf.RoundToInt(Mathf.Lerp(2, 18, t));
-				int centerX = width / 2;
-				for (int x = centerX - halfWidth; x <= centerX + halfWidth; x++)
+				new Vector2(width * 0.5f, 2),
+				new Vector2(width - 4, height - 10),
+				new Vector2(width * 0.5f, height - 18),
+				new Vector2(4, height - 10)
+			};
+
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
 				{
-					if (x < 0 || x >= width)
+					var point = new Vector2(x + 0.5f, y + 0.5f);
+					if (!Geometry2D.IsPointInPolygon(point, pointer))
 						continue;
 
-					Color color = x < centerX ? leftShade : rightShade;
-					if (Mathf.Abs(x - centerX) <= 1)
-						color = baseColor;
+					bool border = false;
+					for (int oy = -1; oy <= 1 && !border; oy++)
+					{
+						for (int ox = -1; ox <= 1; ox++)
+						{
+							var sample = new Vector2(x + ox + 0.5f, y + oy + 0.5f);
+							if (!Geometry2D.IsPointInPolygon(sample, pointer))
+							{
+								border = true;
+								break;
+							}
+						}
+					}
 
-					bool edge = x == centerX - halfWidth || x == centerX + halfWidth || y == 0 || y == 28;
-					image.SetPixel(x, y, edge ? darkOutline : color);
+					Color fill = x < width / 2 ? leftShade : rightShade;
+					if (Mathf.Abs(x - width / 2f) < 3)
+						fill = centerHighlight;
+
+					image.SetPixel(x, y, border ? darkOutline : fill);
 				}
 			}
 
-			for (int y = 20; y <= 56; y++)
+			for (int y = height - 18; y < height - 8; y++)
 			{
-				for (int x = 21; x <= 27; x++)
-				{
-					Color color = x <= 23 ? leftShade : rightShade;
-					if (x == 24)
-						color = baseColor;
-					bool edge = x == 21 || x == 27;
-					image.SetPixel(x, y, edge ? darkOutline : color);
-				}
-			}
-
-			for (int y = 44; y <= 60; y++)
-			{
-				int spread = y - 44;
-				for (int x = 24 - spread; x <= 24 - Mathf.Max(1, spread / 2); x++)
-				{
-					if (x >= 0 && x < width)
-						image.SetPixel(x, y, x == 24 - spread ? darkOutline : fletching);
-				}
-				for (int x = 24 + Mathf.Max(1, spread / 2); x <= 24 + spread; x++)
-				{
-					if (x >= 0 && x < width)
-						image.SetPixel(x, y, x == 24 + spread ? darkOutline : fletching);
-				}
+				int inset = (y - (height - 18)) / 2 + 1;
+				for (int x = width / 2 - 5 + inset; x <= width / 2 + 5 - inset; x++)
+					image.SetPixel(x, y, new Color(0, 0, 0, 0));
 			}
 
 			_arrowSprite.Texture = ImageTexture.CreateFromImage(image);
@@ -181,3 +179,4 @@ namespace dTopDownShooter.Scripts.UI
 		}
 	}
 }
+
