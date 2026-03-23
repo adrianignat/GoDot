@@ -10,12 +10,15 @@ namespace dTopDownShooter.Scripts.Events
 
 		public bool IsCollected { get; private set; }
 
-		private const float FollowDistance = 70f;
-		private const float FollowCatchUpDistance = 120f;
-		private const float MoveSpeed = 150f;
+		private const float StopDistance = 58f;
+		private const float ResumeDistance = 92f;
+		private const float FollowCatchUpDistance = 140f;
+		private const float MoveSpeed = 145f;
 
 		private AnimatedSprite2D _sprite;
 		private bool _delivered;
+		private bool _isMovingToPlayer;
+		private bool _lastFlipH;
 
 		public override void _Ready()
 		{
@@ -38,23 +41,48 @@ namespace dTopDownShooter.Scripts.Events
 			if (player == null)
 				return;
 
-			var direction = player.GlobalPosition - GlobalPosition;
-			var distance = direction.Length();
-			if (distance <= FollowDistance)
+			var toPlayer = player.GlobalPosition - GlobalPosition;
+			var distance = toPlayer.Length();
+
+			if (_isMovingToPlayer)
 			{
-				Velocity = Vector2.Zero;
-				_sprite?.Play("idle");
-				return;
+				if (distance <= StopDistance)
+				{
+					_isMovingToPlayer = false;
+					Velocity = Vector2.Zero;
+					if (_sprite != null)
+					{
+						_sprite.Play("idle");
+						_sprite.FlipH = _lastFlipH;
+					}
+					return;
+				}
+			}
+			else
+			{
+				if (distance <= ResumeDistance)
+				{
+					Velocity = Vector2.Zero;
+					if (_sprite != null)
+					{
+						_sprite.Play("idle");
+						_sprite.FlipH = _lastFlipH;
+					}
+					return;
+				}
+				_isMovingToPlayer = true;
 			}
 
-			var speedScale = distance > FollowCatchUpDistance ? 1.25f : 1f;
-			Velocity = direction.Normalized() * MoveSpeed * speedScale;
+			var speedScale = distance > FollowCatchUpDistance ? 1.15f : 1f;
+			Velocity = toPlayer.Normalized() * MoveSpeed * speedScale;
 			MoveAndSlide();
 
 			if (_sprite != null)
 			{
 				_sprite.Play("walk");
-				_sprite.FlipH = Velocity.X < 0;
+				if (Mathf.Abs(Velocity.X) > 5f)
+					_lastFlipH = Velocity.X < 0;
+				_sprite.FlipH = _lastFlipH;
 			}
 		}
 
@@ -64,6 +92,7 @@ namespace dTopDownShooter.Scripts.Events
 				return;
 
 			IsCollected = true;
+			_isMovingToPlayer = true;
 			EmitSignal(SignalName.Collected, this);
 		}
 

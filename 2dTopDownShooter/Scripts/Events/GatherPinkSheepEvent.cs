@@ -18,6 +18,7 @@ namespace dTopDownShooter.Scripts.Events
 		private readonly List<EventSheep> _sheep = new();
 		private MapGenerator _mapGenerator;
 		private EventMarker _eventMarker;
+		private EventPen _pen;
 		private Vector2 _dropoffPosition;
 		private int _collectedCount;
 		private int _deliveredCount;
@@ -45,9 +46,9 @@ namespace dTopDownShooter.Scripts.Events
 			}
 
 			_dropoffPosition = dropoffMarker.Value;
+			SpawnPen();
 			SpawnSheep(flockMarker.Value);
-			SetObjective($"Gather {TargetSheepCount} pink sheep");
-			UpdateMarker();
+			UpdateUI();
 			_eventMarker.Show();
 		}
 
@@ -72,6 +73,7 @@ namespace dTopDownShooter.Scripts.Events
 				{
 					_deliveredCount++;
 					sheep.MarkDelivered();
+					UpdateUI();
 				}
 			}
 
@@ -79,11 +81,29 @@ namespace dTopDownShooter.Scripts.Events
 				CompleteEvent();
 		}
 
+		private void SpawnPen()
+		{
+			_pen = new EventPen();
+			_pen.GlobalPosition = _dropoffPosition;
+			_mapGenerator.AddChild(_pen);
+		}
+
 		private void SpawnSheep(Vector2 flockPosition)
 		{
+			Vector2[] flockOffsets =
+			{
+				new Vector2(-55, -20),
+				new Vector2(0, 18),
+				new Vector2(52, -12)
+			};
+
 			for (int i = 0; i < TargetSheepCount; i++)
 			{
-				var sheepBody = _mapGenerator.SpawnSheepAt(flockPosition + new Vector2(70 * i, 30 * (i % 2)));
+				Vector2 spawnOffset = i < flockOffsets.Length
+					? flockOffsets[i]
+					: new Vector2((i - 1) * 28, (i % 2 == 0 ? -24 : 24));
+
+				var sheepBody = _mapGenerator.SpawnSheepAt(flockPosition + spawnOffset);
 				var sheep = sheepBody as EventSheep;
 				if (sheep == null)
 					continue;
@@ -96,29 +116,29 @@ namespace dTopDownShooter.Scripts.Events
 		private void OnSheepCollected(EventSheep sheep)
 		{
 			_collectedCount++;
-			if (_collectedCount < TargetSheepCount)
-				SetObjective($"Gather {TargetSheepCount - _collectedCount} more pink sheep");
-			else
-				SetObjective("Take the sheep to the drop-off point");
-			UpdateMarker();
+			UpdateUI();
 		}
 
-		private void UpdateMarker()
+		private void UpdateUI()
 		{
-			if (_eventMarker == null)
-				return;
-
-			if (_collectedCount >= TargetSheepCount)
+			if (_collectedCount < TargetSheepCount)
 			{
-				_eventMarker.Configure("Pen", Colors.HotPink);
-				_eventMarker.SetTarget(_dropoffPosition);
+				SetObjective($"Collect pink sheep {_collectedCount}/{TargetSheepCount}");
+				_eventMarker?.Configure("Pink Sheep", Colors.HotPink);
+				_eventMarker?.SetStatus($"Collected {_collectedCount}/{TargetSheepCount}");
+				var nextSheep = _sheep.FirstOrDefault(s => s != null && GodotObject.IsInstanceValid(s) && !s.IsCollected);
+				if (nextSheep != null)
+					_eventMarker?.SetTarget(nextSheep);
 				return;
 			}
 
-			var nextSheep = _sheep.FirstOrDefault(s => s != null && GodotObject.IsInstanceValid(s) && !s.IsCollected);
-			_eventMarker.Configure("Sheep", Colors.HotPink);
-			if (nextSheep != null)
-				_eventMarker.SetTarget(nextSheep);
+			SetObjective($"Bring sheep to pen {_deliveredCount}/{TargetSheepCount}");
+			_eventMarker?.Configure("Sheep Pen", Colors.HotPink);
+			_eventMarker?.SetStatus($"Penned {_deliveredCount}/{TargetSheepCount}");
+			if (_pen != null && GodotObject.IsInstanceValid(_pen))
+				_eventMarker?.SetTarget(_pen);
+			else
+				_eventMarker?.SetTarget(_dropoffPosition);
 		}
 
 		protected override void OnEventComplete()
@@ -135,6 +155,8 @@ namespace dTopDownShooter.Scripts.Events
 		{
 			if (_eventMarker != null && GodotObject.IsInstanceValid(_eventMarker))
 				_eventMarker.QueueFree();
+			if (_pen != null && GodotObject.IsInstanceValid(_pen))
+				_pen.QueueFree();
 
 			foreach (var sheep in _sheep)
 			{
@@ -144,3 +166,4 @@ namespace dTopDownShooter.Scripts.Events
 		}
 	}
 }
+
