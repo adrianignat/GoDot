@@ -11,15 +11,14 @@ namespace dTopDownShooter.Scripts.UI
 		private DayNightManager _dayNightManager;
 		private Control _dayAnnouncement;
 		private Label _dayAnnouncementLabel;
+		private ulong _announcementVersion;
 
 		public override void _Ready()
 		{
-			// Create the UI elements
 			CreateTimerUI();
 			CreateDayAnnouncement();
 			CreateShelterIndicator();
 
-			// Connect to game signals
 			Game.Instance.DayStarted += OnDayStarted;
 			Game.Instance.ShelterWarning += OnShelterWarning;
 			Game.Instance.NightStarted += OnNightStarted;
@@ -33,14 +32,12 @@ namespace dTopDownShooter.Scripts.UI
 
 		private void CreateTimerUI()
 		{
-			// Timer container in top right
 			var timerContainer = new VBoxContainer();
 			timerContainer.SetAnchorsPreset(Control.LayoutPreset.TopRight);
 			timerContainer.Position = new Vector2(-200, 10);
 			timerContainer.Size = new Vector2(190, 80);
 			AddChild(timerContainer);
 
-			// Day label
 			_dayLabel = new Label();
 			_dayLabel.Text = "Day 1";
 			_dayLabel.HorizontalAlignment = HorizontalAlignment.Right;
@@ -48,7 +45,6 @@ namespace dTopDownShooter.Scripts.UI
 			_dayLabel.AddThemeFontSizeOverride("font_size", 24);
 			timerContainer.AddChild(_dayLabel);
 
-			// Phase label
 			_phaseLabel = new Label();
 			_phaseLabel.Text = "Daylight left";
 			_phaseLabel.HorizontalAlignment = HorizontalAlignment.Right;
@@ -56,7 +52,6 @@ namespace dTopDownShooter.Scripts.UI
 			_phaseLabel.AddThemeFontSizeOverride("font_size", 16);
 			timerContainer.AddChild(_phaseLabel);
 
-			// Timer label
 			_timerLabel = new Label();
 			_timerLabel.Text = "3:00";
 			_timerLabel.HorizontalAlignment = HorizontalAlignment.Right;
@@ -67,7 +62,6 @@ namespace dTopDownShooter.Scripts.UI
 
 		private void CreateDayAnnouncement()
 		{
-			// Full screen announcement for day start
 			_dayAnnouncement = new Control();
 			_dayAnnouncement.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 			_dayAnnouncement.MouseFilter = Control.MouseFilterEnum.Ignore;
@@ -82,12 +76,13 @@ namespace dTopDownShooter.Scripts.UI
 			_dayAnnouncementLabel.VerticalAlignment = VerticalAlignment.Center;
 			_dayAnnouncementLabel.AddThemeColorOverride("font_color", Colors.White);
 			_dayAnnouncementLabel.AddThemeFontSizeOverride("font_size", 72);
+			_dayAnnouncementLabel.AddThemeConstantOverride("outline_size", 4);
+			_dayAnnouncementLabel.AddThemeColorOverride("font_outline_color", Colors.Black);
 			_dayAnnouncement.AddChild(_dayAnnouncementLabel);
 		}
 
 		private void CreateShelterIndicator()
 		{
-			// Shelter status indicator
 			_shelterIndicator = new Label();
 			_shelterIndicator.SetAnchorsPreset(Control.LayoutPreset.TopWide);
 			_shelterIndicator.Position = new Vector2(0, 100);
@@ -103,11 +98,9 @@ namespace dTopDownShooter.Scripts.UI
 			if (_dayNightManager == null || !_dayNightManager.IsStarted)
 				return;
 
-			// Update timer
 			_timerLabel.Text = _dayNightManager.GetTimeString();
 			_phaseLabel.Text = _dayNightManager.GetPhaseLabel();
 
-			// Update colors based on phase
 			switch (Game.Instance.CurrentPhase)
 			{
 				case GamePhase.Day:
@@ -124,7 +117,6 @@ namespace dTopDownShooter.Scripts.UI
 					break;
 			}
 
-			// Update shelter indicator
 			if (Game.Instance.CurrentPhase == GamePhase.ShelterWarning ||
 				Game.Instance.CurrentPhase == GamePhase.Night)
 			{
@@ -149,72 +141,61 @@ namespace dTopDownShooter.Scripts.UI
 		private void OnDayStarted(int dayNumber)
 		{
 			_dayLabel.Text = $"Day {dayNumber}";
-			ShowDayAnnouncement(dayNumber);
-		}
-
-		private async void ShowDayAnnouncement(int dayNumber)
-		{
-			_dayAnnouncementLabel.Text = $"Day {dayNumber}";
-			_dayAnnouncementLabel.Modulate = new Color(1, 1, 1, 0);
-			_dayAnnouncement.Visible = true;
-
-			// Fade in
-			var fadeIn = CreateTween();
-			fadeIn.TweenProperty(_dayAnnouncementLabel, "modulate", new Color(1, 1, 1, 1), 0.5f);
-			await ToSignal(fadeIn, Tween.SignalName.Finished);
-
-			// Hold
-			await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
-
-			// Fade out
-			var fadeOut = CreateTween();
-			fadeOut.TweenProperty(_dayAnnouncementLabel, "modulate", new Color(1, 1, 1, 0), 0.5f);
-			await ToSignal(fadeOut, Tween.SignalName.Finished);
-
-			_dayAnnouncement.Visible = false;
+			ShowAnnouncement($"Day {dayNumber}", Colors.White, 1.5f, 0.5f, 72);
 		}
 
 		private void OnShelterWarning()
 		{
-			// Flash warning
-			FlashWarning("FIND SHELTER!", Colors.Red);
+			ShowAnnouncement("FIND SHELTER!", Colors.Red, 1.0f, 0.3f, 72);
 		}
 
 		private void OnNightStarted()
 		{
-			FlashWarning("NIGHT HAS FALLEN!", Colors.Purple);
+			ShowAnnouncement("NIGHT HAS FALLEN!", Colors.Purple, 1.0f, 0.3f, 72);
 		}
 
 		private void OnPlayerEnteredShelter()
 		{
 			if (Game.Instance.CurrentPhase == GamePhase.ShelterWarning)
-			{
-				FlashWarning("SAFE!", Colors.Green);
-			}
+				ShowAnnouncement("SAFE!", Colors.Green, 1.0f, 0.3f, 72);
 		}
 
-		private async void FlashWarning(string message, Color color)
+		public async void ShowAnnouncement(string message, Color color, float holdDuration = 1.0f, float fadeDuration = 0.3f, int fontSize = 72, float delay = 0f)
 		{
+			ulong version = ++_announcementVersion;
+
+			if (delay > 0f)
+			{
+				await ToSignal(GetTree().CreateTimer(delay), SceneTreeTimer.SignalName.Timeout);
+				if (version != _announcementVersion)
+					return;
+			}
+
 			_dayAnnouncementLabel.Text = message;
 			_dayAnnouncementLabel.AddThemeColorOverride("font_color", color);
+			_dayAnnouncementLabel.AddThemeFontSizeOverride("font_size", fontSize);
 			_dayAnnouncementLabel.Modulate = new Color(1, 1, 1, 0);
 			_dayAnnouncement.Visible = true;
 
-			// Fade in
 			var fadeIn = CreateTween();
-			fadeIn.TweenProperty(_dayAnnouncementLabel, "modulate", new Color(1, 1, 1, 1), 0.3f);
+			fadeIn.TweenProperty(_dayAnnouncementLabel, "modulate", new Color(1, 1, 1, 1), fadeDuration);
 			await ToSignal(fadeIn, Tween.SignalName.Finished);
+			if (version != _announcementVersion)
+				return;
 
-			// Hold
-			await ToSignal(GetTree().CreateTimer(1.0f), SceneTreeTimer.SignalName.Timeout);
+			await ToSignal(GetTree().CreateTimer(holdDuration), SceneTreeTimer.SignalName.Timeout);
+			if (version != _announcementVersion)
+				return;
 
-			// Fade out
 			var fadeOut = CreateTween();
-			fadeOut.TweenProperty(_dayAnnouncementLabel, "modulate", new Color(1, 1, 1, 0), 0.3f);
+			fadeOut.TweenProperty(_dayAnnouncementLabel, "modulate", new Color(1, 1, 1, 0), fadeDuration);
 			await ToSignal(fadeOut, Tween.SignalName.Finished);
+			if (version != _announcementVersion)
+				return;
 
 			_dayAnnouncement.Visible = false;
 			_dayAnnouncementLabel.AddThemeColorOverride("font_color", Colors.White);
+			_dayAnnouncementLabel.AddThemeFontSizeOverride("font_size", 72);
 		}
 	}
 }
