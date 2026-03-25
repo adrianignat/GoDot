@@ -22,12 +22,16 @@ namespace dTopDownShooter.Scripts.Events
 		private const float FindDistance = 800f;
 		private const float ArenaArrivalRadius = 140f;
 		private const float KnightPickupRadius = 110f;
+		private const float StageCount = 3f;
+		private const float BossMaxHealth = 1200f;
 
 		public override string EventId => "help_knight";
 		public override string DisplayName => "Help the Knight Defeat the Ogre";
+		public override ushort CompletionRewardGold => 25;
 
 		private MapGenerator _mapGenerator;
 		private EventMarker _eventMarker;
+		protected override EventMarker QuestMarker => _eventMarker;
 		private KnightAlly _knight;
 		private Enemy _boss;
 		private readonly List<Enemy> _trapAdds = new();
@@ -64,6 +68,8 @@ namespace dTopDownShooter.Scripts.Events
 			SetObjective("Find the knight");
 			_eventMarker.Configure("Knight", Colors.OrangeRed);
 			_eventMarker.SetTarget(_knight);
+			_eventMarker.SetStatus("Stage 1/3: Find the knight");
+			_eventMarker.SetProgress(0f, StageCount);
 			_eventMarker.Show();
 		}
 
@@ -89,6 +95,8 @@ namespace dTopDownShooter.Scripts.Events
 						SetObjective("Lead the knight to the center of the arena");
 						_eventMarker.Configure("Arena", Colors.Gold);
 						_eventMarker.SetTarget(_arenaPosition);
+						_eventMarker.SetStatus("Stage 2/3: Lead the knight to the arena");
+						_eventMarker.SetProgress(1f, StageCount);
 					}
 					break;
 
@@ -101,9 +109,7 @@ namespace dTopDownShooter.Scripts.Events
 
 					if (player.GlobalPosition.DistanceTo(_arenaPosition) <= ArenaArrivalRadius &&
 						_knight.GlobalPosition.DistanceTo(_arenaPosition) <= ArenaArrivalRadius * 1.4f)
-					{
 						TriggerBossFight();
-					}
 					break;
 
 				case KnightQuestPhase.BossFight:
@@ -113,6 +119,7 @@ namespace dTopDownShooter.Scripts.Events
 						return;
 					}
 					_eventMarker.SetTarget(_boss);
+					UpdateBossProgress();
 					break;
 			}
 		}
@@ -136,6 +143,7 @@ namespace dTopDownShooter.Scripts.Events
 			_phase = KnightQuestPhase.BossFight;
 			SetObjective("Defeat the ogre");
 			_eventMarker.Configure("Ogre", Colors.Red);
+			_eventMarker.SetStatus("Stage 3/3: Defeat the ogre");
 
 			var bossScene = GD.Load<PackedScene>(BossScenePath);
 			var goblinScene = GD.Load<PackedScene>(GoblinScenePath);
@@ -166,6 +174,25 @@ namespace dTopDownShooter.Scripts.Events
 				_mapGenerator.AddChild(add);
 				_trapAdds.Add(add);
 			}
+
+			UpdateBossProgress();
+		}
+
+		private void UpdateBossProgress()
+		{
+			if (_eventMarker == null)
+				return;
+
+			if (_boss == null || !GodotObject.IsInstanceValid(_boss))
+			{
+				_eventMarker.SetProgress(2f, StageCount);
+				return;
+			}
+
+			float bossHealth = Mathf.Clamp(_boss.Health, 0f, BossMaxHealth);
+			float bossPhaseProgress = 1f - (bossHealth / BossMaxHealth);
+			_eventMarker.SetStatus($"Stage 3/3: Ogre HP {Mathf.CeilToInt(bossHealth)}/{BossMaxHealth}");
+			_eventMarker.SetProgress(2f + bossPhaseProgress, StageCount);
 		}
 
 		private void OnEnemyKilled(Enemy enemy)
@@ -173,6 +200,8 @@ namespace dTopDownShooter.Scripts.Events
 			if (_boss != null && enemy == _boss)
 			{
 				_phase = KnightQuestPhase.Completed;
+				_eventMarker?.SetStatus("Stage 3/3: Ogre defeated");
+				_eventMarker?.SetProgress(StageCount, StageCount);
 				CompleteEvent();
 			}
 		}

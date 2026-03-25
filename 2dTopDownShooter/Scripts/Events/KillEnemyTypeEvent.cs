@@ -9,13 +9,14 @@ namespace dTopDownShooter.Scripts.Events
 	{
 		private readonly (Type Type, string Label, int Count, Color Color)[] _targets =
 		{
-			(typeof(TorchGoblin), "Torch Goblins", 8, Colors.OrangeRed),
-			(typeof(TntGoblin), "TNT Goblins", 3, Colors.Goldenrod),
-			(typeof(Shaman), "Shamans", 2, Colors.DeepSkyBlue)
+			(typeof(TorchGoblin), "Torch Goblins", 16, Colors.OrangeRed),
+			(typeof(TntGoblin), "TNT Goblins", 8, Colors.Goldenrod),
+			(typeof(Shaman), "Shamans", 6, Colors.DeepSkyBlue)
 		};
 
 		public override string EventId => "kill_enemy_type";
 		public override string DisplayName => "Cull a Specific Enemy Type";
+		public override ushort CompletionRewardGold => 15;
 
 		private Type _targetType;
 		private string _targetLabel;
@@ -23,6 +24,7 @@ namespace dTopDownShooter.Scripts.Events
 		private int _currentKills;
 		private Color _markerColor;
 		private EventMarker _eventMarker;
+		protected override EventMarker QuestMarker => _eventMarker;
 
 		protected override void OnEventStart()
 		{
@@ -86,6 +88,7 @@ namespace dTopDownShooter.Scripts.Events
 			_currentKills++;
 			if (_currentKills >= _requiredKills)
 			{
+				_eventMarker?.SetProgress(_requiredKills, _requiredKills);
 				CompleteEvent();
 				return;
 			}
@@ -101,6 +104,7 @@ namespace dTopDownShooter.Scripts.Events
 
 			_eventMarker.Configure(_targetLabel, _markerColor);
 			_eventMarker.SetStatus($"Killed {_currentKills}/{_requiredKills}");
+			_eventMarker.SetProgress(_currentKills, _requiredKills);
 		}
 
 		protected override void OnEventComplete()
