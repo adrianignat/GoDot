@@ -9,16 +9,21 @@ namespace dTopDownShooter.Scripts.Events
 	{
 		private const int TargetLumberCount = 8;
 		private const int SimultaneousSpawnCount = 5;
-		private const float MinDistance = 650f;
 		private const float PickupRadius = 75f;
+		private const float SpawnClearance = 78f;
+		private const float StructureAvoidanceRadius = 140f;
+		private const int MaxSpawnAttemptsPerBundle = 40;
 
 		public override string EventId => "gather_lumber";
 		public override string DisplayName => "Gather Lumber";
+		public override ushort CompletionRewardGold => 12;
 
 		private readonly List<LumberBundle> _bundles = new();
 		private readonly Queue<Vector2> _remainingSpawnPositions = new();
+		private readonly List<Vector2> _reservedPositions = new();
 		private MapGenerator _mapGenerator;
 		private EventMarker _eventMarker;
+		protected override EventMarker QuestMarker => _eventMarker;
 		private int _collectedCount;
 
 		protected override void OnEventStart()
@@ -26,6 +31,7 @@ namespace dTopDownShooter.Scripts.Events
 			_mapGenerator = Game.Instance.MainWindow.GetNodeOrNull<MapGenerator>("MapGenerator");
 			_eventMarker = new EventMarker();
 			_eventMarker.Name = "LumberMarker";
+			_eventMarker.SetNavigationVisible(false);
 			Game.Instance.AddChild(_eventMarker);
 
 			if (_mapGenerator == null)
@@ -34,8 +40,7 @@ namespace dTopDownShooter.Scripts.Events
 				return;
 			}
 
-			var playerPos = Game.Instance.Player?.GlobalPosition ?? _mapGenerator.GetPlayerSpawnPosition();
-			PrepareSpawnQueue(playerPos);
+			PrepareSpawnQueue();
 			SpawnAvailableLumber();
 			UpdateProgressUI();
 			_eventMarker.Show();
@@ -54,20 +59,69 @@ namespace dTopDownShooter.Scripts.Events
 			}
 		}
 
-		private void PrepareSpawnQueue(Vector2 playerPos)
+		private void PrepareSpawnQueue()
 		{
-			var positions = _mapGenerator.GetBuildingSpawnMarkers()
-				.Where(pos => pos.DistanceTo(playerPos) >= MinDistance * 0.45f)
-				.Take(TargetLumberCount)
-				.ToList();
+			_reservedPositions.Clear();
 
-			if (positions.Count < TargetLumberCount)
+			for (int i = 0; i < TargetLumberCount; i++)
 			{
-				positions = _mapGenerator.GetBuildingSpawnMarkers().Take(TargetLumberCount).ToList();
+				var spawnPosition = FindValidRandomSpawnPosition();
+				if (!spawnPosition.HasValue)
+					break;
+
+				_reservedPositions.Add(spawnPosition.Value);
+				_remainingSpawnPositions.Enqueue(spawnPosition.Value);
+			}
+		}
+
+		private Vector2? FindValidRandomSpawnPosition()
+		{
+			Rect2 playableArea = _mapGenerator.GetPlayableAreaBounds().Grow(-SpawnClearance);
+			var housePositions = _mapGenerator.GetHousePositions();
+			var buildingMarkers = _mapGenerator.GetBuildingSpawnMarkers();
+
+			for (int attempt = 0; attempt < MaxSpawnAttemptsPerBundle; attempt++)
+			{
+				Vector2 candidate = new Vector2(
+					(float)GD.RandRange(playableArea.Position.X, playableArea.End.X),
+					(float)GD.RandRange(playableArea.Position.Y, playableArea.End.Y));
+
+				if (Game.Instance.IsInNoSpawnZone(candidate))
+					continue;
+
+				if (housePositions.Any(house => house.DistanceTo(candidate) < StructureAvoidanceRadius))
+					continue;
+
+				if (buildingMarkers.Any(marker => marker.DistanceTo(candidate) < StructureAvoidanceRadius))
+					continue;
+
+				if (_reservedPositions.Any(existing => existing.DistanceTo(candidate) < StructureAvoidanceRadius))
+					continue;
+
+				if (HasMapCollisionNearby(candidate, SpawnClearance))
+					continue;
+
+				return candidate;
 			}
 
-			for (int i = 0; i < positions.Count; i++)
-				_remainingSpawnPositions.Enqueue(positions[i] + new Vector2((i % 2) * 28, (i % 3) * -18));
+			return null;
+		}
+
+		private bool HasMapCollisionNearby(Vector2 position, float radius)
+		{
+			var spaceState = Game.Instance.GetWorld2D().DirectSpaceState;
+			var shape = new CircleShape2D { Radius = radius };
+			var query = new PhysicsShapeQueryParameters2D
+			{
+				Shape = shape,
+				Transform = new Transform2D(0f, position),
+				CollisionMask = GameConstants.MapCollisionLayer,
+				CollideWithBodies = true,
+				CollideWithAreas = false
+			};
+
+			var results = spaceState.IntersectShape(query, 1);
+			return results.Count > 0;
 		}
 
 		private void SpawnAvailableLumber()
@@ -106,10 +160,7 @@ namespace dTopDownShooter.Scripts.Events
 
 			_eventMarker.Configure("Lumber", Colors.SaddleBrown);
 			_eventMarker.SetStatus($"Collected {_collectedCount}/{TargetLumberCount}");
-
-			var nextBundle = _bundles.FirstOrDefault(b => b != null && GodotObject.IsInstanceValid(b) && !b.IsCollected);
-			if (nextBundle != null)
-				_eventMarker.SetTarget(nextBundle);
+			_eventMarker.SetProgress(_collectedCount, TargetLumberCount);
 		}
 
 		protected override void OnEventComplete()

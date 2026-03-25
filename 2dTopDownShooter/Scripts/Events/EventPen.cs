@@ -4,73 +4,67 @@ namespace dTopDownShooter.Scripts.Events
 {
 	public partial class EventPen : Node2D
 	{
+		private static readonly Texture2D WoodTexture = GD.Load<Texture2D>("res://Sprites/Resources/Resources/W_Idle_(NoShadow).png");
+		private static readonly Texture2D GrassTexture = GD.Load<Texture2D>("res://Sprites/Decor/Sheep/Sheep_Grass.png");
+
 		public override void _Ready()
 		{
 			ZIndex = 1;
-			AddChild(CreateFenceShadow());
-			AddChild(CreateFenceFrame());
-			AddChild(CreateGround());
+			AddChild(CreateGroundSprite());
+			CreateWoodPerimeter();
 		}
 
-		private Node2D CreateFenceFrame()
+		private Node2D CreateGroundSprite()
 		{
-			var root = new Node2D();
-			Color fence = new Color(0.63f, 0.41f, 0.20f);
-			Color post = new Color(0.44f, 0.26f, 0.10f);
-
-			root.AddChild(CreateRail(new Vector2(0, -58), new Vector2(152, 14), fence));
-			root.AddChild(CreateRail(new Vector2(0, 58), new Vector2(152, 14), fence));
-			root.AddChild(CreateRail(new Vector2(-74, 0), new Vector2(14, 132), fence));
-			root.AddChild(CreateRail(new Vector2(74, 0), new Vector2(14, 132), fence));
-
-			foreach (var pos in new[] { new Vector2(-74, -58), new Vector2(74, -58), new Vector2(-74, 58), new Vector2(74, 58) })
-				root.AddChild(CreatePost(pos, post));
-
-			return root;
+			var sprite = new Sprite2D();
+			sprite.Texture = GrassTexture;
+			sprite.Position = new Vector2(0, 18);
+			sprite.Scale = new Vector2(1.35f, 1.2f);
+			sprite.Modulate = new Color(1f, 0.92f, 1f, 0.95f);
+			return sprite;
 		}
 
-		private Node2D CreateFenceShadow()
+		private void CreateWoodPerimeter()
 		{
-			var root = new Node2D();
-			root.Modulate = new Color(0, 0, 0, 0.18f);
-			root.Position = new Vector2(8, 10);
-			root.AddChild(CreateRail(new Vector2(0, -58), new Vector2(152, 14), Colors.Black));
-			root.AddChild(CreateRail(new Vector2(0, 58), new Vector2(152, 14), Colors.Black));
-			root.AddChild(CreateRail(new Vector2(-74, 0), new Vector2(14, 132), Colors.Black));
-			root.AddChild(CreateRail(new Vector2(74, 0), new Vector2(14, 132), Colors.Black));
-			return root;
-		}
+			if (WoodTexture == null)
+				return;
 
-		private Node2D CreateGround()
-		{
-			var poly = new Polygon2D();
-			poly.Color = new Color(0.88f, 0.69f, 0.85f, 0.22f);
-			poly.Polygon = new[]
+			Vector2[] perimeter =
 			{
-				new Vector2(-58, -42),
-				new Vector2(58, -42),
-				new Vector2(58, 42),
-				new Vector2(-58, 42)
+				new Vector2(-82, -56),
+				new Vector2(0, -70),
+				new Vector2(82, -56),
+				new Vector2(-96, 6),
+				new Vector2(96, 6),
+				new Vector2(-82, 68),
+				new Vector2(0, 82),
+				new Vector2(82, 68)
 			};
-			return poly;
+
+			float[] rotations =
+			{
+				-0.22f,
+				0f,
+				0.22f,
+				-Mathf.Pi / 2f,
+				Mathf.Pi / 2f,
+				0.22f,
+				0f,
+				-0.22f
+			};
+
+			for (int i = 0; i < perimeter.Length; i++)
+				AddChild(CreateWoodPiece(perimeter[i], rotations[i]));
 		}
 
-		private static ColorRect CreateRail(Vector2 pos, Vector2 size, Color color)
+		private Node2D CreateWoodPiece(Vector2 position, float rotation)
 		{
-			var rect = new ColorRect();
-			rect.Color = color;
-			rect.Position = pos - size / 2f;
-			rect.Size = size;
-			return rect;
-		}
-
-		private static ColorRect CreatePost(Vector2 pos, Color color)
-		{
-			var rect = new ColorRect();
-			rect.Color = color;
-			rect.Position = pos - new Vector2(8, 8);
-			rect.Size = new Vector2(16, 16);
-			return rect;
+			var sprite = new Sprite2D();
+			sprite.Texture = WoodTexture;
+			sprite.Position = position;
+			sprite.Rotation = rotation;
+			sprite.Scale = new Vector2(0.92f, 0.92f);
+			return sprite;
 		}
 	}
 }

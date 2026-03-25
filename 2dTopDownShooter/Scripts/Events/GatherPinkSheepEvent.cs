@@ -14,10 +14,12 @@ namespace dTopDownShooter.Scripts.Events
 
 		public override string EventId => "gather_pink_sheep";
 		public override string DisplayName => "Gather Pink Sheep";
+		public override ushort CompletionRewardGold => 12;
 
 		private readonly List<EventSheep> _sheep = new();
 		private MapGenerator _mapGenerator;
 		private EventMarker _eventMarker;
+		protected override EventMarker QuestMarker => _eventMarker;
 		private EventPen _pen;
 		private Vector2 _dropoffPosition;
 		private int _collectedCount;
@@ -92,16 +94,16 @@ namespace dTopDownShooter.Scripts.Events
 		{
 			Vector2[] flockOffsets =
 			{
-				new Vector2(-55, -20),
-				new Vector2(0, 18),
-				new Vector2(52, -12)
+				new Vector2(-130, -70),
+				new Vector2(120, -10),
+				new Vector2(10, 125)
 			};
 
 			for (int i = 0; i < TargetSheepCount; i++)
 			{
 				Vector2 spawnOffset = i < flockOffsets.Length
 					? flockOffsets[i]
-					: new Vector2((i - 1) * 28, (i % 2 == 0 ? -24 : 24));
+					: new Vector2(GD.RandRange(-130, 130), GD.RandRange(-130, 130));
 
 				var sheepBody = _mapGenerator.SpawnSheepAt(flockPosition + spawnOffset);
 				var sheep = sheepBody as EventSheep;
@@ -126,6 +128,7 @@ namespace dTopDownShooter.Scripts.Events
 				SetObjective($"Collect pink sheep {_collectedCount}/{TargetSheepCount}");
 				_eventMarker?.Configure("Pink Sheep", Colors.HotPink);
 				_eventMarker?.SetStatus($"Collected {_collectedCount}/{TargetSheepCount}");
+				_eventMarker?.SetProgress(_collectedCount, TargetSheepCount);
 				var nextSheep = _sheep.FirstOrDefault(s => s != null && GodotObject.IsInstanceValid(s) && !s.IsCollected);
 				if (nextSheep != null)
 					_eventMarker?.SetTarget(nextSheep);
@@ -135,6 +138,7 @@ namespace dTopDownShooter.Scripts.Events
 			SetObjective($"Bring sheep to pen {_deliveredCount}/{TargetSheepCount}");
 			_eventMarker?.Configure("Sheep Pen", Colors.HotPink);
 			_eventMarker?.SetStatus($"Penned {_deliveredCount}/{TargetSheepCount}");
+			_eventMarker?.SetProgress(_deliveredCount, TargetSheepCount);
 			if (_pen != null && GodotObject.IsInstanceValid(_pen))
 				_eventMarker?.SetTarget(_pen);
 			else
@@ -166,4 +170,3 @@ namespace dTopDownShooter.Scripts.Events
 		}
 	}
 }
-
