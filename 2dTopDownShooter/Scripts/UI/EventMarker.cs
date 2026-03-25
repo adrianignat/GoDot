@@ -1,13 +1,21 @@
 using Godot;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace dTopDownShooter.Scripts.UI
 {
 	public partial class EventMarker : CanvasLayer
 	{
+		private static readonly HashSet<int> OccupiedSlots = new();
+		private const float SlotHeight = 146f;
+		private const float TopMargin = 4f;
+
 		private Control _container;
 		private Sprite2D _arrowSprite;
 		private Label _nameLabel;
 		private Label _statusLabel;
+		private ProgressBar _progressBar;
+		private Label _timerLabel;
 		private Label _distanceLabel;
 		private float _pulseTime = 0f;
 		private const float PulseSpeed = 2f;
@@ -17,6 +25,9 @@ namespace dTopDownShooter.Scripts.UI
 		private Color _markerColor = Colors.Cyan;
 		private string _markerName = "Objective";
 		private string _statusText = string.Empty;
+		private string _timerText = string.Empty;
+		private bool _navigationVisible = true;
+		private int _slotIndex = -1;
 
 		public override void _Ready()
 		{
@@ -24,12 +35,12 @@ namespace dTopDownShooter.Scripts.UI
 
 			_container = new Control();
 			_container.SetAnchorsPreset(Control.LayoutPreset.TopWide);
-			_container.CustomMinimumSize = new Vector2(0, 118);
+			_container.CustomMinimumSize = new Vector2(0, 138);
 			_container.MouseFilter = Control.MouseFilterEnum.Ignore;
 			AddChild(_container);
 
 			_arrowSprite = new Sprite2D();
-			_arrowSprite.Position = new Vector2(0, 66);
+			_arrowSprite.Position = new Vector2(0, 78);
 			CreateArrowTexture();
 			_container.AddChild(_arrowSprite);
 
@@ -50,6 +61,24 @@ namespace dTopDownShooter.Scripts.UI
 			_statusLabel.AddThemeColorOverride("font_outline_color", Colors.Black);
 			_statusLabel.Visible = false;
 			_container.AddChild(_statusLabel);
+
+			_progressBar = new ProgressBar();
+			_progressBar.MinValue = 0;
+			_progressBar.MaxValue = 1;
+			_progressBar.Value = 0;
+			_progressBar.ShowPercentage = false;
+			_progressBar.Visible = false;
+			_progressBar.Modulate = _markerColor;
+			_container.AddChild(_progressBar);
+
+			_timerLabel = new Label();
+			_timerLabel.HorizontalAlignment = HorizontalAlignment.Center;
+			_timerLabel.AddThemeColorOverride("font_color", Colors.LightSalmon);
+			_timerLabel.AddThemeFontSizeOverride("font_size", 13);
+			_timerLabel.AddThemeConstantOverride("outline_size", 2);
+			_timerLabel.AddThemeColorOverride("font_outline_color", Colors.Black);
+			_timerLabel.Visible = false;
+			_container.AddChild(_timerLabel);
 
 			_distanceLabel = new Label();
 			_distanceLabel.HorizontalAlignment = HorizontalAlignment.Center;
@@ -129,24 +158,43 @@ namespace dTopDownShooter.Scripts.UI
 			if (!Visible)
 				return;
 
+			var viewport = GetViewport();
+			var screenSize = viewport.GetVisibleRect().Size;
+			float screenCenterX = screenSize.X / 2;
+			float slotOffsetY = TopMargin + (_slotIndex < 0 ? 0f : _slotIndex * SlotHeight);
+
+			_nameLabel.Position = new Vector2(screenCenterX - 120, slotOffsetY + 4);
+			_nameLabel.Size = new Vector2(240, 22);
+			_statusLabel.Position = new Vector2(screenCenterX - 160, slotOffsetY + 25);
+			_statusLabel.Size = new Vector2(320, 20);
+			_progressBar.Position = new Vector2(screenCenterX - 95, slotOffsetY + 48);
+			_progressBar.Size = new Vector2(190, 14);
+			_timerLabel.Position = new Vector2(screenCenterX - 75, slotOffsetY + 66);
+			_timerLabel.Size = new Vector2(150, 20);
+
+			if (!_navigationVisible)
+			{
+				_arrowSprite.Visible = false;
+				_distanceLabel.Visible = false;
+				return;
+			}
+
 			var player = Game.Instance.Player;
 			if (player == null)
 				return;
 
 			Vector2 targetPos = GetTargetPosition();
 			if (targetPos == Vector2.Zero)
+			{
+				_arrowSprite.Visible = false;
+				_distanceLabel.Visible = false;
 				return;
+			}
 
-			var viewport = GetViewport();
-			var screenSize = viewport.GetVisibleRect().Size;
-			float screenCenterX = screenSize.X / 2;
-
-			_arrowSprite.Position = new Vector2(screenCenterX, 63);
-			_nameLabel.Position = new Vector2(screenCenterX - 90, 4);
-			_nameLabel.Size = new Vector2(180, 22);
-			_statusLabel.Position = new Vector2(screenCenterX - 120, 25);
-			_statusLabel.Size = new Vector2(240, 20);
-			_distanceLabel.Position = new Vector2(screenCenterX - 60, 92);
+			_arrowSprite.Visible = true;
+			_distanceLabel.Visible = true;
+			_arrowSprite.Position = new Vector2(screenCenterX, slotOffsetY + 84);
+			_distanceLabel.Position = new Vector2(screenCenterX - 60, slotOffsetY + 110);
 			_distanceLabel.Size = new Vector2(120, 20);
 
 			Vector2 playerPos = player.GlobalPosition;
@@ -180,6 +228,23 @@ namespace dTopDownShooter.Scripts.UI
 			return _targetPosition ?? Vector2.Zero;
 		}
 
+		private int AcquireSlot()
+		{
+			int slot = 0;
+			while (OccupiedSlots.Contains(slot))
+				slot++;
+			OccupiedSlots.Add(slot);
+			return slot;
+		}
+
+		private void ReleaseSlot()
+		{
+			if (_slotIndex < 0)
+				return;
+			OccupiedSlots.Remove(_slotIndex);
+			_slotIndex = -1;
+		}
+
 		public void SetTarget(Vector2 position)
 		{
 			_targetPosition = position;
@@ -190,6 +255,15 @@ namespace dTopDownShooter.Scripts.UI
 		{
 			_targetNode = node;
 			_targetPosition = null;
+		}
+
+		public void SetNavigationVisible(bool visible)
+		{
+			_navigationVisible = visible;
+			if (_arrowSprite != null)
+				_arrowSprite.Visible = visible;
+			if (_distanceLabel != null)
+				_distanceLabel.Visible = visible;
 		}
 
 		public void Configure(string name, Color color)
@@ -208,6 +282,9 @@ namespace dTopDownShooter.Scripts.UI
 
 			if (_distanceLabel != null)
 				_distanceLabel.AddThemeColorOverride("font_color", color);
+
+			if (_progressBar != null)
+				_progressBar.Modulate = color;
 		}
 
 		public void SetStatus(string status)
@@ -220,17 +297,62 @@ namespace dTopDownShooter.Scripts.UI
 			_statusLabel.Visible = !string.IsNullOrWhiteSpace(_statusText);
 		}
 
+		public void SetTimer(string timerText)
+		{
+			_timerText = timerText ?? string.Empty;
+			if (_timerLabel == null)
+				return;
+
+			_timerLabel.Text = _timerText;
+			_timerLabel.Visible = !string.IsNullOrWhiteSpace(_timerText);
+		}
+
+		public void SetProgress(float value, float maxValue)
+		{
+			if (_progressBar == null)
+				return;
+
+			if (maxValue <= 0f)
+			{
+				_progressBar.Visible = false;
+				return;
+			}
+
+			_progressBar.MaxValue = maxValue;
+			_progressBar.Value = Mathf.Clamp(value, 0f, maxValue);
+			_progressBar.Visible = true;
+		}
+
+		public void ClearProgress()
+		{
+			if (_progressBar == null)
+				return;
+
+			_progressBar.Visible = false;
+			_progressBar.Value = 0;
+			_progressBar.MaxValue = 1;
+		}
+
 		public new void Show()
 		{
+			if (_slotIndex < 0)
+				_slotIndex = AcquireSlot();
 			Visible = true;
 			_pulseTime = 0f;
 			SetStatus(_statusText);
+			SetTimer(_timerText);
 		}
 
 		public new void Hide()
 		{
 			Visible = false;
+			ReleaseSlot();
+		}
+
+		public override void _ExitTree()
+		{
+			ReleaseSlot();
+			base._ExitTree();
 		}
 	}
 }
-

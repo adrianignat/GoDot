@@ -7,6 +7,8 @@ namespace dTopDownShooter.Scripts.Events
 {
 	public partial class EventsManager : Node
 	{
+		private const int EventsPerDay = 2;
+
 		private readonly Dictionary<string, Func<GameEvent>> _eventFactories = new();
 		private readonly Dictionary<string, GameEvent> _activeEvents = new();
 		private readonly Random _random = new();
@@ -34,8 +36,10 @@ namespace dTopDownShooter.Scripts.Events
 
 		public override void _Process(double delta)
 		{
-			foreach (var gameEvent in _activeEvents.Values)
+			foreach (var gameEvent in _activeEvents.Values.ToList())
 				gameEvent.UpdateEvent(delta);
+
+			CleanupFinishedEvents();
 		}
 
 		public void RegisterEventFactory(string eventId, Func<GameEvent> factory)
@@ -62,9 +66,9 @@ namespace dTopDownShooter.Scripts.Events
 				return;
 			}
 
-			if (_activeEvents.Count > 0)
+			if (_activeEvents.ContainsKey(gameEvent.EventId))
 			{
-				GD.Print("[EventsManager] Skipping event start because another event is already active");
+				GD.Print($"[EventsManager] Skipping duplicate event start: {gameEvent.EventId}");
 				gameEvent.QueueFree();
 				return;
 			}
@@ -85,17 +89,30 @@ namespace dTopDownShooter.Scripts.Events
 			return _activeEvents.ContainsKey(eventId);
 		}
 
-		private void OnDayStarted(int dayNumber)
+		private async void OnDayStarted(int dayNumber)
 		{
-			if (_activeEvents.Count > 0 || _eventFactories.Count == 0)
+			if (_eventFactories.Count == 0)
 				return;
 
-			var availableFactories = _eventFactories.Keys.ToList();
-			if (availableFactories.Count > 1 && !string.IsNullOrEmpty(_lastEventId))
+			await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+			CleanupFinishedEvents();
+
+			var availableFactories = _eventFactories.Keys
+				.Where(id => !_activeEvents.ContainsKey(id))
+				.ToList();
+			if (availableFactories.Count == 0)
+				return;
+
+			int eventsToStart = Math.Min(EventsPerDay, availableFactories.Count);
+			if (availableFactories.Count > eventsToStart && !string.IsNullOrEmpty(_lastEventId))
 				availableFactories.Remove(_lastEventId);
 
-			string selectedId = availableFactories[_random.Next(availableFactories.Count)];
-			StartEvent(selectedId);
+			availableFactories = availableFactories
+				.OrderBy(_ => _random.Next())
+				.ToList();
+
+			foreach (string selectedId in availableFactories.Take(eventsToStart))
+				StartEvent(selectedId);
 		}
 
 		private void OnNightStarted()
