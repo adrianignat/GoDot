@@ -3,6 +3,12 @@ using Godot;
 
 public partial class TowerRuins : Node2D
 {
+	[Signal]
+	public delegate void BuiltEventHandler(TowerRuins ruins);
+
+	[Signal]
+	public delegate void BuildProgressChangedEventHandler(TowerRuins ruins, float currentProgress, float requiredProgress);
+
 	[Export] public Texture2D DestroyedTexture;
 	[Export] public Texture2D ConstructionTexture;
 	[Export] public Texture2D BuiltTexture;
@@ -31,6 +37,7 @@ public partial class TowerRuins : Node2D
 	private TowerState _state = TowerState.Destroyed;
 
 	public bool IsBuilt => _state == TowerState.Built;
+	public float CurrentBuildProgress => _buildProgress;
 
 	public override void _Ready()
 	{
@@ -92,7 +99,6 @@ public partial class TowerRuins : Node2D
 		if (WorkerScene == null)
 			return;
 
-		// If worker already exists and is valid, recall it to work point
 		if (GodotObject.IsInstanceValid(_workerInstance))
 		{
 			_workerInstance.MoveTo(_workerWorkPoint.GlobalPosition);
@@ -100,7 +106,6 @@ public partial class TowerRuins : Node2D
 			return;
 		}
 
-		// Spawn new worker
 		_workerInstance = WorkerScene.Instantiate<Worker>();
 		GetParent().CallDeferred("add_child", _workerInstance);
 		_workerInstance.GlobalPosition = _workerSpawnPoint.GlobalPosition;
@@ -112,6 +117,8 @@ public partial class TowerRuins : Node2D
 	{
 		_state = TowerState.Building;
 		_sprite.Texture = ConstructionTexture;
+		_buildProgress = 0f;
+		EmitSignal(SignalName.BuildProgressChanged, this, _buildProgress, BuildTimeRequired);
 		_buildTimer.Start();
 	}
 
@@ -121,6 +128,7 @@ public partial class TowerRuins : Node2D
 			return;
 
 		_buildProgress += 1f;
+		EmitSignal(SignalName.BuildProgressChanged, this, Mathf.Min(_buildProgress, BuildTimeRequired), BuildTimeRequired);
 
 		if (_buildProgress >= BuildTimeRequired)
 			FinishBuilding();
@@ -133,6 +141,8 @@ public partial class TowerRuins : Node2D
 		_buildTimer.Stop();
 		SendWorkerBack();
 		SpawnArcher();
+		EmitSignal(SignalName.BuildProgressChanged, this, BuildTimeRequired, BuildTimeRequired);
+		EmitSignal(SignalName.Built, this);
 	}
 
 	private void SendWorkerBack()
@@ -140,7 +150,6 @@ public partial class TowerRuins : Node2D
 		if (!GodotObject.IsInstanceValid(_workerInstance))
 			return;
 
-		// don't null the reference - worker will be freed on despawn and IsInstanceValid will return false
 		_workerInstance.MoveToAndDespawn(_workerSpawnPoint.GlobalPosition);
 		_workerInstance.FaceTowards(_workerSpawnPoint.GlobalPosition);
 	}

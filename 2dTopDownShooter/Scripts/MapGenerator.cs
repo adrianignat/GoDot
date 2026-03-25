@@ -245,6 +245,12 @@ namespace dTopDownShooter.Scripts
 			return new List<Vector2>(_buildingSpawnMarkers);
 		}
 
+		public List<TowerRuins> GetTowerRuins()
+		{
+			return _towerRuinsInstances
+				.FindAll(ruins => ruins != null && IsInstanceValid(ruins));
+		}
+
 		public Vector2? GetSpawnMarkerAwayFrom(Vector2 position, float minDistance)
 		{
 			var availableMarkers = _buildingSpawnMarkers.FindAll(m => !_usedSpawnMarkers.Contains(m));
@@ -406,3 +412,4 @@ namespace dTopDownShooter.Scripts
 		}
 	}
 }
+
