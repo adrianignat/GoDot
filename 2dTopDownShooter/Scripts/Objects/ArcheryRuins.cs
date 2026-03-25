@@ -6,6 +6,9 @@ public partial class ArcheryRuins : Node2D
 	[Signal]
 	public delegate void BuiltEventHandler(ArcheryRuins ruins);
 
+	[Signal]
+	public delegate void BuildProgressChangedEventHandler(ArcheryRuins ruins, float currentProgress, float requiredProgress);
+
 	[Export] public Texture2D DestroyedTexture;
 	[Export] public Texture2D ConstructionTexture;
 	[Export] public Texture2D BuiltTexture;
@@ -31,6 +34,7 @@ public partial class ArcheryRuins : Node2D
 	private ArcheryState _state = ArcheryState.Destroyed;
 
 	public bool IsBuilt => _state == ArcheryState.Built;
+	public float CurrentBuildProgress => _buildProgress;
 
 	public override void _Ready()
 	{
@@ -67,7 +71,6 @@ public partial class ArcheryRuins : Node2D
 	private void OnPlayerEntered()
 	{
 		_playerInRange = true;
-
 		SpawnOrRecallWorker();
 
 		if (_state == ArcheryState.Destroyed)
@@ -106,6 +109,8 @@ public partial class ArcheryRuins : Node2D
 	{
 		_state = ArcheryState.Building;
 		_sprite.Texture = ConstructionTexture;
+		_buildProgress = 0f;
+		EmitSignal(SignalName.BuildProgressChanged, this, _buildProgress, BuildTimeRequired);
 		_buildTimer.Start();
 	}
 
@@ -115,6 +120,7 @@ public partial class ArcheryRuins : Node2D
 			return;
 
 		_buildProgress += 1f;
+		EmitSignal(SignalName.BuildProgressChanged, this, Mathf.Min(_buildProgress, BuildTimeRequired), BuildTimeRequired);
 
 		if (_buildProgress >= BuildTimeRequired)
 			FinishBuilding();
@@ -126,6 +132,7 @@ public partial class ArcheryRuins : Node2D
 		_sprite.Texture = BuiltTexture;
 		_buildTimer.Stop();
 		SendWorkerBack();
+		EmitSignal(SignalName.BuildProgressChanged, this, BuildTimeRequired, BuildTimeRequired);
 		EmitSignal(SignalName.Built, this);
 	}
 

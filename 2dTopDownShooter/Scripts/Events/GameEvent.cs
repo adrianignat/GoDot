@@ -1,3 +1,4 @@
+using dTopDownShooter.Scripts.UI;
 using Godot;
 
 namespace dTopDownShooter.Scripts.Events
@@ -10,19 +11,18 @@ namespace dTopDownShooter.Scripts.Events
 		Failed
 	}
 
-	/// <summary>
-	/// Abstract base class for all game events/quests.
-	/// Events have a lifecycle: Inactive -> Active -> Completed/Failed
-	/// </summary>
 	public abstract partial class GameEvent : Node
 	{
 		public abstract string EventId { get; }
 		public abstract string DisplayName { get; }
+		public virtual ushort CompletionRewardGold => 10;
+		public virtual float TimeLimitSeconds => 30f;
+		protected virtual EventMarker QuestMarker => null;
 
 		public EventState State { get; protected set; } = EventState.Inactive;
 		public string CurrentObjective { get; protected set; } = "";
+		public float TimeRemainingSeconds { get; protected set; }
 
-		// Signals
 		[Signal]
 		public delegate void EventStartedEventHandler(string eventId);
 
@@ -35,17 +35,11 @@ namespace dTopDownShooter.Scripts.Events
 		[Signal]
 		public delegate void ObjectiveChangedEventHandler(string eventId, string objective);
 
-		/// <summary>
-		/// Check if this event can be started. Override for specific conditions.
-		/// </summary>
 		public virtual bool CanStart()
 		{
 			return State == EventState.Inactive;
 		}
 
-		/// <summary>
-		/// Start the event. Sets state to Active and calls OnEventStart.
-		/// </summary>
 		public void StartEvent()
 		{
 			if (!CanStart())
@@ -55,39 +49,47 @@ namespace dTopDownShooter.Scripts.Events
 			}
 
 			State = EventState.Active;
+			TimeRemainingSeconds = TimeLimitSeconds;
 			GD.Print($"[{EventId}] Event started: {DisplayName}");
-			EmitSignal(SignalName.EventStarted, EventId);
 			OnEventStart();
+
+			if (State != EventState.Active)
+				return;
+
+			UpdateQuestTimerUI();
+			EmitSignal(SignalName.EventStarted, EventId);
+			ShowStartAnnouncement();
 		}
 
-		/// <summary>
-		/// Called every frame while event is active.
-		/// </summary>
 		public void UpdateEvent(double delta)
 		{
 			if (State != EventState.Active)
 				return;
 
+			TimeRemainingSeconds = Mathf.Max(0f, TimeRemainingSeconds - (float)delta);
+			UpdateQuestTimerUI();
+			if (TimeRemainingSeconds <= 0f)
+			{
+				FailEvent();
+				return;
+			}
+
 			OnEventUpdate(delta);
 		}
 
-		/// <summary>
-		/// Complete the event successfully.
-		/// </summary>
 		public void CompleteEvent()
 		{
 			if (State != EventState.Active)
 				return;
 
 			State = EventState.Completed;
+			AwardCompletionReward();
 			GD.Print($"[{EventId}] Event completed: {DisplayName}");
 			EmitSignal(SignalName.EventCompleted, EventId);
 			OnEventComplete();
+			ShowCompletionAnnouncement();
 		}
 
-		/// <summary>
-		/// Fail the event.
-		/// </summary>
 		public void FailEvent()
 		{
 			if (State != EventState.Active)
@@ -99,17 +101,10 @@ namespace dTopDownShooter.Scripts.Events
 			OnEventFail();
 		}
 
-		/// <summary>
-		/// Cleanup event entities (allies, markers, buildings spawned by this event).
-		/// </summary>
 		public virtual void CleanupEventEntities()
 		{
-			// Override in subclasses to cleanup specific entities
 		}
 
-		/// <summary>
-		/// Set a new objective and emit signal.
-		/// </summary>
 		protected void SetObjective(string objective)
 		{
 			CurrentObjective = objective;
@@ -117,24 +112,52 @@ namespace dTopDownShooter.Scripts.Events
 			EmitSignal(SignalName.ObjectiveChanged, EventId, objective);
 		}
 
-		/// <summary>
-		/// Override to handle event start logic.
-		/// </summary>
+		protected string GetRemainingTimeText()
+		{
+			return $"{Mathf.CeilToInt(TimeRemainingSeconds)}s left";
+		}
+
+		private void UpdateQuestTimerUI()
+		{
+			if (QuestMarker != null && GodotObject.IsInstanceValid(QuestMarker))
+				QuestMarker.SetTimer(GetRemainingTimeText());
+		}
+
+		private void AwardCompletionReward()
+		{
+			if (CompletionRewardGold <= 0)
+				return;
+
+			Game.Instance.EmitSignal(Game.SignalName.GoldAcquired, CompletionRewardGold);
+			GD.Print($"[{EventId}] Reward granted: {CompletionRewardGold} gold");
+		}
+
+		private void ShowStartAnnouncement()
+		{
+			var dayNightUi = Game.Instance.GetNodeOrNull<DayNightUI>("DayNightUI");
+			if (dayNightUi == null)
+				return;
+
+			string message = string.IsNullOrWhiteSpace(CurrentObjective)
+				? $"Quest Started\n{DisplayName}\n{Mathf.CeilToInt(TimeLimitSeconds)}s to complete"
+				: $"Quest Started\n{CurrentObjective}\n{Mathf.CeilToInt(TimeLimitSeconds)}s to complete";
+
+			dayNightUi.ShowAnnouncement(message, Colors.Gold, 4.8f, 0.35f, 42, 2.1f);
+		}
+
+		private void ShowCompletionAnnouncement()
+		{
+			var dayNightUi = Game.Instance.GetNodeOrNull<DayNightUI>("DayNightUI");
+			if (dayNightUi == null)
+				return;
+
+			string rewardLine = CompletionRewardGold > 0 ? $"\n+{CompletionRewardGold} Gold" : string.Empty;
+			dayNightUi.ShowAnnouncement($"Quest Complete\n{DisplayName}{rewardLine}", Colors.GreenYellow, 1.8f, 0.35f, 40);
+		}
+
 		protected abstract void OnEventStart();
-
-		/// <summary>
-		/// Override to handle event update logic (called every frame while active).
-		/// </summary>
 		protected abstract void OnEventUpdate(double delta);
-
-		/// <summary>
-		/// Override to handle event completion logic.
-		/// </summary>
 		protected abstract void OnEventComplete();
-
-		/// <summary>
-		/// Override to handle event failure logic.
-		/// </summary>
 		protected abstract void OnEventFail();
 	}
 }

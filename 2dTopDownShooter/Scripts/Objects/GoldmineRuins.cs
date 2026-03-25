@@ -7,6 +7,9 @@ public partial class GoldmineRuins : Node2D
 	public delegate void BuiltEventHandler(GoldmineRuins ruins);
 
 	[Signal]
+	public delegate void BuildProgressChangedEventHandler(GoldmineRuins ruins, float currentProgress, float requiredProgress);
+
+	[Signal]
 	public delegate void GoldExtractedEventHandler(GoldmineRuins ruins, int amountExtracted, int remainingAmount);
 
 	[Signal]
@@ -43,6 +46,8 @@ public partial class GoldmineRuins : Node2D
 	public bool IsBuilt => _state == GoldmineState.Built;
 	public bool IsDepleted => _isDepleted;
 	public int RemainingGold => _remainingGold;
+	public int TotalGold => TotalGoldAvailable;
+	public float BuildProgress => _buildProgress;
 
 	public override void _Ready()
 	{
@@ -150,6 +155,8 @@ public partial class GoldmineRuins : Node2D
 	{
 		_state = GoldmineState.Building;
 		_sprite.Texture = ConstructionTexture;
+		_buildProgress = 0f;
+		EmitSignal(SignalName.BuildProgressChanged, this, _buildProgress, BuildTimeRequired);
 		_buildTimer.Start();
 	}
 
@@ -161,6 +168,7 @@ public partial class GoldmineRuins : Node2D
 		if (_state == GoldmineState.Building)
 		{
 			_buildProgress += 1f;
+			EmitSignal(SignalName.BuildProgressChanged, this, Mathf.Min(_buildProgress, BuildTimeRequired), BuildTimeRequired);
 			if (_buildProgress >= BuildTimeRequired)
 				FinishBuilding();
 			return;
@@ -170,10 +178,11 @@ public partial class GoldmineRuins : Node2D
 			ExtractGold();
 	}
 
-	private void FinishBuilding()
+		private void FinishBuilding()
 	{
 		_state = GoldmineState.Built;
 		_sprite.Texture = BuiltTexture;
+		EmitSignal(SignalName.BuildProgressChanged, this, BuildTimeRequired, BuildTimeRequired);
 		EmitSignal(SignalName.Built, this);
 	}
 

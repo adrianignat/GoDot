@@ -9,10 +9,12 @@ namespace dTopDownShooter.Scripts.Events
 
 		public override string EventId => "deplete_gold_mine";
 		public override string DisplayName => "Deplete the Gold Mine";
+		public override ushort CompletionRewardGold => 20;
 
 		private MapGenerator _mapGenerator;
 		private GoldmineRuins _goldmine;
 		private EventMarker _eventMarker;
+		protected override EventMarker QuestMarker => _eventMarker;
 
 		protected override void OnEventStart()
 		{
@@ -42,13 +44,16 @@ namespace dTopDownShooter.Scripts.Events
 				return;
 			}
 
+			_goldmine.BuildProgressChanged += OnBuildProgressChanged;
 			_goldmine.Built += OnMineBuilt;
 			_goldmine.GoldExtracted += OnGoldExtracted;
 			_goldmine.Depleted += OnMineDepleted;
 
-			SetObjective("Travel to the gold mine and activate it");
+			SetObjective("Travel to the gold mine and rebuild it");
 			_eventMarker.Configure("Gold Mine", Colors.Yellow);
 			_eventMarker.SetTarget(_goldmine);
+			_eventMarker.SetStatus("Find and rebuild the mine");
+			_eventMarker.SetProgress(0f, _goldmine.BuildTimeRequired + _goldmine.TotalGold);
 			_eventMarker.Show();
 		}
 
@@ -58,18 +63,33 @@ namespace dTopDownShooter.Scripts.Events
 				FailEvent();
 		}
 
+		private void OnBuildProgressChanged(GoldmineRuins mine, float currentProgress, float requiredProgress)
+		{
+			SetObjective($"Rebuild the mine {Mathf.FloorToInt(currentProgress)}/{Mathf.CeilToInt(requiredProgress)}");
+			_eventMarker?.SetStatus($"Rebuild {Mathf.FloorToInt(currentProgress)}/{Mathf.CeilToInt(requiredProgress)}");
+			_eventMarker?.SetProgress(currentProgress, mine.BuildTimeRequired + mine.TotalGold);
+		}
+
 		private void OnMineBuilt(GoldmineRuins mine)
 		{
-			SetObjective($"Extract the remaining gold ({mine.RemainingGold} left)");
+			int extracted = mine.TotalGold - mine.RemainingGold;
+			SetObjective($"Extract gold {extracted}/{mine.TotalGold}");
+			_eventMarker?.SetStatus($"Extracted {extracted}/{mine.TotalGold}");
+			_eventMarker?.SetProgress(mine.BuildTimeRequired + extracted, mine.BuildTimeRequired + mine.TotalGold);
 		}
 
 		private void OnGoldExtracted(GoldmineRuins mine, int amountExtracted, int remainingAmount)
 		{
-			SetObjective($"Extract the remaining gold ({remainingAmount} left)");
+			int extracted = mine.TotalGold - remainingAmount;
+			SetObjective($"Extract gold {extracted}/{mine.TotalGold}");
+			_eventMarker?.SetStatus($"Extracted {extracted}/{mine.TotalGold}");
+			_eventMarker?.SetProgress(mine.BuildTimeRequired + extracted, mine.BuildTimeRequired + mine.TotalGold);
 		}
 
 		private void OnMineDepleted(GoldmineRuins mine)
 		{
+			_eventMarker?.SetStatus("Mine depleted");
+			_eventMarker?.SetProgress(mine.BuildTimeRequired + mine.TotalGold, mine.BuildTimeRequired + mine.TotalGold);
 			CompleteEvent();
 		}
 
@@ -90,6 +110,7 @@ namespace dTopDownShooter.Scripts.Events
 			if (_goldmine == null || !GodotObject.IsInstanceValid(_goldmine))
 				return;
 
+			_goldmine.BuildProgressChanged -= OnBuildProgressChanged;
 			_goldmine.Built -= OnMineBuilt;
 			_goldmine.GoldExtracted -= OnGoldExtracted;
 			_goldmine.Depleted -= OnMineDepleted;
