@@ -132,16 +132,7 @@ namespace dTopDownShooter.Scripts
 		{
 			Game.Instance.CurrentPhase = GamePhase.ShelterWarning;
 			_shelterMarked = true;
-
-			// Pick shelter - prioritizes built house ruins if available
-			if (_mapGenerator != null)
-			{
-				_currentShelterPosition = _mapGenerator.GetShelterPosition();
-			}
-			else
-			{
-				_currentShelterPosition = new Vector2(640, 640); // Fallback to center
-			}
+			EnsureShelterPositionAssigned();
 
 			Game.Instance.EmitSignal(Game.SignalName.ShelterWarning);
 			GD.Print($"Shelter warning! Find shelter at {_currentShelterPosition}");
@@ -186,12 +177,31 @@ namespace dTopDownShooter.Scripts
 
 		private void StartNight()
 		{
+			if (!_shelterMarked)
+			{
+				_shelterMarked = true;
+				EnsureShelterPositionAssigned();
+			}
+
 			Game.Instance.CurrentPhase = GamePhase.Night;
 			_timeRemaining = GameConstants.NightDuration;
 			_nightDamageTimer = GameConstants.NightDamageInterval;
 
 			Game.Instance.EmitSignal(Game.SignalName.NightStarted);
 			GD.Print("Night has fallen! You'll take damage until dawn.");
+		}
+
+		private void EnsureShelterPositionAssigned()
+		{
+			// Pick shelter - prioritizes built house ruins if available
+			if (_mapGenerator != null)
+			{
+				_currentShelterPosition = _mapGenerator.GetShelterPosition();
+			}
+			else
+			{
+				_currentShelterPosition = new Vector2(640, 640); // Fallback to center
+			}
 		}
 
 		private void ProcessNight(float delta)

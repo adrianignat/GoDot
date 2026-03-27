@@ -45,6 +45,7 @@ namespace dTopDownShooter.Scripts.UI
 
 			Game.Instance.ShelterWarning += OnShelterWarning;
 			Game.Instance.DayStarted += OnDayStarted;
+			Game.Instance.NightStarted += OnNightStarted;
 			Game.Instance.PlayerEnteredShelter += OnPlayerEnteredShelter;
 
 			Visible = false;
@@ -171,6 +172,12 @@ namespace dTopDownShooter.Scripts.UI
 		{
 			Visible = false;
 			_arrowSprite.Modulate = Colors.Gold;
+		}
+
+		private void OnNightStarted()
+		{
+			Visible = true;
+			_pulseTime = 0f;
 		}
 
 		private void OnPlayerEnteredShelter()

@@ -11,6 +11,12 @@ namespace dTopDownShooter.Scripts.Events
 		private const float MinDistance = 700f;
 		private const float CollectionRadius = 80f;
 		private const float DropoffRadius = 130f;
+		private const float PenSeparationDistance = 650f;
+		private const float SheepSpawnMaxRadius = 420f;
+		private const float SheepSpawnSeparation = 180f;
+		private const float SheepMaxDistanceBetweenSheep = 420f;
+		private const float SheepSpawnClearance = 72f;
+		private const int MaxSheepSpawnAttempts = 200;
 
 		public override string EventId => "gather_pink_sheep";
 		public override string DisplayName => "Gather Pink Sheep";
@@ -40,7 +46,9 @@ namespace dTopDownShooter.Scripts.Events
 
 			var playerPos = Game.Instance.Player?.GlobalPosition ?? _mapGenerator.GetPlayerSpawnPosition();
 			var flockMarker = _mapGenerator.GetSpawnMarkerAwayFrom(playerPos, MinDistance);
-			var dropoffMarker = _mapGenerator.GetSpawnMarkerAwayFrom(flockMarker ?? playerPos, MinDistance * 0.6f);
+			var dropoffMarker = flockMarker.HasValue
+				? _mapGenerator.GetSpawnMarkerAwayFrom(flockMarker.Value, PenSeparationDistance)
+				: null;
 			if (!flockMarker.HasValue || !dropoffMarker.HasValue)
 			{
 				FailEvent();
@@ -49,7 +57,11 @@ namespace dTopDownShooter.Scripts.Events
 
 			_dropoffPosition = dropoffMarker.Value;
 			SpawnPen();
-			SpawnSheep(flockMarker.Value);
+			if (!SpawnSheep(flockMarker.Value))
+			{
+				FailEvent();
+				return;
+			}
 			UpdateUI();
 			_eventMarker.Show();
 		}
@@ -69,7 +81,7 @@ namespace dTopDownShooter.Scripts.Events
 			if (_collectedCount < TargetSheepCount)
 				return;
 
-			foreach (var sheep in _sheep.Where(s => s != null && GodotObject.IsInstanceValid(s) && s.IsCollected).ToList())
+			foreach (var sheep in _sheep.Where(s => s != null && GodotObject.IsInstanceValid(s) && s.IsCollected && !s.IsDelivered).ToList())
 			{
 				if (sheep.GlobalPosition.DistanceTo(_dropoffPosition) <= DropoffRadius)
 				{
@@ -90,29 +102,75 @@ namespace dTopDownShooter.Scripts.Events
 			_mapGenerator.AddChild(_pen);
 		}
 
-		private void SpawnSheep(Vector2 flockPosition)
+		private bool SpawnSheep(Vector2 flockPosition)
 		{
-			Vector2[] flockOffsets =
-			{
-				new Vector2(-130, -70),
-				new Vector2(120, -10),
-				new Vector2(10, 125)
-			};
+			var reservedPositions = new List<Vector2>();
 
 			for (int i = 0; i < TargetSheepCount; i++)
 			{
-				Vector2 spawnOffset = i < flockOffsets.Length
-					? flockOffsets[i]
-					: new Vector2(GD.RandRange(-130, 130), GD.RandRange(-130, 130));
+				var spawnPosition = FindValidSheepSpawnPosition(flockPosition, reservedPositions);
+				if (!spawnPosition.HasValue)
+					return false;
 
-				var sheepBody = _mapGenerator.SpawnSheepAt(flockPosition + spawnOffset);
+				reservedPositions.Add(spawnPosition.Value);
+				var sheepBody = _mapGenerator.SpawnSheepAt(spawnPosition.Value);
 				var sheep = sheepBody as EventSheep;
 				if (sheep == null)
-					continue;
+					return false;
 
 				sheep.Collected += OnSheepCollected;
 				_sheep.Add(sheep);
 			}
+
+			return true;
+		}
+
+		private Vector2? FindValidSheepSpawnPosition(Vector2 flockPosition, IEnumerable<Vector2> reservedPositions)
+		{
+			Rect2 playableArea = _mapGenerator.GetPlayableAreaBounds().Grow(-SheepSpawnClearance);
+
+			for (int attempt = 0; attempt < MaxSheepSpawnAttempts; attempt++)
+			{
+				float angle = (float)GD.RandRange(0, Mathf.Tau);
+				float distance = (float)GD.RandRange(0f, SheepSpawnMaxRadius);
+				Vector2 candidate = flockPosition + Vector2.Right.Rotated(angle) * distance;
+
+				if (!playableArea.HasPoint(candidate))
+					continue;
+
+				if (Game.Instance.IsInNoSpawnZone(candidate))
+					continue;
+
+				if (reservedPositions.Any(existing => existing.DistanceTo(candidate) < SheepSpawnSeparation))
+					continue;
+
+				if (reservedPositions.Any(existing => existing.DistanceTo(candidate) > SheepMaxDistanceBetweenSheep))
+					continue;
+
+				if (HasMapCollisionNearby(candidate, SheepSpawnClearance))
+					continue;
+
+				return candidate;
+			}
+
+			return null;
+		}
+
+		private bool HasMapCollisionNearby(Vector2 position, float radius)
+		{
+			var spaceState = Game.Instance.GetWorld2D().DirectSpaceState;
+			var shape = new CircleShape2D { Radius = radius };
+			var query = new PhysicsShapeQueryParameters2D
+			{
+				Shape = shape,
+				Transform = new Transform2D(0f, position),
+				CollisionMask = GameConstants.MapCollisionLayer,
+				CollideWithBodies = true,
+				CollideWithAreas = false
+			};
+
+			var results = spaceState.IntersectShape(query, 1);
+			return results.Count > 0;
 		}
 
 		private void OnSheepCollected(EventSheep sheep)

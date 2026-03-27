@@ -8,11 +8,14 @@ namespace dTopDownShooter.Scripts.Events
 	public partial class GatherLumberEvent : GameEvent
 	{
 		private const int TargetLumberCount = 8;
-		private const int SimultaneousSpawnCount = 5;
+		private const int TotalSpawnCount = 20;
+		private const int SimultaneousSpawnCount = 14;
 		private const float PickupRadius = 75f;
 		private const float SpawnClearance = 78f;
 		private const float StructureAvoidanceRadius = 140f;
-		private const int MaxSpawnAttemptsPerBundle = 40;
+		private const float NearbySpawnMinDistance = 180f;
+		private const float NearbySpawnMaxDistance = 1500f;
+		private const int MaxSpawnAttemptsPerBundle = 80;
 
 		public override string EventId => "gather_lumber";
 		public override string DisplayName => "Gather Lumber";
@@ -62,16 +65,46 @@ namespace dTopDownShooter.Scripts.Events
 		private void PrepareSpawnQueue()
 		{
 			_reservedPositions.Clear();
+			_remainingSpawnPositions.Clear();
+			Vector2 origin = Game.Instance.Player?.GlobalPosition ?? _mapGenerator.GetPlayerSpawnPosition();
 
-			for (int i = 0; i < TargetLumberCount; i++)
+			for (int i = 0; i < TotalSpawnCount; i++)
 			{
-				var spawnPosition = FindValidRandomSpawnPosition();
+				var spawnPosition = FindValidSpawnPosition(origin);
 				if (!spawnPosition.HasValue)
 					break;
 
 				_reservedPositions.Add(spawnPosition.Value);
 				_remainingSpawnPositions.Enqueue(spawnPosition.Value);
 			}
+		}
+
+		private Vector2? FindValidSpawnPosition(Vector2 origin)
+		{
+			var nearbyPosition = FindValidNearbySpawnPosition(origin);
+			if (nearbyPosition.HasValue)
+				return nearbyPosition;
+
+			return FindValidRandomSpawnPosition();
+		}
+
+		private Vector2? FindValidNearbySpawnPosition(Vector2 origin)
+		{
+			Rect2 playableArea = _mapGenerator.GetPlayableAreaBounds().Grow(-SpawnClearance);
+			var housePositions = _mapGenerator.GetHousePositions();
+			var buildingMarkers = _mapGenerator.GetBuildingSpawnMarkers();
+
+			for (int attempt = 0; attempt < MaxSpawnAttemptsPerBundle; attempt++)
+			{
+				float angle = (float)GD.RandRange(0, Mathf.Tau);
+				float distance = (float)GD.RandRange(NearbySpawnMinDistance, NearbySpawnMaxDistance);
+				Vector2 candidate = origin + Vector2.Right.Rotated(angle) * distance;
+
+				if (IsValidSpawnPosition(candidate, playableArea, housePositions, buildingMarkers))
+					return candidate;
+			}
+
+			return null;
 		}
 
 		private Vector2? FindValidRandomSpawnPosition()
@@ -86,25 +119,34 @@ namespace dTopDownShooter.Scripts.Events
 					(float)GD.RandRange(playableArea.Position.X, playableArea.End.X),
 					(float)GD.RandRange(playableArea.Position.Y, playableArea.End.Y));
 
-				if (Game.Instance.IsInNoSpawnZone(candidate))
-					continue;
-
-				if (housePositions.Any(house => house.DistanceTo(candidate) < StructureAvoidanceRadius))
-					continue;
-
-				if (buildingMarkers.Any(marker => marker.DistanceTo(candidate) < StructureAvoidanceRadius))
-					continue;
-
-				if (_reservedPositions.Any(existing => existing.DistanceTo(candidate) < StructureAvoidanceRadius))
-					continue;
-
-				if (HasMapCollisionNearby(candidate, SpawnClearance))
-					continue;
-
-				return candidate;
+				if (IsValidSpawnPosition(candidate, playableArea, housePositions, buildingMarkers))
+					return candidate;
 			}
 
 			return null;
+		}
+
+		private bool IsValidSpawnPosition(Vector2 candidate, Rect2 playableArea, IEnumerable<Vector2> housePositions, IEnumerable<Vector2> buildingMarkers)
+		{
+			if (!playableArea.HasPoint(candidate))
+				return false;
+
+			if (Game.Instance.IsInNoSpawnZone(candidate))
+				return false;
+
+			if (housePositions.Any(house => house.DistanceTo(candidate) < StructureAvoidanceRadius))
+				return false;
+
+			if (buildingMarkers.Any(marker => marker.DistanceTo(candidate) < StructureAvoidanceRadius))
+				return false;
+
+			if (_reservedPositions.Any(existing => existing.DistanceTo(candidate) < StructureAvoidanceRadius))
+				return false;
+
+			if (HasMapCollisionNearby(candidate, SpawnClearance))
+				return false;
+
+			return true;
 		}
 
 		private bool HasMapCollisionNearby(Vector2 position, float radius)

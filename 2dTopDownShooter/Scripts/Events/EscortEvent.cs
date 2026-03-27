@@ -41,18 +41,12 @@ namespace dTopDownShooter.Scripts.Events
 
 		protected override void OnEventStart()
 		{
-			_phase = EscortPhase.WaitingForTrigger;
-			_triggerTimer = GameConstants.EscortEventTriggerDelay;
 			_mapGenerator = Game.Instance.MainWindow.GetNodeOrNull<MapGenerator>("MapGenerator");
 
 			_eventMarker = new EventMarker();
 			_eventMarker.Name = "EscortEventMarker";
 			Game.Instance.AddChild(_eventMarker);
-			_eventMarker.Configure("Escort Quest", Colors.Cyan);
-			_eventMarker.SetStatus("Quest is preparing");
-			_eventMarker.SetProgress(0f, StageCount);
-
-			GD.Print($"[EscortEvent] Event started, waiting {_triggerTimer}s to trigger");
+			TriggerEvent();
 		}
 
 		protected override void OnEventUpdate(double delta)
@@ -109,7 +103,7 @@ namespace dTopDownShooter.Scripts.Events
 			_phase = EscortPhase.TravelingToMonastery;
 			SetObjective("Find the monastery");
 			_eventMarker.Configure("Monastery", Colors.Cyan);
-			_eventMarker.SetTarget(_monastery);
+			_eventMarker.SetTarget(_monasteryPosition);
 			_eventMarker.SetStatus("Stage 1/3: Find the monk");
 			_eventMarker.SetProgress(1f, StageCount);
 			_eventMarker.Show();
@@ -173,7 +167,7 @@ namespace dTopDownShooter.Scripts.Events
 			_phase = EscortPhase.Escorting;
 			SetObjective("Escort the monk to the monastary");
 			_eventMarker.Configure("Monastary", Colors.Gold);
-			_eventMarker.SetTarget(_targetMonastary);
+			_eventMarker.SetTarget(_monastaryRuinsPosition);
 			_eventMarker.SetStatus("Stage 2/3: Escort the monk");
 			_eventMarker.SetProgress(2f, StageCount);
 		}

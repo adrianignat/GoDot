@@ -16,7 +16,7 @@ namespace dTopDownShooter.Scripts.Events
 		public abstract string EventId { get; }
 		public abstract string DisplayName { get; }
 		public virtual ushort CompletionRewardGold => 10;
-		public virtual float TimeLimitSeconds => 30f;
+		public virtual float TimeLimitSeconds => 90f;
 		protected virtual EventMarker QuestMarker => null;
 
 		public EventState State { get; protected set; } = EventState.Inactive;
