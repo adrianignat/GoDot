@@ -37,6 +37,7 @@ namespace dTopDownShooter.Scripts.Events
 
 			_eventMarker = new EventMarker();
 			_eventMarker.Name = "CullEnemyTypeMarker";
+			_eventMarker.SetNavigationVisible(false);
 			Game.Instance.AddChild(_eventMarker);
 
 			Game.Instance.EnemyKilled += OnEnemyKilled;
@@ -46,38 +47,6 @@ namespace dTopDownShooter.Scripts.Events
 
 		protected override void OnEventUpdate(double delta)
 		{
-			if (_eventMarker == null)
-				return;
-
-			var targetEnemy = FindNearestMatchingEnemy();
-			if (targetEnemy != null)
-				_eventMarker.SetTarget(targetEnemy);
-			else if (Game.Instance.Player != null)
-				_eventMarker.SetTarget(Game.Instance.Player.GlobalPosition + new Vector2(0, -200));
-		}
-
-		private Enemy FindNearestMatchingEnemy()
-		{
-			var player = Game.Instance.Player;
-			if (player == null)
-				return null;
-
-			Enemy nearest = null;
-			float bestDistance = float.MaxValue;
-			foreach (Node node in GetTree().GetNodesInGroup(GameConstants.EnemiesGroup))
-			{
-				if (node is not Enemy enemy || !_targetType.IsInstanceOfType(enemy))
-					continue;
-
-				float distance = player.GlobalPosition.DistanceSquaredTo(enemy.GlobalPosition);
-				if (distance < bestDistance)
-				{
-					bestDistance = distance;
-					nearest = enemy;
-				}
-			}
-
-			return nearest;
 		}
 
 		private void OnEnemyKilled(Enemy enemy)

@@ -9,6 +9,7 @@ namespace dTopDownShooter.Scripts.Events
 		public delegate void CollectedEventHandler(EventSheep sheep);
 
 		public bool IsCollected { get; private set; }
+		public bool IsDelivered { get; private set; }
 
 		private const float StopDistance = 58f;
 		private const float ResumeDistance = 92f;
@@ -16,7 +17,6 @@ namespace dTopDownShooter.Scripts.Events
 		private const float MoveSpeed = 145f;
 
 		private AnimatedSprite2D _sprite;
-		private bool _delivered;
 		private bool _isMovingToPlayer;
 		private bool _lastFlipH;
 
@@ -27,7 +27,7 @@ namespace dTopDownShooter.Scripts.Events
 
 		public override void _PhysicsProcess(double delta)
 		{
-			if (_delivered)
+			if (IsDelivered)
 				return;
 
 			if (!IsCollected)
@@ -88,7 +88,7 @@ namespace dTopDownShooter.Scripts.Events
 
 		public void Collect()
 		{
-			if (IsCollected || _delivered)
+			if (IsCollected || IsDelivered)
 				return;
 
 			IsCollected = true;
@@ -98,7 +98,10 @@ namespace dTopDownShooter.Scripts.Events
 
 		public void MarkDelivered()
 		{
-			_delivered = true;
+			if (IsDelivered)
+				return;
+
+			IsDelivered = true;
 			Visible = false;
 			SetPhysicsProcess(false);
 			QueueFree();
